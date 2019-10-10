@@ -1,0 +1,110 @@
+\ProvidesPackage{preamble}
+
+%%%%% PACCHETTI %%%%%
+
+% to have precise relative import with \import{chapters/}{intro.tex}
+\usepackage{import}
+
+% setup input and allow italian
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+
+% setup bibliography
+\usepackage[
+    backend=biber,
+    style=alphabetic,
+    sorting=ynt,
+]{biblatex}
+% \usepackage[nottoc]{tocbibind}	% to generate Bibliography entry in toc
+% mah https://tex.stackexchange.com/a/71153
+% sorting order https://tex.stackexchange.com/a/51439
+% year name title
+\addbibresource{biblio.bib}
+
+% standard math magic
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{bm}
+\allowdisplaybreaks % allow breaking equations over pages tex.stackexchange.com/a/431236
+\usepackage{cases} % numbering eq inside case env
+\usepackage{upquote} % display '` in verbatim
+
+
+% setup geometry of the page, header/footer, and lists
+\usepackage[top=3cm, bottom=3cm, heightrounded, marginparwidth=2.5cm, marginparsep=1.5cm]{geometry}
+\usepackage{enumitem} % more control over lists: stackoverflow.com/a/4974583
+\usepackage{indentfirst} % YES indent after section/chapter heading
+\usepackage{fancyhdr}
+\makeatletter 
+\pagestyle{fancy}
+\lhead{\@title}
+\chead{}
+\rhead{}
+\lfoot{Capitolo \thechapter}
+% my name in E V E R Y page seems a bit much
+% \cfoot{\@author}
+\cfoot{}
+\rfoot{\thepage}
+\makeatother 
+
+% standard filler text
+\usepackage{lipsum}
+
+% setup algorithms
+\usepackage[Algoritmo]{algorithm}
+\usepackage[noend]{algpseudocode} % algoritmi decenti, senza end
+
+% graphics and images
+% \usepackage{graphicx}
+% \graphicspath{ {images/} }
+% per poter usare subfigure devi importare questo package
+\usepackage{subcaption}
+
+% some say this should be the last package added...
+\usepackage{hyperref}	% enable hyperlinks to referenced elements
+\hypersetup{
+	colorlinks=true,
+	linkcolor=cyan,
+	citecolor=cyan,
+    linkcolor=cyan,
+    filecolor=magenta,
+    urlcolor=blue,
+}
+\urlstyle{same}
+
+%%%%% COMANDI %%%%%
+
+\newcommand{\bpi}{\bm{\Pi}}
+% \newcommand{\bi}{I}
+\newcommand{\bi}{\mathcal{I}}
+\newcommand{\bs}{\mathcal{S}}
+
+\newcommand{\mleq}{\overset{?}{\leq}}
+\newcommand{\mgeq}{\overset{?}{\geq}}
+\newcommand{\mles}{\overset{?}{<}}
+\newcommand{\mges}{\overset{?}{>}}
+\newcommand{\meq}{\overset{?}{=}}
+
+% put text inside a circle
+\newcommand{\circola}[1]{\mbox{\textcircled{\footnotesize #1}}}
+% and put it above an equal sign
+\newcommand{\labeq}[1]{\overset{\circola{#1}}{=}}
+
+\newcommand{\rfig}[1]{Figura~\ref{#1}}
+
+% numerazione sana degli algoritmi
+\renewcommand{\thealgorithm}{\arabic{chapter}.\arabic{algorithm}} 
+
+%% MATH OPERATORS %%
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+%% CUSTOM THEOREM/DEF %%
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definizione}[section]
+
+\theoremstyle{theorem}
+\newtheorem{theorem}{Teorema}[section]
+
+\theoremstyle{theorem}
+\newtheorem{lemma}[theorem]{Lemma}
