@@ -1,5 +1,79 @@
 
 
-\section{PNP}
+\section{Categorie}
 
-PNP
+\dots
+
+\subsubsection{Problemi intrattabili}
+
+Sono problemi per cui non esiste né un algoritmo $A_{\bpi{}}$ che li risolva, né un lower bound esponenziale.
+Tuttavia c'è forte evidenza che il \textit{lower bound} esista, infatti si può provare che tutti i problemi in questa classe sono equivalenti, e questa proprietà di chiusura spinge verso la loro difficoltà.
+
+\section{Problemi Decisionali}
+
+\subsection{Problemi di ottimizzazione}
+
+In un problema di ottimizzazione, si definisce una funzione di costo associato ad una soluzione:
+\begin{equation*}
+    c : \bs{} \rightarrow \mathbb{R}
+\end{equation*}
+e, dato l'insieme di soluzioni ammissibili associate ad un'istanza
+\begin{equation*}
+    \bs{} (i) = \left\{ s \in \bs{} : i \, \bpi{} \, s \right\}
+\end{equation*}
+si vuole individuare la soluzione di costo massimo (o minimo)
+\begin{equation*}
+    s_{i}^{*} = \argmax \left\{ c(s) : s \in \bs{} (i) \right\}
+\end{equation*}
+
+\subsection{Problemi Decisionali}
+
+Per definire problemi e complessità degli algoritmi in modo rigoroso è necessario standardizzare i problemi computazionali.
+
+Un problema decisionale presenta un insieme delle soluzioni ridotto a due elementi, ed associa ad un'istanza generica una risposta (positiva o negativa) ad una domanda sull'istanza.
+\begin{equation*}
+    \bpi{}_{D} : \bi{} \rightarrow \left\{ \text{Sì, No} \right\}
+\end{equation*}
+La restrizione a questo insieme di soluzioni non comporta una perdita di generalità, per esempio, si consideri il problema di trovare un cammino minimo tra due nodi in un grafo:
+
+\subsubsection{\textit{Shortest Unweighted Path}}
+
+% Il problema è definito sull'istanza $<G=(V,E), s, t>$, dove $V \subseteq \mathbb{N}$ finito (i nodi sono identificati con numeri naturali), $E \subseteq V \times V$ (gli archi sono coppie ordinate di vertici), $s, t \in V$. L'insieme delle soluzioni è $\mathbb{N}^*$, e una soluzione generica è $s=<v_1, \dots, v_k$, dove $v_i \in V, v_1=s, v_k=t$ e $\left( v_i, v_{i+1} \right) \in E, 1 \leq i < k$.
+\begin{align*}
+    \text{istanza:} & <G=(V,E), s, t> \\
+    & V \subseteq \mathbb{N} \text{finito (i nodi sono identificati con numeri naturali)}
+\end{align*}
+    $E \subseteq V \times V$ (gli archi sono coppie ordinate di vertici)
+    $s, t \in V$
+    soluzioni: $\mathbb{N}^*$, e una soluzione generica è $s=<v_1, \dots, v_k$
+    dove $v_i \in V, v_1=s, v_k=t$ 
+    $\left( v_i, v_{i+1} \right) \in E, 1 \leq i < k$.
+
+
+
+
+
+
+
+
+
+
+\section{Pezzi utili di \LaTeX{}}
+\begin{algorithm}[H]
+\caption{Divide and Conquer}\label{alg:dnc}
+\begin{algorithmic}[1]
+    \Procedure{D\&C}{$i$}
+        \If{$|i| \leq n_0$}                             \Comment{BASE}
+            \State *risolvo direttamente*
+        \EndIf
+        \State $<i_1, i_2, \dots, i_k> \gets A_D(i)$    \Comment{DIVIDE}
+        \For{$j \gets 1 $ to $ k $ }                    \Comment{RECURSE}
+            \State $s_j \gets $ \Call{D\&C}{$i_j$}
+        \EndFor
+        \State $s \gets A_C(<s_1, s_2, \dots, s_k>)$    \Comment{CONQUER}
+        \State return $s$
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+
