@@ -10,12 +10,14 @@ Sono problemi per cui non esiste né un algoritmo $A_{\bpi{}}$ che li risolva, n
 Tuttavia c'è forte evidenza che il \textit{lower bound} esista, infatti si può provare che tutti i problemi in questa classe sono equivalenti, e questa proprietà di chiusura spinge verso la loro difficoltà.
 
 \section{Problemi Decisionali}
+% pag 4.2
 
 \subsection{Problemi di ottimizzazione}
+% pag 5
 
 In un problema di ottimizzazione, si definisce una funzione di costo associato ad una soluzione:
 \begin{equation*}
-    c : \bs{} \rightarrow \mathbb{R}
+    c : \bs{} \to \mathbb{R}
 \end{equation*}
 e, dato l'insieme di soluzioni ammissibili associate ad un'istanza
 \begin{equation*}
@@ -27,29 +29,93 @@ si vuole individuare la soluzione di costo massimo (o minimo)
 \end{equation*}
 
 \subsection{Problemi Decisionali}
+% pag 4.2
 
 Per definire problemi e complessità degli algoritmi in modo rigoroso è necessario standardizzare i problemi computazionali.
 
 Un problema decisionale presenta un insieme delle soluzioni ridotto a due elementi, ed associa ad un'istanza generica una risposta (positiva o negativa) ad una domanda sull'istanza.
 \begin{equation*}
-    \bpi{}_{D} : \bi{} \rightarrow \left\{ \text{Sì, No} \right\}
+    \bpi{}_{D} : \bi{} \to \left\{ \text{Sì, No} \right\}
 \end{equation*}
-La restrizione a questo insieme di soluzioni non comporta una perdita di generalità, per esempio, si consideri il problema di trovare un cammino minimo tra due nodi in un grafo:
 
 \subsubsection{\textit{Shortest Unweighted Path}}
-
+% pag 4.5
 % Il problema è definito sull'istanza $<G=(V,E), s, t>$, dove $V \subseteq \mathbb{N}$ finito (i nodi sono identificati con numeri naturali), $E \subseteq V \times V$ (gli archi sono coppie ordinate di vertici), $s, t \in V$. L'insieme delle soluzioni è $\mathbb{N}^*$, e una soluzione generica è $s=<v_1, \dots, v_k$, dove $v_i \in V, v_1=s, v_k=t$ e $\left( v_i, v_{i+1} \right) \in E, 1 \leq i < k$.
+La restrizione ad un insieme binario di soluzioni non comporta una perdita di generalità, per esempio, si consideri il problema di trovare un cammino minimo tra due nodi in un grafo:
 \begin{align*}
-    \text{istanza:} & <G=(V,E), s, t> \\
-    & V \subseteq \mathbb{N} \text{finito (i nodi sono identificati con numeri naturali)}
+    \text{istanza:} \quad & <G=(V,E), s, t> \\
+    \text{dove} \quad & V \subseteq \mathbb{N} \quad \text{finito (i nodi sono identificati con numeri naturali)} \\
+    & E \subseteq V \times V \quad \text{(gli archi sono coppie ordinate di vertici)} \\
+    & s, t \in V \\
+    \text{soluzioni:} \quad & s=<v_1, \dots, v_k> \in \mathbb{N}^* \\
+    i \, \bpi{} s \text{ se } \quad & 
+    % \text{dove} \quad &
+    v_i \in V \\
+    & v_1=s, \: v_k=t \\
+    & \left( v_i, v_{i+1} \right) \in E, 1 \leq i < k \\
+    i \, \bpi{} \, \varepsilon \text{ se } \quad & \text{non esiste cammino tra $s$ e $t$ in $G$} \\
+    \text{costo:} \quad & c\left( < v_1, \ldots, v_k > \right) = k-1 \\
+    & c( \varepsilon ) = \infty \\
+    \intertext{A questo problema di ottimizzazione si può associare un problema decisionale, arricchendo l'istanza con un limite superiore alla lunghezza del cammino}
+    \text{istanza:} \quad & <G=(V,E), s, t, k> \\
+    \text{domanda:} \quad & \text{esiste un cammino tra $s$ e $t$ in $G$, di lunghezza $\leq k$?} \\
 \end{align*}
-    $E \subseteq V \times V$ (gli archi sono coppie ordinate di vertici)
-    $s, t \in V$
-    soluzioni: $\mathbb{N}^*$, e una soluzione generica è $s=<v_1, \dots, v_k$
-    dove $v_i \in V, v_1=s, v_k=t$ 
-    $\left( v_i, v_{i+1} \right) \in E, 1 \leq i < k$.
+Avendo un algoritmo $A_{KUP}$ che risolva il problema decisionale, si può costruire facilmente un algoritmo che risolva $SUP$, usando $KUP$ come subroutine; l'algoritmo termina, perché si stanno cercando cammini semplici, quindi di lunghezza massima pari al numero di nodi meno uno.
+\begin{algorithm}[H]
+\caption{Shortest Unweighted Path}\label{alg:sup}
+\begin{algorithmic}[1]
+    \Procedure{$A_{SUP}$}{$<G=(V,E), s, t>$}
+        \State $m \gets |V|$
+        \For{$k \gets 0 $ to $ m-1 $ }
+            \If{\Call{$A_{KUP}$}{$<G=(V,E), s, t, k>$} = Sì}
+                \State return $k$
+            \EndIf
+        \EndFor
+        \State return $\infty$
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+Per quanto riguarda la complessità, si possono considerare le due istanze come di taglia paragonabile
+\begin{equation*}
+    |<G, s, t, k>| = \Theta \left( |<G, s, t>| \right)
+\end{equation*}
+e assumendo $KUP$ polinomiale
+\begin{equation*}
+    T_{KUP} = O \left( |<G, s, t, k>|^{h} \right)
+\end{equation*}
+e considerando che il numero di archi è limitato dalla taglia dell'istanza
+\begin{equation}
+    m = O \left( |<G, s, t>| \right)
+    \label{eq:tagliamgst}
+\end{equation}
+si ottiene che
+\begin{align*}
+    T_{SUP} \left( |<G, s, t>| \right) &= O \left( |<G, s, t>||<G, s, t>|^{h} \right) \\
+    &= O \left( |<G, s, t>|^{h+1} \right)
+\end{align*}
+per cui se si riesce a risolvere il problema decisionale si può risolvere anche il problema di ottimizzazione.
 
+Per ESERCIZIO, si scriva un algoritmo che ritorni anche il cammino minimo. Si suggerisce, dopo aver identificato $k$, di rimuovere archi per identificare quali siano quelli necessari per il cammino cercato. La complessità può risultare di due gradi superiore a quella di $KUP$.
 
+\section{Codifica delle istanze}
+% pag 6.7
+Un problema astratto generico è definito quindi come
+\begin{equation*}
+    \bpi{}_{A} : \bi{} \to \left\{ \text{Sì, No} \right\}
+\end{equation*}
+Come si evidenzia nell'equazione \ref{eq:tagliamgst}, c'è un forte legame tra taglia dell'istanza e complessità dell'algoritmo.
+% TODO definizioni serie?
+Si definisce quindi \textit{encoding} (codifica) una funzione invertibile (iniettiva)
+\begin{equation*}
+    e : \bi{} \to \left\{ 0,1 \right\}^{*}
+\end{equation*}
+che mappa istanze in stringhe finite (quindi considera istanze numerabili, che è ragionevole). La notazione completa è $e_{\bi{}}$ perché la codifica è legata ad un insieme di istanze, ma il pedice viene omesso per leggibilità.
+
+\section{Verifica in tempo polinomiale}
+% pag 10
+
+\section{Riducibilità}
+% pag 12
 
 
 
