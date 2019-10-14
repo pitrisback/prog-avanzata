@@ -1,12 +1,58 @@
+\section{Ripasso}
+
+Si ricordano le definizioni di algoritmo e problema computazionale astratto:
+
+\begin{definition}[Algoritmo]\label{def:alg}
+    Un algoritmo è una procedura computazionale finita (terminante) e deterministica, specificata come una sequenza di passi elementari (istruzioni) estratte da un insieme standard associato a un modello computazionale (astrazione di un computer) che trasforma in maniera univoca un ingresso in un uscita.
+\end{definition}
 
 
-\section{Categorie}
+\begin{definition}[Problema computazionale]\label{def:probcomp}
+    Un problema computazionale $\bpi{}$ è una relazione tra un insieme di istanze $\bi{}$ e un insieme di soluzioni $\bs{}$: $\bpi{} \subseteq \bi{} \times \bs{}$
+    \\
+    Un problema computazionale definisce la specifica astratta. % ma de che?
+\end{definition}
 
-\dots
+Note:
+% \begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
+\begin{itemize}[noitemsep,parsep=0pt,partopsep=0pt,topsep=0pt]
+    \item[--] le seguenti notazioni sono usate in maniera equivalente: $i_1 \bpi{} s_1 \iff (i_1 , s_1 ) \in \bpi{}$
+    \item[--] la relazione non è univoca, ad un'istanza possono essere associate più soluzioni
+    \item[--] nella specifica astratta si assume esistano le soluzioni per ogni istanza:\\
+        $\forall i \in \bi{},\exists s \in \bs{} | i \bpi{} s$
+\end{itemize}
+
+Un algoritmo $A_{\bpi{}}$ è un algoritmo per $\bpi{}$, ossia risolve $\bpi{}$ se, quando i suoi ingressi sono elementi di $\bi{}$, le sue uscite sono gli elementi di $\bs{}$ in relazione all'ingresso, formalmente:
+$$ A: \bi{} \to \bs{} \quad \textrm{e} \quad A(i)=s \iff i \, \bpi{} \, s $$
+
+\section{Categorie di problemi}
+I problemi computazionali si possono dividere in quattro categorie:
+
+\subsubsection{Polinomiali}
+Problemi $\bpi{}$ che ammettono algoritmi di risoluzione polinomiale, che si possono considerare ``facili''. Si trova una certa evidenza epistemiologica che i gradi in generale sono bassi, e si può considerare un problema polinomiale come trattabile.
+
+\subsubsection{Con limite inferiore esponenziale}
+Problemi $\bpi{}$ per cui si può provare che la complessità di ogni algoritmo che li risolve è esponenziale.
+\begin{equation*}
+    \forall A_{\bpi{}} \; \exists \, c > 1 : T_{A_{\bpi{}}} \left( n \right) = \Omega \left( c^{n} \right)
+    % \label{}
+\end{equation*}
+I problemi per cui si riesce a dimostrare questa proprietà sono però molto pochi, in genere problemi artificiali legati ai linguaggi.
+
+\subsubsection{Problemi che non ammettono algoritmi di risoluzione}
+Ricordiamo che un algoritmo è una procedura \textit{terminante}. Per esempio l'\textit{halting problem}, si definisce come:
+\begin{equation*}
+    \bi{}_{H} = \left\{ <MT,x> \right\}
+    \;\;
+    \bs{}_{H} = \left\{ \texttt{Sì, No} \right\}
+\end{equation*}
+
+TODO mancano pezzi
+
 
 \subsubsection{Problemi intrattabili}
 
-Sono problemi per cui non esiste né un algoritmo $A_{\bpi{}}$ che li risolva, né un lower bound esponenziale.
+Sono problemi per cui non esiste né un algoritmo $A_{\bpi{}}$ che li risolva, e neppure un \textit{lower bound} esponenziale.
 Tuttavia c'è forte evidenza che il \textit{lower bound} esista, infatti si può provare che tutti i problemi in questa classe sono equivalenti, e questa proprietà di chiusura spinge verso la loro difficoltà.
 
 \section{Problemi Decisionali}
@@ -35,7 +81,7 @@ Per definire problemi e complessità degli algoritmi in modo rigoroso è necessa
 
 Un problema decisionale presenta un insieme delle soluzioni ridotto a due elementi, ed associa ad un'istanza generica una risposta (positiva o negativa) ad una domanda sull'istanza.
 \begin{equation*}
-    \bpi{}_{D} : \bi{} \to \left\{ \text{Sì, No} \right\}
+    \bpi{}_{D} : \bi{} \to \left\{ \texttt{Sì, No} \right\}
 \end{equation*}
 
 \subsubsection{\textit{Shortest Unweighted Path}}
@@ -67,7 +113,7 @@ Avendo un algoritmo $A_{KUP}$ che risolva il problema decisionale, si può costr
     \Procedure{$A_{SUP}$}{$<G=(V,E), s, t>$}
         \State $m \gets |V|$
         \For{$k \gets 0 $ to $ m-1 $ }
-            \If{\Call{$A_{KUP}$}{$<G=(V,E), s, t, k>$} = Sì}
+        \If{\Call{$A_{KUP}$}{$<G=(V,E), s, t, k>$} = \texttt{Sì}}
                 \State return $k$
             \EndIf
         \EndFor
@@ -101,7 +147,7 @@ Per ESERCIZIO, si scriva un algoritmo che ritorni anche il cammino minimo. Si su
 % pag 6.7
 Un problema astratto generico è definito quindi come
 \begin{equation*}
-    \bpi{}_{A} : \bi{} \to \left\{ \text{Sì, No} \right\}
+    \bpi{}_{A} : \bi{} \to \left\{ \texttt{Sì, No} \right\}
 \end{equation*}
 Come si evidenzia nell'equazione \ref{eq:tagliamgst}, c'è un forte legame tra taglia dell'istanza e complessità dell'algoritmo.
 % TODO definizioni serie?
@@ -129,14 +175,18 @@ che mappa istanze in stringhe finite (quindi considera istanze numerabili, che �
 \caption{Divide and Conquer}\label{alg:dnc}
 \begin{algorithmic}[1]
     \Procedure{D\&C}{$i$}
-        \If{$|i| \leq n_0$}                             \Comment{BASE}
+        \If{$|i| \leq n_0$}
+        \Comment{BASE}
             \State *risolvo direttamente*
         \EndIf
-        \State $<i_1, i_2, \dots, i_k> \gets A_D(i)$    \Comment{DIVIDE}
-        \For{$j \gets 1 $ to $ k $ }                    \Comment{RECURSE}
+        \State $<i_1, i_2, \dots, i_k> \gets A_D(i)$ 
+        \Comment{DIVIDE}
+        \For{$j \gets 1 $ to $ k $ }
+        \Comment{RECURSE}
             \State $s_j \gets $ \Call{D\&C}{$i_j$}
         \EndFor
-        \State $s \gets A_C(<s_1, s_2, \dots, s_k>)$    \Comment{CONQUER}
+        \State $s \gets A_C(<s_1, s_2, \dots, s_k>)$
+        \Comment{CONQUER}
         \State return $s$
     \EndProcedure
 \end{algorithmic}
