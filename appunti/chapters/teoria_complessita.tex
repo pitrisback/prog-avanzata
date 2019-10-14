@@ -149,13 +149,115 @@ Un problema astratto generico è definito quindi come
 \begin{equation*}
     \bpi{}_{A} : \bi{} \to \left\{ \texttt{Sì, No} \right\}
 \end{equation*}
-Come si evidenzia nell'equazione \ref{eq:tagliamgst}, c'è un forte legame tra taglia dell'istanza e complessità dell'algoritmo.
-% TODO definizioni serie?
-Si definisce quindi \textit{encoding} (codifica) una funzione invertibile (iniettiva)
+Come si evidenzia nell'equazione \ref{eq:tagliamgst}, c'è un forte legame tra taglia dell'istanza e complessità dell'algoritmo. Va quindi definito precisamente il concetto di codifica di un'istanza.
+\begin{definition}[\textit{Encoding} (codifica)]\label{def:codifica}
+L'\textit{encoding} è una funzione invertibile (iniettiva)
 \begin{equation*}
     e : \bi{} \to \left\{ 0,1 \right\}^{*}
 \end{equation*}
-che mappa istanze in stringhe finite (quindi considera istanze numerabili, che è ragionevole). La notazione completa è $e_{\bi{}}$ perché la codifica è legata ad un insieme di istanze, ma il pedice viene omesso per leggibilità.
+che mappa istanze in stringhe finite (quindi considera istanze numerabili, che è ragionevole). La notazione completa è $e_{\bi{}}$ per indicare che la codifica è legata ad un preciso insieme di istanze, ma il pedice viene omesso per leggibilità.
+\end{definition}
+
+Il problema astratto viene mappato nel problema concreto
+\begin{equation*}
+    \bpi{}_{C} : \left\{ 0,1 \right\}^{*} \to \left\{ 0,1 \right\}
+\end{equation*}
+specificato come
+\begin{equation*}
+    \forall x \in \left\{ 0,1 \right\}^{*} \quad
+    \bpi{}_{C} (x) =
+    \begin{cases}
+        1 & \exists i \, \in \bi{} : e(i) = x \wedge \bpi{}_{A} (i) = \texttt{Sì} \\
+        0 & \text{altrimenti}
+    \end{cases}
+\end{equation*}
+Va notato che il problema concreto associa il valore $0$ sia ad istanze correttamente formate con risposta negativa, sia a tutte le stringhe non associate ad un'istanza.
+
+Il problema concreto corrisponde ad un linguaggio formale
+\begin{equation*}
+    L_{\bpi{}_{C}} \subseteq \left\{ 0,1 \right\}^{*} = \left\{ x \in \left\{ 0,1 \right\}^{*} : \bpi{}_{C}(x) = 1 \right\}
+\end{equation*}
+
+% TODO commento sui concreti e dipendenze pag 7.5
+In questo modo lo spazio dei problemi è reso uniforme.
+
+\subsubsection{Problema della codifica}
+La complessità di un algoritmo è legata alla codifica scelta, infatti secondo il modello di costo di una \textit{Random Access Machine} in cui tutte le istruzioni hanno costo $1$:
+\begin{equation}
+    T_{A_{\bpi{}_{C}}} (n) = \max_{|x|=n} \left\{ \text{\# di passi impiegati da } A_{\bpi{}_{C}} (x) \right\}
+    \label{eq:compltaglia}
+\end{equation}
+e in questa formula il parametro indipendente è la taglia dell'\textit{encoding}: $n=|e(i)|$
+
+\subsubsection{Codifica dei numeri naturali positivi}
+Si consideri l'insieme $\mathbb{N} - \left\{ 0 \right\}$ e un suo elemento generico $m$. Due codifiche possibili sono quella binaria e quella unaria.
+
+Per la codifica binaria:
+\begin{equation*}
+    e_b (m) = <a_{k-1}, \cdots, a_0 > \quad \text{con} \quad k = \left\lfloor \log_2 m \right\rfloor + 1
+\end{equation*}
+e la lunghezza di un'istanza risulta logaritmica rispetto al valore
+\begin{equation*}
+    |e_b(m)| = \Theta \left( \log m \right)
+\end{equation*}
+In realtà la codifica è indipendente dalla base, varia solamente per una costante.
+
+Per la codifica unaria:
+\begin{equation*}
+    e_u (m) = < \underbrace{1, \cdots, 1}_m >
+\end{equation*}
+e risultano istanze di lunghezza lineare rispetto al valore $m$
+\begin{equation}
+    |e_u(m)| = \Theta \left( m \right)
+    \label{eq:coduncomp}
+\end{equation}
+ed esponenziale rispetto alla codifica binaria:
+\begin{equation*}
+    |e_u(m)| = \Theta \left( 2^{|e_b(m)|} \right)
+\end{equation*}
+
+Un semplice problema che evidenzia l'importanza della codifica è l'algoritmo che esegue la somma dei primi $m$ numeri interi:
+\begin{algorithm}[H]
+\caption{\textit{Gauss}}\label{alg:gauss}
+\begin{algorithmic}[1]
+    \Procedure{\textit{Gauss}}{$m$}
+        \State $sum \gets 0$
+        \For{$i \gets 1 $ to $ m $ }
+            \State $sum \gets sum + i$
+        \EndFor
+        \State return $sum$
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+Per $m$ come valore, occorrono $\Theta \left( m \right)$ operazioni per concludere l'algoritmo.
+
+Ricordando che la complessità va espressa in funzione della taglia dell'istanza, come indicato all'equazione \ref{eq:compltaglia}, le complessità risultano:
+
+Nel caso della codifica unaria:
+\begin{equation*}
+    \Theta \left( m \right) = T_{G}^{u} \left( |<e_u(m)>| \right)
+\end{equation*}
+che componendo con l'equazione \ref{eq:coduncomp} risulta
+\begin{equation*}
+    T_{G}^{u} \left( n \right) = \Theta\left( n \right)
+\end{equation*}
+ossia una complessità lineare nel \textit{valore} dell'ingresso.
+
+Per la codifica binaria
+\begin{equation*}
+    \Theta \left( m \right) = T_{G}^{b} \left( |<e_b(m)>| \right)
+\end{equation*}
+ma in questo caso il valore è legato in maniera esponenziale alla lunghezza dell'istanza
+\begin{equation*}
+    m = \Theta \left( 2^{|<e_b(m)>|} \right)
+\end{equation*}
+per cui risulta una complessità esponenziale dell'algoritmo, rispetto alla lunghezza della codifica dell'istanza
+\begin{equation*}
+    T_{G}^{b} \left( n \right) = \Theta \left( 2^n \right)
+\end{equation*}
+
+\section{Decisione in tempo polinomiale}
+% pag 9.5
 
 \section{Verifica in tempo polinomiale}
 % pag 10
