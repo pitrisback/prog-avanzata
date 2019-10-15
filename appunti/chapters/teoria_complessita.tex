@@ -29,7 +29,7 @@ $$ A: \bi{} \to \bs{} \quad \textrm{e} \quad A(i)=s \iff i \, \bpi{} \, s $$
 I problemi computazionali si possono dividere in quattro categorie:
 
 \subsubsection{Polinomiali}
-Problemi $\bpi{}$ che ammettono algoritmi di risoluzione polinomiale, che si possono considerare ``facili''. Si trova una certa evidenza epistemiologica che i gradi in generale sono bassi, e si può considerare un problema polinomiale come trattabile.
+Problemi $\bpi{}$ che ammettono algoritmi di risoluzione polinomiale, che si possono considerare ``facili''. Si trova una certa evidenza epistemologica che i gradi in generale sono bassi, e si può considerare un problema polinomiale come trattabile.
 
 \subsubsection{Con limite inferiore esponenziale}
 Problemi $\bpi{}$ per cui si può provare che la complessità di ogni algoritmo che li risolve è esponenziale.
@@ -241,7 +241,7 @@ che componendo con l'equazione \ref{eq:coduncomp} risulta
 \begin{equation*}
     T_{G}^{u} \left( n \right) = \Theta\left( n \right)
 \end{equation*}
-ossia una complessità lineare nel \textit{valore} dell'ingresso.
+ossia una complessità lineare nella taglia dell'istanza (che corrisponde al \textit{valore} dell'ingresso).
 
 Per la codifica binaria
 \begin{equation*}
@@ -256,19 +256,213 @@ per cui risulta una complessità esponenziale dell'algoritmo, rispetto alla lung
     T_{G}^{b} \left( n \right) = \Theta \left( 2^n \right)
 \end{equation*}
 
-\section{Decisione in tempo polinomiale}
+Come esempio numerico, si pensi alla differenza tra $1024$ e $10$, e come $2^{10}$ sia necessario per esprimere $1024$ in funzione di $10$.
+
+La codifica unaria quindi maschera l'algoritmo come molto buono, nascondendo la complessità nella codifica stessa.
+
+\begin{definition}[\textit{Encoding} conciso]
+    \label{def:encodingconciso}
+    Con le parentesi angolate $<\cdots>$ si indica l'uso di una codifica \textit{concisa} e \textit{ragionevole} dell'istanza.
+\end{definition}
+
+
+\section{Classi di problemi}
+
+\subsection{Decisione in tempo polinomiale}
 % pag 9.5
 
-\section{Verifica in tempo polinomiale}
+% MAYBE spostare questa definizione prima, dove introduce il legame linguaggio/algoritmo/problema
+Considerando un problema $\bpi{}_{C}$ e un algoritmo $A_{\bpi{}_{C}}$ che risolve il problema, si dice che il linguaggio \textit{deciso} o \textit{accettato} da $A_{\bpi{}_{C}}$ è
+\begin{equation*}
+    L_{\bpi{}_{C}} = \left\{ x \in \left\{ 0,1 \right\}^* : A_{\bpi{}_{C}}(x) = 1 \right\}
+\end{equation*}
+ossia l'insieme di stringhe per cui la computazione ha esito positivo.
+
+\begin{definition}[Tempo polinomiale]
+    \label{def:tempopoli}
+    $L$ è deciso in tempo polinomiale se esiste un algoritmo $A$ tale che:
+    % \begin{itemize}
+    \begin{itemize}[itemsep=0pt]
+    % \begin{itemize}[noitemsep,parsep=0pt,partopsep=0pt,topsep=0pt]
+        \item[--] $L_A = L$ (il linguaggio deciso da $A$ è $L$)
+        \item[--] $T_A(|x|) = O(|x|^k)$ per qualche costante $k \geq 0$
+    \end{itemize}
+\end{definition}
+
+\begin{definition}
+    \label{def:classep}
+    La classe di problemi $\bp{}$ è l'insieme
+    \begin{align*}
+        \bp{} &= \left\{ L \subseteq \left\{ 0,1 \right\}^* |\, L \text{ è deciso in tempo polinomiale}\right\} \\
+        &= \left\{ \bpi{}_{C} : \left\{ 0,1 \right\}^* \to \left\{ 0,1 \right\} |\, \bpi{}_C \text{ è risolto in tempo polinomiale} \right\}
+    \end{align*}
+\end{definition}
+
+
+\subsection{Verifica in tempo polinomiale}
 % pag 10
+
+La classe $\bnp{}$ non viene caratterizzata utilizzando automi non deterministici, ma analizzando la complessità della \textit{verifica} della correttezza di una soluzione di un dato problema, senza preoccuparsi di come si è trovata questa soluzione.
+
+Si consideri il problema di trovare un circuito \textit{Hamiltoniano} in un grafo non orientato:
+\begin{align*}
+    \text{istanza:} \quad & <G=(V,E)> \\
+    \text{dove} \quad & G \text{ grafo non orientato} \\
+    \text{domanda:} \quad & G \text{ contiene un ciclo semplice che tocca tutti i nodi?} \\
+    \text{soluzioni:} \quad & s=<v_1, \dots, v_k> \in \mathbb{N}^* \\
+    i \, \bpi{} s \text{ se } \quad & 
+    % \text{dove} \quad &
+    v_i \in V \\
+    & v_1 = v_k \\
+    & \left( v_i, v_{i+1} \right) \in E, 1 \leq i < k \\
+    & v_i \neq v_j , 1 \leq i < j < k
+\end{align*}
+In questo caso la soluzione è difficile da trovare, ma verificare se un cammino sia valido è facile, infatti:
+\begin{algorithm}[H]
+\caption{Verificatore per Hamiltonian}\label{alg:verifyh}
+\begin{algorithmic}[1]
+    \Procedure{VERIFY\_H}{$x, y$}
+        \If{$x \neq <G=(V,E)>$}
+        \Comment{verifico $x$ sia istanza ben formata}
+            \State return $0$
+        \EndIf
+        \If{$x \neq <v_1, v_2, \cdots, v_{|V|+1}>$}
+        \Comment{verifico $y$ codifichi un cammino valido }
+            \State return $0$
+        \EndIf
+        \If{$ v_1 \neq v_{|V|+1}$}
+        \Comment{che sia un ciclo}
+            \State return $0$
+        \EndIf
+        \If{* $ \exists i,j : 1 \leq i < j < |V| : v_i \neq v_j $ * }
+        \Comment{che sia semplice}
+            \State return $0$
+        \EndIf
+        \For{$i \gets 1 $ to $ |V| $ }
+        % \Comment{}
+            \If{$ ( v_i , v_{i+1} ) \notin E $  }
+                \State return $0$
+            \EndIf
+        \EndFor
+        \State return $1$
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\begin{definition}[Verificatore, certificato]
+    \label{def:verificatore}
+    $V(x,y)$ verifica $\bar{x}$ se 
+    \begin{equation*}
+    % $
+        \exists \bar{y} : V( \bar{x}, \bar{y}) = 1
+    \end{equation*}
+    % $
+    $\bar{y}$ si dice \textit{certificato} per $\bar{x}$
+\end{definition}
+
+\begin{definition}[Linguaggio verificato]
+    \label{def:linguaggioverificato}
+    Il linguaggio verificato da $V(x,y)$ è
+    \begin{equation*}
+        L_V = \left\{ \bar{x} \in \left\{ 0,1 \right\}^* \text{ verificate da } V(x,y) \right\}
+    \end{equation*}
+\end{definition}
+
+\begin{definition}[Verifica polinomiale]
+    \label{def:verificapolinomiale}
+    $L$ è un linguaggio verificato in tempo polinomiale se
+    \begin{itemize}
+        \item $ \exists \, V_L (x,y) : L_{V_{L}} = L$
+        \item $ \forall x \in L, \; \exists y : V_L(x,y) = 1 \wedge |y| = O \left( |x|^{k_{1}} \right) $ per qualche $k_1 \geq 0$ costante (il certificato non può essere troppo esteso rispetto all'istanza)
+        \item $ T_{V_{L}} (|x|, |y|) = O \left( \left( |x|+|y| \right)^{k_{2}} \right)$ per qualche $k_2 \geq 0$ costante (tempo del verificatore polinomiale negli ingressi)
+    \end{itemize}
+\end{definition}
+
+\begin{definition}
+    \label{def:classenp}
+    La classe di problemi $\bnp{}$ è l'insieme
+    \begin{equation*}
+        \bnp{} = \left\{ L \subseteq \left\{ 0,1 \right\}^* \to \left\{ 0,1 \right\}|\, L \text{ è verificato in tempo polinomiale}\right\}
+    \end{equation*}
+\end{definition}
+
+% \section{$\bp{}$ \textit{vs} $\bnp{}$}
+\subsection{P vs NP}
+% pag 11.8
+
+La domanda del millennio è la seguente:
+\begin{equation*}
+    \bp{} = \bnp{}
+    \quad
+    \texttt{vs}
+    \quad
+    \bp{} \neq \bnp{}
+\end{equation*}
+
+È facile provare che $\bp{} \subseteq \bnp{}$, ossia che $\forall L \in \bp{}$ ammette un verificatore polinomiale. Infatti, se $L \in \bp{}, \exists A_{L}(x) : x \in L \Leftrightarrow A_L (x) = 1$ e in più $T_{A_{L}} (|x|) = O \left( |x|^{k} \right)$ per cui è triviale esibire un verificatore per $L$
+\begin{algorithm}[H]
+    \caption{Verificatore per $L$ in $\bp{}$}\label{alg:verificap}
+\begin{algorithmic}[1]
+    \Procedure{V\_L}{$x,y$}
+        \State return $A_L (x)$
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+Sotto l'ipotesi $\bp{} \neq \bnp{} $, si trova una classe di linguaggi $\bnpc{} \subseteq \bp{} - \bnp{} $ detti NP-completi. Si può costruire una relazione d'ordine tra linguaggi, e provare che gli $\bnpc{}$ sono i $\sup$ di questa relazione, e sono tutti equivalenti. Se uno di questi appartenesse a $\bp{}$, l'intera classe collasserebbe in $\bp{}$.
+
 
 \section{Riducibilità}
 % pag 12
 
+Dati due problemi
+$\bpi{}_1$
+e
+$\bpi{}_2$
+, si cerca una funzione $f$ in modo che la soluzione di $f(i_1)$ implichi la soluzione di $i_1$.
+\begin{itemize}[noitemsep,parsep=0pt,partopsep=0pt,topsep=0pt]
+    \item se $i_1$ è positiva $\Rightarrow i_2 = f(i_1)$ è positiva
+    \item se $i_1$ è negativa $\Rightarrow i_2 = f(i_1)$ è negativa
+\end{itemize}
+Ossia $i_1$ è positiva $\Leftrightarrow i_2 = f(i_1)$ è positiva.
 
+Per rispondere a $\bpi{}_1$ si usa la risposta a $\bpi{}_2$, da cui si intuisce che è il secondo problema il più difficile (sapere 1 non dice nulla su 2):
+\begin{equation*}
+\bpi{}_1
+\lp
+% \bpi{}_2
+\bpi_2
+\end{equation*}
 
+Si consideri di nuovo il problema di \textit{Hamilton} e la sua relazione con il \textit{Travelling Salesman Problem}:
+\begin{align*}
+    \text{Hamilton:} & \quad \\
+    \text{istanza:} \quad & <G=(V,E)> \\
+    \text{domanda:} \quad & G \text{ contiene un ciclo semplice che tocca tutti i nodi?} \\
+    \text{TSP:} & \quad \\
+    \text{istanza:} \quad & <G_C=(V,E_C), w, k> \\
+    \text{dove} \quad & G_C \text{ grafo completo non orientato} \\
+    & w : E \to \mathbb{N} - \left\{ 0 \right\} \\
+    & k \in \mathbb{N} \\
+    \text{domanda:} \quad & G \text{ contiene un ciclo \textit{Hamiltoniano} di costo $\leq k$?} \\
+    \text{dove} \quad &  c(<v_1, \cdots, v_{|V|+1}>) = \sum_{i=1}^{|V|} w(v_i, v_{i+1} )  \\
+\end{align*}
+Dall'istanza di \textit{Hamilton} generica 
+$i_1 = <G=(V,E)>$
+si ottiene con facilità l'istanza del \textit{Travelling Salesman Problem}
+$i_2 = <G_C=(V,E_C), w, k>$
 
-
+\begin{itemize}[parsep=0pt,partopsep=0pt,topsep=2pt]
+    \item[--] si aggiungono archi come necessario per rendere completo il grafo
+    \item[--] $w(e) = 
+        \begin{cases}
+            1 & e \in E \\
+            2 & e \in E_C - E
+        \end{cases}
+        $
+    \item[--] $k = |V|$
+\end{itemize}
+In questo modo, se $G$ è \textit{Hamiltoniano}, esiste un ciclo di costo $|V|$ e TSP risponde \texttt{Sì}. Se invece serve un arco in $E_C - E$, il costo salirebbe, andando oltre $k$.
 
 
 
@@ -295,3 +489,11 @@ per cui risulta una complessità esponenziale dell'algoritmo, rispetto alla lung
 \end{algorithm}
 
 
+\begin{definition}[Algoritmo]\label{def:algex}
+    Un algoritmo è una procedura computazionale finita (terminante) e deterministica, specificata come una sequenza di passi elementari (istruzioni) estratte da un insieme standard associato a un modello computazionale (astrazione di un computer) che trasforma in maniera univoca un ingresso in un uscita.
+\end{definition}
+
+\begin{itemize}[noitemsep,parsep=0pt,partopsep=0pt,topsep=0pt]
+    \item[--] $L_A = L$ (il linguaggio deciso da $A$ è $L$)
+    \item[--] $T_A(|x|) = O(|x|^k)$ per qualche costante $k \geq 0$
+\end{itemize}
