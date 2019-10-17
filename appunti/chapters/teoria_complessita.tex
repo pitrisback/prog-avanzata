@@ -388,6 +388,7 @@ In questo caso la soluzione è difficile da trovare, ma verificare se un cammino
 
 % \section{$\bp{}$ \textit{vs} $\bnp{}$}
 \subsection{P vs NP}
+\label{sss:pvsnp}
 % pag 11.8
 
 La domanda del millennio è la seguente:
@@ -550,6 +551,112 @@ L'immagine nel caso più estremo può anche essere di due soli punti, tutta la c
         A_{L_1} (x) = 0
     \end{equation*}
 \end{proof}
+
+\subsubsection{Proprietà della relazione tra linguaggi}
+\begin{itemize}
+    \item $\lp$ è riflessiva: $L \lp L$, e $f$ è l'identità
+    \item $\lp$ è transitiva: $(L_1 \lp L_2) \wedge (L_2 \lp L_3) \Rightarrow (L_1 \lp L_3)$, la composizione di due funzioni polinomiali è polinomiale
+\end{itemize}
+
+\begin{definition}[NP-hard]
+    \label{def:nphard}
+    Un linguaggio $L \subseteq \left\{ 0,1 \right\}^{*}$ si dice NP-hard se
+    \begin{equation*}
+        \forall L' \in \bnp \quad \to \quad L' \lp L
+    \end{equation*}
+\end{definition}
+
+\begin{definition}[NP-completo]
+    \label{def:nphard}
+    Un linguaggio $L \subseteq \left\{ 0,1 \right\}^{*}$ si dice NP-completo se
+    \begin{align*}
+        L & \in \bnp \\
+        L & \in \bnph
+    \end{align*}
+    I problemi NP-completi sono i più difficili \textit{nella} classe $\bnp$
+\end{definition}
+
+\begin{corollario}[P=NP]
+    Se esistesse un linguaggio NP-completo in $\bp$ le classi $\bp, \bnp$ sarebbero equivalenti
+    \begin{equation*}
+        \exists L \in \left( \bnpc \cap \bp \right)
+        \quad
+        \Rightarrow
+        \quad
+        \bp = \bnp
+    \end{equation*}
+\end{corollario}
+\begin{proof}
+    La tesi equivale a $ ( \bp \subseteq \bnp ) \wedge ( \bnp \subseteq \bp )$
+    La prima parte è già stata vista alla sezione \ref{sss:pvsnp}. Per la seconda, si consideri un generico $L' \in \bnp$. Vale $L' \lp L$ perché $L \in \bnpc$ e tutti i linguaggi in $\bnp$ si riducono ad esso, e per ipotesi $L \in \bp$. Per il teorema \ref{teo:relazioneordine} vale quindi
+    \begin{equation*}
+        \left( L' \lp L \right) \wedge \left( L \in \bp \right) \Rightarrow   L \in \bp 
+    \end{equation*}
+\end{proof}
+
+La teoria della complessità strutturale studia, sotto l'ipotesi $\bp \ne \bnp$, che tipologie di problemi intermedi siano esistenti, e si può costruire un'intera gerarchia infinita di complessità dei problemi.
+
+\section{Problemi NP-completi}
+
+Dimostrare che un problema è NP-completo non è semplice, vanno infatti provate due proprietà per verificare che $L \in \bnpc$:
+\begin{enumerate}
+    \item $L \in \bnp$
+    \item $\forall L' \in \bnp, L' \lp L$
+\end{enumerate}
+La prima è ragionevole, ed è sufficiente esibire un verificatore $V_L(x,y)$. La seconda invece è estremamente pesante, perché è necessaria una catena infinita di riduzioni per provare che \textit{per ogni} $L'$ la relazione sia verificata.
+
+Si procede quindi in modo diverso: supponendo che un linguaggio \textit{sia} in $\bnpc$, è sufficiente una singola riduzione per provare che il linguaggio candidato sia NP-completo.
+
+Ovvero, se $\bar{L} \in \bnpc$, vale $L_C \in \bnpc$?
+
+Se si dimostra la riduzione
+$
+\bar{L} \lp L_C
+$
+si può applicare la proprietà transitiva della relazione $\lp$ per cui
+\begin{equation*}
+    \left( L' \lp \bar{L} \right) \wedge \left( \bar{L} \lp L_C \right) \Rightarrow  L' \lp L_C
+\end{equation*}
+
+\subsection{Circuiti \textit{booleani}}
+
+Un circuito \textit{booleano}, o circuito combinatorio, è un'interconnessione di gate \textit{senza cicli}, in cui l'output di un gate può essere input di uno o più gate. I fili che non provengono da gate sono gli input del circuito, e i fili che non entrano in gate sono gli output del circuito. Verranno considerati solo circuiti con un singolo output.
+
+Il circuito si può scrivere come funzione $C \left( x_1, \cdots, x_k \right)$, ed è isomorfo al grafo in cui i fili corrispondono ad archi, e vengono aggiunti nodi per input e output del circuito:
+\begin{equation*}
+    C \equiv G_C = \left( I \cup G \cup \left\{ o \right\}, W \right)
+\end{equation*}
+
+Si indica con \textit{fan-in} il massimo numero di ingressi ad un gate, e con \textit{fan-out} il massimo numero di gate raggiuni da un output di un gate.
+
+Assegnando dei valori di verità $\vec{b} \in \left\{ 0,1 \right\}^{k}$ agli input di un circuito, si dice che questo \textit{commuta}, ossia assume una certa configurazione di valori su ogni filo, che si indica
+\begin{equation*}
+    Config(C) = \vec{h} \in \left\{ 0,1 \right\}^{m}
+\end{equation*}
+
+Un circuito di dice \textit{soddisfacibile} se
+\begin{equation*}
+    \exists \,\vec{b} \in \left\{ 0,1 \right\}^{k} : C ( \, \vec{b} \,) = 1
+\end{equation*}
+
+Il problema di stabilire la soddisfacibilità di un circuito è stato risolto da $Cook$ nel 1971, ed è stato dimostrato essere NP-completo.
+\begin{align*}
+    \text{istanza:} \quad & < C \left( x_1, \cdots, x_k \right) > \\
+    \text{domanda:} \quad & C \text{ è soddisfacibile?}
+\end{align*}
+
+Un verificatore per il problema è semplice da implementare, e risulta lineare nella taglia del circuito:
+\begin{algorithm}[H]
+\caption{Soddisfacibilità di un circuito}\label{alg:cooksoddisfa}
+\begin{algorithmic}[1]
+    \Procedure{VERIFY\_BC\_SAT}{$x,y$}
+        \State * controllare se $x = < I \cup G \cup \left\{ o \right\}, W >$ è aciclico *
+        \State * controllare se $y = < W_1, \cdots, W_{|W|}$ corrisponde ad un valore per filo *
+        \State * controlla la validità della configurazione, per ogni gate in $G$ l'output del gate deve implementare la funzione correttamente *
+        \State * controlla se il valore di uscita è uno: $W_o = 1$*
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
 
 \section{Pezzi utili di \LaTeX{}}
 \begin{algorithm}[H]
