@@ -153,18 +153,18 @@ Come si evidenzia nell'equazione \ref{eq:tagliamgst}, c'è un forte legame tra t
 \begin{definition}[\textit{Encoding} (codifica)]\label{def:codifica}
 L'\textit{encoding} è una funzione invertibile (iniettiva)
 \begin{equation*}
-    e : \bi{} \to \left\{ 0,1 \right\}^{*}
+    e : \bi{} \to \setzo{*}
 \end{equation*}
 che mappa istanze in stringhe finite (quindi considera istanze numerabili, che è ragionevole). La notazione completa è $e_{\bi{}}$ per indicare che la codifica è legata ad un preciso insieme di istanze, ma il pedice viene omesso per leggibilità.
 \end{definition}
 
 Il problema astratto viene mappato nel problema concreto
 \begin{equation*}
-    \bpi{}_{C} : \left\{ 0,1 \right\}^{*} \to \left\{ 0,1 \right\}
+    \bpi{}_{C} : \setzo{*} \to \setzo{}
 \end{equation*}
 specificato come
 \begin{equation*}
-    \forall x \in \left\{ 0,1 \right\}^{*} \quad
+    \forall x \in \setzo{*} \quad
     \bpi{}_{C} (x) =
     \begin{cases}
         1 & \exists i \, \in \bi{} : e(i) = x \wedge \bpi{}_{A} (i) = \texttt{Sì} \\
@@ -175,7 +175,7 @@ Va notato che il problema concreto associa il valore $0$ sia ad istanze corretta
 
 Il problema concreto corrisponde ad un linguaggio formale
 \begin{equation*}
-    L_{\bpi{}_{C}} \subseteq \left\{ 0,1 \right\}^{*} = \left\{ x \in \left\{ 0,1 \right\}^{*} : \bpi{}_{C}(x) = 1 \right\}
+    L_{\bpi{}_{C}} \subseteq \setzo{*} = \left\{ x \in \setzo{*} : \bpi{}_{C}(x) = 1 \right\}
 \end{equation*}
 
 % TODO commento sui concreti e dipendenze pag 7.5
@@ -274,7 +274,7 @@ La codifica unaria quindi maschera l'algoritmo come molto buono, nascondendo la 
 % MAYBE spostare questa definizione prima, dove introduce il legame linguaggio/algoritmo/problema
 Considerando un problema $\bpi{}_{C}$ e un algoritmo $A_{\bpi{}_{C}}$ che risolve il problema, si dice che il linguaggio \textit{deciso} o \textit{accettato} da $A_{\bpi{}_{C}}$ è
 \begin{equation*}
-    L_{\bpi{}_{C}} = \left\{ x \in \left\{ 0,1 \right\}^* : A_{\bpi{}_{C}}(x) = 1 \right\}
+    L_{\bpi{}_{C}} = \left\{ x \in \setzo{*} : A_{\bpi{}_{C}}(x) = 1 \right\}
 \end{equation*}
 ossia l'insieme di stringhe per cui la computazione ha esito positivo.
 
@@ -289,12 +289,12 @@ ossia l'insieme di stringhe per cui la computazione ha esito positivo.
     \end{itemize}
 \end{definition}
 
-\begin{definition}
+\begin{definition}[Classe $\bp$]
     \label{def:classep}
     La classe di problemi $\bp{}$ è l'insieme
     \begin{align*}
-        \bp{} &= \left\{ L \subseteq \left\{ 0,1 \right\}^* |\, L \text{ è deciso in tempo polinomiale}\right\} \\
-        &= \left\{ \bpi{}_{C} : \left\{ 0,1 \right\}^* \to \left\{ 0,1 \right\} |\, \bpi{}_C \text{ è risolto in tempo polinomiale} \right\}
+        \bp{} &= \left\{ L \subseteq \setzo{*} |\, L \text{ è deciso in tempo polinomiale}\right\} \\
+        &= \left\{ \bpi{}_{C} : \setzo{*} \to \setzo{} |\, \bpi{}_C \text{ è risolto in tempo polinomiale} \right\}
     \end{align*}
 \end{definition}
 
@@ -364,7 +364,7 @@ In questo caso la soluzione è difficile da trovare, ma verificare se un cammino
     \label{def:linguaggioverificato}
     Il linguaggio verificato da $V(x,y)$ è
     \begin{equation*}
-        L_V = \left\{ \bar{x} \in \left\{ 0,1 \right\}^* \text{ verificate da } V(x,y) \right\}
+        L_V = \left\{ \bar{x} \in \setzo{*} \text{ verificate da } V(x,y) \right\}
     \end{equation*}
 \end{definition}
 
@@ -382,7 +382,7 @@ In questo caso la soluzione è difficile da trovare, ma verificare se un cammino
     \label{def:classenp}
     La classe di problemi $\bnp{}$ è l'insieme
     \begin{equation*}
-        \bnp{} = \left\{ L \subseteq \left\{ 0,1 \right\}^* \to \left\{ 0,1 \right\}|\, L \text{ è verificato in tempo polinomiale}\right\}
+        \bnp{} = \left\{ L \subseteq \setzo{*} \to \setzo{} |\, L \text{ è verificato in tempo polinomiale}\right\}
     \end{equation*}
 \end{definition}
 
@@ -469,7 +469,7 @@ In questo modo, se $G$ è \textit{Hamiltoniano}, esiste un ciclo di costo $|V|$ 
     \label{def:calcolabilepolinomiale}
     La funzione
     \begin{equation*}
-        f : \left\{ 0,1 \right\}^{*} \to \left\{ 0,1 \right\}^{*} 
+        f : \setzo{*} \to \setzo{*} 
     \end{equation*}
     si dice calcolabile in tempo polinomiale se esiste un algoritmo $A_F (x)$ che la calcola, per cui vale, per qualche $k \geq 0$ costante
     \begin{equation*}
@@ -505,7 +505,7 @@ L'immagine nel caso più estremo può anche essere di due soli punti, tutta la c
 
 \begin{theorem}[Relazione d'ordine]
     \label{teo:relazioneordine}
-    Siano $L_1, L_2 \subseteq \left\{ 0,1 \right\}^{*}$, la relazione d'ordine fra linguaggi è indicata da
+    Siano $L_1, L_2 \subseteq \setzo{*}$, la relazione d'ordine fra linguaggi è indicata da
     \begin{equation*}
         \left( L_1 \lp L_2 \right) \wedge \left( L_2 \in \bp \right) \Rightarrow L_1 \in \bp
     \end{equation*}
@@ -560,15 +560,15 @@ L'immagine nel caso più estremo può anche essere di due soli punti, tutta la c
 
 \begin{definition}[NP-hard]
     \label{def:nphard}
-    Un linguaggio $L \subseteq \left\{ 0,1 \right\}^{*}$ si dice NP-hard se
+    Un linguaggio $L \subseteq \setzo{*}$ si dice NP-hard se
     \begin{equation*}
         \forall L' \in \bnp \quad \to \quad L' \lp L
     \end{equation*}
 \end{definition}
 
 \begin{definition}[NP-completo]
-    \label{def:nphard}
-    Un linguaggio $L \subseteq \left\{ 0,1 \right\}^{*}$ si dice NP-completo se
+    \label{def:npcompleto}
+    Un linguaggio $L \subseteq \setzo{*}$ si dice NP-completo se
     \begin{align*}
         L & \in \bnp \\
         L & \in \bnph
@@ -629,14 +629,14 @@ Il circuito si può scrivere come funzione $C \left( x_1, \cdots, x_k \right)$, 
 
 Si indica con \textit{fan-in} il massimo numero di ingressi ad un gate, e con \textit{fan-out} il massimo numero di gate raggiuni da un output di un gate.
 
-Assegnando dei valori di verità $\vec{b} \in \left\{ 0,1 \right\}^{k}$ agli input di un circuito, si dice che questo \textit{commuta}, ossia assume una certa configurazione di valori su ogni filo, che si indica
+Assegnando dei valori di verità $\vec{b} \in \setzo{k}$ agli input di un circuito, si dice che questo \textit{commuta}, ossia assume una certa configurazione di valori su ogni filo, che si indica
 \begin{equation*}
-    Config(C) = \vec{h} \in \left\{ 0,1 \right\}^{m}
+    Config(C) = \vec{h} \in \setzo{m}
 \end{equation*}
 
 Un circuito di dice \textit{soddisfacibile} se
 \begin{equation*}
-    \exists \,\vec{b} \in \left\{ 0,1 \right\}^{k} : C ( \, \vec{b} \,) = 1
+    \exists \,\vec{b} \in \setzo{k} : C ( \, \vec{b} \,) = 1
 \end{equation*}
 
 Il problema di stabilire la soddisfacibilità di un circuito è stato risolto da $Cook$ nel 1971, ed è stato dimostrato essere NP-completo.
@@ -657,6 +657,8 @@ Un verificatore per il problema è semplice da implementare, e risulta lineare n
     \EndProcedure
 \end{algorithmic}
 \end{algorithm}
+
+
 
 \section{Pezzi utili di \LaTeX{}}
 \begin{algorithm}[H]
@@ -684,6 +686,13 @@ Un verificatore per il problema è semplice da implementare, e risulta lineare n
 \begin{definition}[Algoritmo]\label{def:algex}
     Un algoritmo è una procedura computazionale finita (terminante) e deterministica, specificata come una sequenza di passi elementari (istruzioni) estratte da un insieme standard associato a un modello computazionale (astrazione di un computer) che trasforma in maniera univoca un ingresso in un uscita.
 \end{definition}
+
+Look here 
+\begin{equation*}
+    \setzo{m}
+    \quad
+    \setzo{}
+\end{equation*}
 
 \begin{itemize}[noitemsep,parsep=0pt,partopsep=0pt,topsep=0pt]
     \item[--] $L_A = L$ (il linguaggio deciso da $A$ è $L$)
