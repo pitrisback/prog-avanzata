@@ -618,6 +618,10 @@ si può applicare la proprietà transitiva della relazione $\lp$ per cui
     \left( L' \lp \bar{L} \right) \wedge \left( \bar{L} \lp L_C \right) \Rightarrow  L' \lp L_C
 \end{equation*}
 
+Va quindi provato per un linguaggio $\bar{L}$ che
+$\forall L' \in \bnp, L' \lp \bar{L}$
+e lo si potrà poi utilizzare per mostrare che altri linguaggi sono NP-completi.
+
 \subsection{Circuiti \textit{booleani}}
 
 Un circuito \textit{booleano}, o circuito combinatorio, è un'interconnessione di gate \textit{senza cicli}, in cui l'output di un gate può essere input di uno o più gate. I fili che non provengono da gate sono gli input del circuito, e i fili che non entrano in gate sono gli output del circuito. Verranno considerati solo circuiti con un singolo output.
@@ -657,6 +661,56 @@ Un verificatore per il problema è semplice da implementare, e risulta lineare n
     \EndProcedure
 \end{algorithmic}
 \end{algorithm}
+
+\subsection{Problema della \textit{boolean circuit satisfiability} (BC\_SAT)}
+
+Il problema per cui si dimostra per prima l'appartenenza a $\bnpc$ è quello di stabilire se un circuito booleano sia soddisfacibile o meno, ovvero se esistano input al circuito tali per cui l'output risulti 1.
+
+Va quindi provato che 
+$$
+\forall L \in \bnp, \; L \lp L_{BC\_SAT}
+$$
+Il linguaggio $L \in \bnp$ è generico, si sa solo che esiste un verificatore $V_L(x,y)$ per cui, per qualche $k_1, k_2 \geq 0$ costanti:
+\begin{itemize}
+    \item $|y_x| = O (|x|^{k_1})$ (il certificato per $x \in L$ è polinomiale nella taglia dell'istanza)
+    \item $ T_{V_{L}} (|x|, |y|) = O \left( \left( |x|+|y| \right)^{k_{2}} \right)$ 
+        (la complessità della verifica è polinomiale)
+\end{itemize}
+
+Idea riduzione di Cook, simile a riduzione di SAT
+
+Dato un verificatore vl e una stringa x, creo un circuito (istanza di bcsat) che chiamo CVLx, che ha un numero di 
+
+legati al candidato certificato y
+
+se x in l allora . . . quando in ingresso al circuito metto il certificato dara 1 e sara un circuito soddisfacibile
+
+contropositiva: non esiste nessun certificato di questo tipo, e il circuito per tutti gli input dara 0 e non sara sodisfacibile
+
+creo corrispondenza tra generico linguaggio basato sul verificatore e il probelma della soddisfacibilità
+
+per ogni stringa creo un circuito particolare in modo che se la stringa è positiva il circuito costruito basandosi sul verificatore della stringa è soddisfacibile. se la strina è istanza negativa del linguaggio il circuito dara sempre 0.
+
+Cos'e' cvlx è costruito su Cram che implementa un calcolatore a partire dai gate, 
+
+ram è macchina  programma memorizzato, che trasforma lo stato da ingresso a uscita
+
+in questo caso non posso avere memoria (mi servono feedback/anelli)
+
+all'inizio negli input del programma c'e' vl
+
+memoria inizializzata in maniera coerente, e negli input la stringa y, che varia.
+
+implementa la logica che serve per implementare i passi elementari del modello computazionale ram. ad esempio addizione/moltiplicazione, unita aritmetico logica, salti condizionati... logica combinatoria e stato dei valori memorizzati, ma ho solo la parte combinatoria. si mettono quindi in sequenza tanti circuiti uguali, la memoria viene propagata passando dagli input dello stato precedente l'output per lo stato successivo. il circuito finale è la giustapposizione di tanti circuiti cram.
+
+la trasformazione è in tempo polinomiale: devo copiare cram in maniera proporzionale alla lunghezza della computazione. quanto è grande il singolo circuito? dipende fondamentalemnte dal numero di input, lineare negli input x y del verificatore. e quindi è polinomiale nella lunghezza di x (y è gia limitato a polinomio)
+
+facciamo 
+se x e positiva allra ce input polinomiale che messo nel circuito fa ritornare 1
+se x negativa, gli input non fareanno mai commutare il circuito a 0
+
+che comporta la riduzione da L a bcsat
+
 
 
 
