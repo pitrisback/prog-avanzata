@@ -739,8 +739,222 @@ TODO disegno black box
 
 il circuito è associato al sottocircuito, detto gadget, che simula il singolo passo di computazione.
 
-altri inressi che al primo livello del circuito sono valori precisi che sono: il codice del verificatore, lo spazio dove si trova x; altri ingressi che sono memoria (a 0) e i registri (program counter...). questi input permettono di mantenere memoria, per ogni ingresso avro un filo d'uscita, che indica la memoria in uscita dopo un certo passo della macchina ram. è il circuito che implementa una singola transizione di stato: guarda il PC, vede che istruzione è associata e la esegue (load, somma...) tutte operazioni che si possoon implementare con circuiti combinatori.
+altri ingressi che al primo livello del circuito sono valori precisi che sono: il codice del verificatore, lo spazio dove si trova x; altri ingressi che sono memoria (a 0) e i registri (program counter...). questi input permettono di mantenere memoria, per ogni ingresso avro un filo d'uscita, che indica la memoria in uscita dopo un certo passo della macchina ram. è il circuito che implementa una singola transizione di stato: guarda il PC, vede che istruzione è associata e la esegue (load, somma...) tutte operazioni che si possono implementare con circuiti combinatori.
 
+se il circuito fosse troppo grande rispetto all'ingresso, la funzione non potrebbe essere ctp, dovrebbe generare la circuiteria di taglia esponenziale. va mostrato che il circuito si può realizzare in uno spazio polinomiale in x.
+
+ingressi:
+
+certificato limitato a lunghezza max di certificato accettabile k1
+
+memoria di cui può fare uso non può essere piu grande del numero di passi che esegue il verificatore, può toccare al più una cella di memoria per passo.
+
+numero di passi che esegue il verificatore: tempo associato e' polinomiale in x+y con k2, la memoria non più di questa quantita, e lo stesso per i registri.
+
+totale numero input 
+\begin{equation*}
+    O \left( |x|^{k_1} + \left( |x|+|x|^{k_1} \right)^{k_2} \right)
+    =
+    O \left( |x|^{k_3} \right)
+\end{equation*}
+
+un circuito che realizza una computazione su questo numero di input ha al più taglia polinomiale, pensi ad addizionatore o moltiplicatore
+
+\begin{equation*}
+    |C_{RAM}| =
+    O
+    \left( 
+        \left( |x|^{k_3} \right)^{k_4}
+    \right)
+    =
+    O \left( |x|^{k_5} \right)
+\end{equation*}
+
+per emulare una computazione, si costruisce una cascata di gadget, e il valore associato a return VL, seleziono quello come bit in memoria che è output dell'intero circuito
+
+il numero di gadget deve essere sufficiente per eseguire la computazione su x e y che al più sono
+\begin{equation*}
+    O \left( \left( |x|+|x|^{k_1} \right)^{k_2} \right)
+\end{equation*}
+
+e questo si applica ad ogni linguaggio in np, appena ho un verificatore questo mi implica un verificatore, e esiste un circuito associato. i dettagli ora sono solo la circuiteria del modello ram.
+
+\begin{align*}
+    x \in L
+    &\Leftrightarrow
+    \exists y : |y| = O \left( |x|^{k_1} \right) : V_L (x,y) = 1 
+    \\
+    &\Leftrightarrow 
+    C_{V_L, x} \text{ quando ha un ingresso $y$ ritorna $1$ sul suo output}
+    \\
+    &\Leftrightarrow 
+    C_{V_L, x} \text{ è soddisfacibile}
+\end{align*}
+
+questa catena vale da dx a sx e viceversa, e quindi prova che
+
+\begin{equation*}
+    x \in L \Leftrightarrow f(x) \in BC\_SAT
+\end{equation*}
+
+\section{Riduzioni notevoli}
+
+\begin{definition}
+    una formula $<\Phi \left( x_1, \cdots, x_n \right)>$ è un'espressione totalmente parentesizzata, costruita su $\vec{x}$ e gli operatori (connettori) seguenti:
+    $\wedge, \vee, \neg, \to, \leftrightarrow$
+    \label{def:formula}
+\end{definition}
+
+L'implicazione equivale a $x \to y \equiv ( \neg \, x ) \vee y$
+\begin{equation*}
+    \begin{array}[h]{cc|c}
+        x & y & x \to y \\
+        \hline
+        0 & 0 & 1 \\
+        0 & 1 & 1 \\
+        1 & 0 & 0 \\
+        1 & 1 & 1 \\
+    \end{array}
+\end{equation*}
+
+L'equivalenza si riscrive come a
+$ x \leftrightarrow y \equiv 
+\left( x \wedge y \right)
+\vee
+\left( \neg \, x \wedge \neg \, y \right)
+$
+\begin{equation*}
+    \begin{array}[h]{cc|c}
+        x & y & x \leftrightarrow y \\
+        \hline
+        0 & 0 & 1 \\
+        0 & 1 & 0 \\
+        1 & 0 & 0 \\
+        1 & 1 & 1 \\
+    \end{array}
+\end{equation*}
+
+TODO albero e formula di esempio
+
+l'albero è la codifica della formula, posso scriverla come albero e l'albero lo codifico come grafo. quando si parla di codifiche ragionevoli, si finisce sempre alla codifica di insieme di interi, e le codifiche ragionevoli si scrivono a partire dagli interi . . .
+
+si definisce assegnamento di valori di verita alle variabili di una formula per sat un vettore di valori 0 1, come bcsat, sotto un assegnamento di valori di verita la formula ha un valore vero o falso
+
+si dice soddisfacibile se esiste b per cui vale 1
+
+\subsection{Da BC\_SAT a \textit{formula satisfiability} (SAT)}
+
+sat:
+
+istanza: $<\Phi \left( x_1, \cdots, x_n \right)>$
+
+domanda: $\Phi$ è soddisfacibile?
+
+sat appartiene a NPC va provato
+
+sat in NP semplice da mostrare, scrivi verificatore $V_{SAT}(x,y)$ per SAT come ESERCIZIO, risali l'albero e trovi il valore alla radice. computazione lineare nella lunghezza della formula
+
+vogliamo mostrare che sat è NP-hard, usando la transitività, prendo un problema noto in NPC o NPH e provare che questo problema noto si riduce al candidato SAT. ossia
+\begin{equation*}
+    BC\_SAT \lp SAT
+\end{equation*}
+
+NOTA: si riduce DAL noto all'ignoto.
+
+so che sx è difficile, e mostro che è più semplice dell'ignoto, l'ignoto deve essere difficile.
+
+(l'altro verso è inutile, bcsat è NPH, quindi tutti i problemi NP si riducono ad esso)
+
+\subsubsection{Scrittura naive della formula}
+
+mostra che la funzione di riduzione deve essere polinomiale
+
+potrebbe sembrare che la soluzione sia un circuito che risolve la formula. posso ottenere la formula implementata da un circuito seguendo le operazioni compiute da sinistra a destra. arrivo in fondo al gate di uscita
+
+TODO disegni del circuito d'esempio...
+
+$
+\left( 
+\left( 
+\left( x \wedge y \right)
+\vee z \right)
+\vee
+\left( \neg \, 
+\left( x \wedge y \right) \right)
+\right)
+$
+
+noto che il problema sta nella replica esponenziale dei simboli, quando un output di un gate entra più volte come input, da circuito con pochi gate arrivo a una formula in cui il numero di simboli è esponenziale nella grandezza del circuito. quindi la funzione non è ctp.
+
+TODO ciruito critico disegno
+
+usando quattro gate per modulo, implemento 
+$
+o_2 = \left( x_1 \wedge \neg \, x_2 \right)
+o_1 = \left( \neg \, x_1 \wedge x_2 \right)
+$
+
+in un modulo generico $i$
+
+$
+\Phi_{i}^{u} \left( x_1, x_2 \right)
+= \left( 
+\Phi_{i-1}^{u} \left( x_1, x_2 \right)
+\wedge \neg \, 
+\left( 
+\Phi_{i-1}^{l} \left( x_1, x_2 \right)
+\right)
+\right)
+$
+
+sia $S(i)$ la taglia della funzione al passo $i$, si nota che al passo i contiene due funzioni del passo i-1 più altri simboli, per cui vale $S(i) \ge 2 S (i-1)$, in più vale $S(1)=c$ costante, e si crea una minorazione per ricorrenza che ha come soluzione $S(i) \ge c \cdot 2^i$, di conseguenzza dopo $n$ stati vale $S(n) \ge c \cdot 2^n$
+\begin{equation*}
+    |< \Phi \left( x_1, x_2 \right) >|
+    = \Omega \left( 2^{n} \right)
+\end{equation*}
+
+da una codifica $\Theta (n)$ si arriva ad una complessità esponenziale
+
+\subsubsection{Scrittura efficiente della formula}
+
+il circuito si può vedere come grafo
+$c \equiv \left( I \cup G \cup \left\{ o \right\}, W \right)$
+associo le variabili $x$ agli input, e variabili addizionali $y_g$, una per ogni gate, che indica il valore di uscita ad un gate sotto una configurazione d'ingresso. Simuliamo la commutazione del circuito con una serie di equazione logiche dette clausole.
+Per esempio un gate AND di indice g con input $x_1^g, \cdots, x_k^g, y_1^g, \cdots, y_h^g$, dove y sono output di altri gate, avra fa in k+h
+$
+C_g \left( \vec{x}, \vec{y} \right) :
+\left( y_g \leftrightarrow
+    \left( x_1^g \wedge
+        \left( x_2^g \wedge \cdots \wedge
+            \left( x_k^g \wedge
+                \left( y_1^g \wedge
+                    \left( y_2^g \wedge \cdots \wedge
+                        \left( y_h^g \wedge
+                        \right)
+                        \cdots
+                    \right)
+                \right)
+            \right)
+            \cdots
+        \right)
+    \right)
+\right)
+$
+
+\begin{equation*}
+    Conf \left( \vec{x}, \vec{y} \right) =
+    \bigwedge\limits_{g \in G}
+    C_g \left( \vec{x}, \vec{y} \right)
+\end{equation*}
+
+si chiama conf perche inica la configurazione di un circuito sotto un certo ingresso
+
+\begin{theorem}
+    $ Conf ( \vec{b_1}, \vec{b_2} ) = 1 \Leftrightarrow $ sotto $\vec{b_1}$, $C( \vec{b_1} )$ commuta e ogni gate in uscita ha valore $( \vec{b_2} )_g$
+    \label{teo:commuta}
+\end{theorem}
+
+se si prende quella configurazione e si mettono dentro due assegnamenti di valori quella configurazione avra valore uno, la conf è and di formule, e vale uno quando tutte le formule sono vere, per cui sotto b1 l'output del circuito che rappresenta la left side 
 
 
 \section{Pezzi utili di \LaTeX{}}
