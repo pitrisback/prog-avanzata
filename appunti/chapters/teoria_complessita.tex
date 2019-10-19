@@ -412,6 +412,8 @@ La domanda del millennio è la seguente:
 
 Sotto l'ipotesi $\bp{} \neq \bnp{} $, si trova una classe di linguaggi $\bnpc{} \subseteq \bp{} - \bnp{} $ detti NP-completi. Si può costruire una relazione d'ordine tra linguaggi, e provare che gli $\bnpc{}$ sono i $\sup$ di questa relazione, e sono tutti equivalenti. Se uno di questi appartenesse a $\bp{}$, l'intera classe collasserebbe in $\bp{}$.
 
+% TODO aggiungi disegno insiemi p np
+
 
 \section{Riducibilità}
 % pag 12
@@ -626,10 +628,14 @@ e lo si potrà poi utilizzare per mostrare che altri linguaggi sono NP-completi.
 
 Un circuito \textit{booleano}, o circuito combinatorio, è un'interconnessione di gate \textit{senza cicli}, in cui l'output di un gate può essere input di uno o più gate. I fili che non provengono da gate sono gli input del circuito, e i fili che non entrano in gate sono gli output del circuito. Verranno considerati solo circuiti con un singolo output.
 
+% TODO tipi di gate e disegno gate pag 16.5
+
 Il circuito si può scrivere come funzione $C \left( x_1, \cdots, x_k \right)$, ed è isomorfo al grafo in cui i fili corrispondono ad archi, e vengono aggiunti nodi per input e output del circuito:
 \begin{equation*}
     C \equiv G_C = \left( I \cup G \cup \left\{ o \right\}, W \right)
 \end{equation*}
+
+% TODO esempio di circuito e grafo isomorfo pag 16.8
 
 Si indica con \textit{fan-in} il massimo numero di ingressi ad un gate, e con \textit{fan-out} il massimo numero di gate raggiuni da un output di un gate.
 
@@ -677,40 +683,63 @@ Il linguaggio $L \in \bnp$ è generico, si sa solo che esiste un verificatore $V
         (la complessità della verifica è polinomiale)
 \end{itemize}
 
-Idea riduzione di Cook, simile a riduzione di SAT
+L'idea della riduzione di \textit{Cook} è di costruire, per ogni verificatore $V_L$ e istanza (stringa) $x$, un circuito $C_{V_L,x}$ (ovvero un'istanza di $BC\_SAT$), tale che
+\begin{itemize}
+    \item se $x \in L$, quando il circuito riceve in ingresso il certificato $y_x$ associato ad $x$, segnerà in output $1$ e sarà quindi un circuito soddisfacibile
+    \item se $x \notin L$ (la stringa è un'istanza negativa del linguaggio), non esiste nessun certificato $y_x$ per cui il circuito segnerà in output $1$ e il circuito sarà \textit{non} soddisfacibile
+\end{itemize}
+Formalmente:
+\begin{equation*}
+    x \in L \Rightarrow \exists y_x : V_L \left( x, y_x \right) = 1 \Rightarrow C_{V_L,x} \left( y_x \right) = 1
+\end{equation*}
+Si crea quindi una corrispondenza tra il generico linguaggio basato sul verificatore e il problema della soddisfacibilità.
 
-Dato un verificatore vl e una stringa x, creo un circuito (istanza di bcsat) che chiamo CVLx, che ha un numero di 
+Il circuito $C_{V_L,x}$ è costruito sul modello di calcolatore $C_{RAM}$ (\textit{random access machine}). Per implementare i registri di memoria e le istruzioni però, questo modello utilizza retroazioni (\textit{feedback}), che sono vietate in un circuito combinatorio. Questo problema viene risolto giustapponendo un numero di circuiti $C_{RAM}$ pari al numero di computazioni necessarie, dove una parte degli input rappresentano la memoria e lo stato dei registri ottenuti in output al passo precedente.
 
-legati al candidato certificato y
+La trasformazione avviene in tempo polinomiale: si deve copiare $C_{RAM}$ in maniera proporzionale alla lunghezza della computazione. Per quanto riguarda la grandezza del singolo circuito, questa dipende fondamentalemnte dal numero di input, che è lineare negli input $x,y$ del verificatore, e quindi è polinomiale nella lunghezza di $x$ ($y$ è gia limitato rispetto a $x$ in modo polinomiale).
 
-se x in l allora . . . quando in ingresso al circuito metto il certificato dara 1 e sara un circuito soddisfacibile
+Ricapitolando, se $x$ è positiva allora esiste un input polinomiale che inserito nel circuito fa ritornare $1$; se $x$ è negativa, nessun input farà mai commutare il circuito a $1$, il che comporta la riduzione da $L$ a $BC\_SAT$.
 
-contropositiva: non esiste nessun certificato di questo tipo, e il circuito per tutti gli input dara 0 e non sara sodisfacibile
+% TODO disegno cram affiancati pag 18.6
 
-creo corrispondenza tra generico linguaggio basato sul verificatore e il probelma della soddisfacibilità
+Va quindi esibita una funzione $f$, calcolabile in tempo polinomiale, che associa ad ogni stringa un circuito
+\begin{equation*}
+    f_l : x \in \setzo{*} \to f(x) = <C_{V_{L}},x>
+\end{equation*}
+tale per cui
+\begin{equation*}
+    x \in L \Leftrightarrow f(x) \in BC\_SAT
+\end{equation*}
+e $f(x) \in BC\_SAT$ significa che $C_{V_{L}}$ è soddisfacibile.
 
-per ogni stringa creo un circuito particolare in modo che se la stringa è positiva il circuito costruito basandosi sul verificatore della stringa è soddisfacibile. se la strina è istanza negativa del linguaggio il circuito dara sempre 0.
+Il circuito che rappresenta un singolo passo elementare di un $C_{RAM}$ si dice \textit{gadget}, la cui taglia può essere studiata più a fondo: 
 
-Cos'e' cvlx è costruito su Cram che implementa un calcolatore a partire dai gate, 
+% --------- transcript audio fine lezione 3
+% Idea riduzione di Cook, simile a riduzione di SAT
+% Dato un verificatore vl e una stringa x, creo un circuito (istanza di bcsat) che chiamo CVLx, che ha un numero di
+% legati al candidato certificato y
+% se x in l allora . . . quando in ingresso al circuito metto il certificato dara 1 e sara un circuito soddisfacibile
+% contropositiva: non esiste nessun certificato di questo tipo, e il circuito per tutti gli input dara 0 e non sara sodisfacibile
+% creo corrispondenza tra generico linguaggio basato sul verificatore e il probelma della soddisfacibilità
+% per ogni stringa creo un circuito particolare in modo che se la stringa è positiva il circuito costruito basandosi sul verificatore della stringa è soddisfacibile. se la strina è istanza negativa del linguaggio il circuito dara sempre 0.
+% Cos'e' cvlx è costruito su Cram che implementa un calcolatore a partire dai gate, 
+% ram è macchina  programma memorizzato, che trasforma lo stato da ingresso a uscita
+% in questo caso non posso avere memoria (mi servono feedback/anelli)
+% all'inizio negli input del programma c'e' vl
+% --> memoria inizializzata in maniera coerente, e negli input la stringa y, che varia.
+% implementa la logica che serve per implementare i passi elementari del modello computazionale ram. ad esempio addizione/moltiplicazione, unita aritmetico logica, salti condizionati... logica combinatoria e stato dei valori memorizzati, ma ho solo la parte combinatoria. si mettono quindi in sequenza tanti circuiti uguali, la memoria viene propagata passando dagli input dello stato precedente l'output per lo stato successivo. il circuito finale è la giustapposizione di tanti circuiti cram.
+% la trasformazione è in tempo polinomiale: devo copiare cram in maniera proporzionale alla lunghezza della computazione. quanto è grande il singolo circuito? dipende fondamentalemnte dal numero di input, lineare negli input x y del verificatore. e quindi è polinomiale nella lunghezza di x (y è gia limitato a polinomio)
 
-ram è macchina  programma memorizzato, che trasforma lo stato da ingresso a uscita
+% --------- transcript audio inizio lezione 4
+--- --- ---
 
-in questo caso non posso avere memoria (mi servono feedback/anelli)
+cvlx a livello macroscopico gli input sono legati al possibile certificato e l'output e associato al valore associato al verificatore.
 
-all'inizio negli input del programma c'e' vl
+TODO disegno black box
 
-memoria inizializzata in maniera coerente, e negli input la stringa y, che varia.
+il circuito è associato al sottocircuito, detto gadget, che simula il singolo passo di computazione.
 
-implementa la logica che serve per implementare i passi elementari del modello computazionale ram. ad esempio addizione/moltiplicazione, unita aritmetico logica, salti condizionati... logica combinatoria e stato dei valori memorizzati, ma ho solo la parte combinatoria. si mettono quindi in sequenza tanti circuiti uguali, la memoria viene propagata passando dagli input dello stato precedente l'output per lo stato successivo. il circuito finale è la giustapposizione di tanti circuiti cram.
-
-la trasformazione è in tempo polinomiale: devo copiare cram in maniera proporzionale alla lunghezza della computazione. quanto è grande il singolo circuito? dipende fondamentalemnte dal numero di input, lineare negli input x y del verificatore. e quindi è polinomiale nella lunghezza di x (y è gia limitato a polinomio)
-
-facciamo 
-se x e positiva allra ce input polinomiale che messo nel circuito fa ritornare 1
-se x negativa, gli input non fareanno mai commutare il circuito a 0
-
-che comporta la riduzione da L a bcsat
-
+altri inressi che al primo livello del circuito sono valori precisi che sono: il codice del verificatore, lo spazio dove si trova x; altri ingressi che sono memoria (a 0) e i registri (program counter...). questi input permettono di mantenere memoria, per ogni ingresso avro un filo d'uscita, che indica la memoria in uscita dopo un certo passo della macchina ram. è il circuito che implementa una singola transizione di stato: guarda il PC, vede che istruzione è associata e la esegue (load, somma...) tutte operazioni che si possoon implementare con circuiti combinatori.
 
 
 
