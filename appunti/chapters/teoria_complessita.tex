@@ -89,22 +89,22 @@ Un problema decisionale presenta un insieme delle soluzioni ridotto a due elemen
 % Il problema è definito sull'istanza $<G=(V,E), s, t>$, dove $V \subseteq \mathbb{N}$ finito (i nodi sono identificati con numeri naturali), $E \subseteq V \times V$ (gli archi sono coppie ordinate di vertici), $s, t \in V$. L'insieme delle soluzioni è $\mathbb{N}^*$, e una soluzione generica è $s=<v_1, \dots, v_k$, dove $v_i \in V, v_1=s, v_k=t$ e $\left( v_i, v_{i+1} \right) \in E, 1 \leq i < k$.
 La restrizione ad un insieme binario di soluzioni non comporta una perdita di generalità, per esempio, si consideri il problema di trovare un cammino minimo tra due nodi in un grafo:
 \begin{align*}
-    \text{istanza:} \quad & <G=(V,E), s, t> \\
+    \texttt{istanza:} \quad & <G=(V,E), s, t> \\
     \text{dove} \quad & V \subseteq \mathbb{N} \quad \text{finito (i nodi sono identificati con numeri naturali)} \\
     & E \subseteq V \times V \quad \text{(gli archi sono coppie ordinate di vertici)} \\
     & s, t \in V \\
-    \text{soluzioni:} \quad & s=<v_1, \dots, v_k> \in \mathbb{N}^* \\
+    \texttt{soluzioni:} \quad & s=<v_1, \dots, v_k> \in \mathbb{N}^* \\
     i \, \bpi{} s \text{ se } \quad & 
     % \text{dove} \quad &
     v_i \in V \\
     & v_1=s, \: v_k=t \\
     & \left( v_i, v_{i+1} \right) \in E, 1 \leq i < k \\
     i \, \bpi{} \, \varepsilon \text{ se } \quad & \text{non esiste cammino tra $s$ e $t$ in $G$} \\
-    \text{costo:} \quad & c\left( < v_1, \ldots, v_k > \right) = k-1 \\
+    \texttt{costo:} \quad & c\left( < v_1, \ldots, v_k > \right) = k-1 \\
     & c( \varepsilon ) = \infty \\
     \intertext{A questo problema di ottimizzazione si può associare un problema decisionale, arricchendo l'istanza con un limite superiore alla lunghezza del cammino}
-    \text{istanza:} \quad & <G=(V,E), s, t, k> \\
-    \text{domanda:} \quad & \text{esiste un cammino tra $s$ e $t$ in $G$, di lunghezza $\leq k$?} \\
+    \texttt{istanza:} \quad & <G=(V,E), s, t, k> \\
+    \texttt{domanda:} \quad & \text{esiste un cammino tra $s$ e $t$ in $G$, di lunghezza $\leq k$?} \\
 \end{align*}
 Avendo un algoritmo $A_{KUP}$ che risolva il problema decisionale, si può costruire facilmente un algoritmo che risolva $SUP$, usando $KUP$ come subroutine; l'algoritmo termina, perché si stanno cercando cammini semplici, quindi di lunghezza massima pari al numero di nodi meno uno.
 \begin{algorithm}[H]
@@ -306,12 +306,11 @@ La classe $\bnp{}$ non viene caratterizzata utilizzando automi non deterministic
 
 Si consideri il problema di trovare un circuito \textit{Hamiltoniano} in un grafo non orientato:
 \begin{align*}
-    \text{istanza:} \quad & <G=(V,E)> \\
+    \texttt{istanza:} \quad & <G=(V,E)> \\
     \text{dove} \quad & G \text{ grafo non orientato} \\
-    \text{domanda:} \quad & G \text{ contiene un ciclo semplice che tocca tutti i nodi?} \\
-    \text{soluzioni:} \quad & s=<v_1, \dots, v_k> \in \mathbb{N}^* \\
+    \texttt{domanda:} \quad & G \text{ contiene un ciclo semplice che tocca tutti i nodi?} \\
+    \texttt{soluzioni:} \quad & s=<v_1, \dots, v_k> \in \mathbb{N}^* \\
     i \, \bpi{} s \text{ se } \quad & 
-    % \text{dove} \quad &
     v_i \in V \\
     & v_1 = v_k \\
     & \left( v_i, v_{i+1} \right) \in E, 1 \leq i < k \\
@@ -440,21 +439,20 @@ Per rispondere a $\bpi{}_1$ si usa la risposta a $\bpi{}_2$, da cui si intuisce 
 Si consideri di nuovo il problema di \textit{Hamilton} e la sua relazione con il \textit{Travelling Salesman Problem}:
 \begin{align*}
     \text{Hamilton:} & \quad \\
-    \text{istanza:} \quad & <G=(V,E)> \\
-    \text{domanda:} \quad & G \text{ contiene un ciclo semplice che tocca tutti i nodi?} \\
+    \texttt{istanza:} \quad & <G=(V,E)> \\
+    \texttt{domanda:} \quad & G \text{ contiene un ciclo semplice che tocca tutti i nodi?} \\
     \text{TSP:} & \quad \\
-    \text{istanza:} \quad & <G_C=(V,E_C), w, k> \\
+    \texttt{istanza:} \quad & <G_C=(V,E_C), w, k> \\
     \text{dove} \quad & G_C \text{ grafo completo non orientato} \\
     & w : E \to \mathbb{N} - \left\{ 0 \right\} \\
     & k \in \mathbb{N} \\
-    \text{domanda:} \quad & G \text{ contiene un ciclo \textit{Hamiltoniano} di costo $\leq k$?} \\
+    \texttt{domanda:} \quad & G \text{ contiene un ciclo \textit{Hamiltoniano} di costo $\leq k$?} \\
     \text{dove} \quad &  c(<v_1, \cdots, v_{|V|+1}>) = \sum_{i=1}^{|V|} w(v_i, v_{i+1} )  \\
 \end{align*}
 Dall'istanza di \textit{Hamilton} generica 
 $i_1 = <G=(V,E)>$
 si ottiene con facilità l'istanza del \textit{Travelling Salesman Problem}
 $i_2 = <G_C=(V,E_C), w, k>$
-
 \begin{itemize}[parsep=0pt,partopsep=0pt,topsep=2pt]
     \item[--] si aggiungono archi come necessario per rendere completo il grafo
     \item[--] $w(e) = 
@@ -468,7 +466,7 @@ $i_2 = <G_C=(V,E_C), w, k>$
 In questo modo, se $G$ è \textit{Hamiltoniano}, esiste un ciclo di costo $|V|$ e TSP risponde \texttt{Sì}. Se invece serve un arco in $E_C - E$, il costo salirebbe, andando oltre $k$.
 
 \begin{definition}[Calcolabile in tempo polinomiale]
-    \label{def:calcolabilepolinomiale}
+    \label{def:funzionectp}
     La funzione
     \begin{equation*}
         f : \setzo{*} \to \setzo{*} 
@@ -590,9 +588,9 @@ L'immagine nel caso più estremo può anche essere di due soli punti, tutta la c
 \end{corollario}
 \begin{proof}
     La tesi equivale a $ ( \bp \subseteq \bnp ) \wedge ( \bnp \subseteq \bp )$
-    La prima parte è già stata vista alla sezione \ref{sss:pvsnp}. Per la seconda, si consideri un generico $L' \in \bnp$. Vale $L' \lp L$ perché $L \in \bnpc$ e tutti i linguaggi in $\bnp$ si riducono ad esso, e per ipotesi $L \in \bp$. Per il teorema \ref{teo:relazioneordine} vale quindi
+    La prima parte è già stata vista alla sezione \ref{sss:pvsnp}. Per la seconda, si consideri un generico $L' \in \bnp$. Vale $L' \lp L$ perché $L \in \bnpc$ (e quindi anche $L \in \bnp$) e tutti i linguaggi in $\bnp$ si riducono ad esso, e per ipotesi $L \in \bp$. Per il teorema \ref{teo:relazioneordine} vale quindi
     \begin{equation*}
-        \left( L' \lp L \right) \wedge \left( L \in \bp \right) \Rightarrow   L \in \bp 
+        \left( L' \lp L \right) \wedge \left( L \in \bp \right) \Rightarrow   L' \in \bp 
     \end{equation*}
 \end{proof}
 
@@ -712,7 +710,10 @@ tale per cui
 \end{equation*}
 e $f(x) \in BC\_SAT$ significa che $C_{V_{L}}$ è soddisfacibile.
 
-Il circuito che rappresenta un singolo passo elementare di un $C_{RAM}$ si dice \textit{gadget}, la cui taglia può essere studiata più a fondo: 
+A livello macroscopico gli input di $<C_{V_{L}},x>$ sono legati al possibile certificato e l'output è associato al valore del verificatore.
+% TODO disegno black box
+
+Il circuito che rappresenta un singolo passo elementare della computazione di un $C_{RAM}$ si dice \textit{gadget}, i cui ingressi e taglia possono essere studiati più a fondo: 
 
 % --------- transcript audio fine lezione 3
 % Idea riduzione di Cook, simile a riduzione di SAT
@@ -731,35 +732,24 @@ Il circuito che rappresenta un singolo passo elementare di un $C_{RAM}$ si dice 
 % la trasformazione è in tempo polinomiale: devo copiare cram in maniera proporzionale alla lunghezza della computazione. quanto è grande il singolo circuito? dipende fondamentalemnte dal numero di input, lineare negli input x y del verificatore. e quindi è polinomiale nella lunghezza di x (y è gia limitato a polinomio)
 
 % --------- transcript audio inizio lezione 4
---- --- ---
 
-cvlx a livello macroscopico gli input sono legati al possibile certificato e l'output e associato al valore associato al verificatore.
+% il circuito è associato al sottocircuito, detto gadget, che simula il singolo passo di computazione.
 
-TODO disegno black box
+Gli ingressi al primo livello del circuito sono valori precisi che rappresentano: il codice del verificatore, il valore di x, la memoria (inizializzata a 0) e i registri (program counter...). Questi input permettono di simulare una memoria, per ogni ingresso corrisponde un filo d'uscita, che indica lo stato della memoria in uscita dopo il passo appena eseguito della macchina RAM. Il \textit{gadget} è il circuito che implementa una singola transizione di stato: in base al valore del PC, estrae ed esegue l'istruzione associata (load, somma...). Tutte queste operazioni si possono implementare con circuiti combinatori.
 
-il circuito è associato al sottocircuito, detto gadget, che simula il singolo passo di computazione.
+Se il circuito fosse troppo grande rispetto all'ingresso, la funzione potrebbe non essere calcolabile in tempo polinomiale, dovendo generare circuiteria di taglia esponenziale. Si deve mostrare che il circuito si può realizzare in uno spazio polinomiale rispetto a $|x|$.
 
-altri ingressi che al primo livello del circuito sono valori precisi che sono: il codice del verificatore, lo spazio dove si trova x; altri ingressi che sono memoria (a 0) e i registri (program counter...). questi input permettono di mantenere memoria, per ogni ingresso avro un filo d'uscita, che indica la memoria in uscita dopo un certo passo della macchina ram. è il circuito che implementa una singola transizione di stato: guarda il PC, vede che istruzione è associata e la esegue (load, somma...) tutte operazioni che si possono implementare con circuiti combinatori.
+Per quanto riguarda gli ingressi, il certificato di un linguaggio in $\bnp$ è limitato a lunghezza polinomiale rispetto a $x$ da una qualche costante $k_1$. La memoria di cui può fare uso non può essere più grande del numero di passi che esegue il verificatore, potendo toccare al più una cella di memoria per passo.
+Il tempo associato al verificatore è polinomiale in $|x|+|y|$ rispetto a $k_2$, la memoria non supera quindi questa quantità, e lo stesso per i registri.
 
-se il circuito fosse troppo grande rispetto all'ingresso, la funzione non potrebbe essere ctp, dovrebbe generare la circuiteria di taglia esponenziale. va mostrato che il circuito si può realizzare in uno spazio polinomiale in x.
-
-ingressi:
-
-certificato limitato a lunghezza max di certificato accettabile k1
-
-memoria di cui può fare uso non può essere piu grande del numero di passi che esegue il verificatore, può toccare al più una cella di memoria per passo.
-
-numero di passi che esegue il verificatore: tempo associato e' polinomiale in x+y con k2, la memoria non più di questa quantita, e lo stesso per i registri.
-
-totale numero input 
+Il numero totale di input è quindi limitato da
 \begin{equation*}
+    \# input =
     O \left( |x|^{k_1} + \left( |x|+|x|^{k_1} \right)^{k_2} \right)
     =
     O \left( |x|^{k_3} \right)
 \end{equation*}
-
-un circuito che realizza una computazione su questo numero di input ha al più taglia polinomiale, pensi ad addizionatore o moltiplicatore
-
+Un circuito che realizza una computazione su questo numero di input ha al più taglia polinomiale, in quanto la taglia dei circuiti necessari ad implementare le funzioni necessarie (e.g. addizionatori, moltiplicatori) è al più polinomiale (di grado 2)
 \begin{equation*}
     |C_{RAM}| =
     O
@@ -770,15 +760,14 @@ un circuito che realizza una computazione su questo numero di input ha al più t
     O \left( |x|^{k_5} \right)
 \end{equation*}
 
-per emulare una computazione, si costruisce una cascata di gadget, e il valore associato a return VL, seleziono quello come bit in memoria che è output dell'intero circuito
+Per emulare una computazione, si costruisce quindi una cascata di gadget, e il valore associato a $return \; V_L$ viene selezionato come bit in memoria che è output dell'intero circuito.
 
-il numero di gadget deve essere sufficiente per eseguire la computazione su x e y che al più sono
+Il numero di gadget deve essere sufficiente per eseguire la computazione sugli input $x$ e $y$, e la complessità del verificatore è polinomiale
 \begin{equation*}
+    T_{V_{L}} (|x|, |y|) = O \left( \left( |x|+|y| \right)^{k_{2}} \right) = 
     O \left( \left( |x|+|x|^{k_1} \right)^{k_2} \right)
 \end{equation*}
-
-e questo si applica ad ogni linguaggio in np, appena ho un verificatore questo mi implica un verificatore, e esiste un circuito associato. i dettagli ora sono solo la circuiteria del modello ram.
-
+e questo si applica ad ogni linguaggio in $\bnp$, per ogni verificatore esiste un circuito associato. I dettagli che mancano sono solo la circuiteria del modello RAM.
 \begin{align*}
     x \in L
     &\Leftrightarrow
@@ -790,22 +779,20 @@ e questo si applica ad ogni linguaggio in np, appena ho un verificatore questo m
     &\Leftrightarrow 
     C_{V_L, x} \text{ è soddisfacibile}
 \end{align*}
-
-questa catena vale da dx a sx e viceversa, e quindi prova che
-
+Questa catena vale in entrambe le direzioni, e quindi prova che
 \begin{equation*}
     x \in L \Leftrightarrow f(x) \in BC\_SAT
 \end{equation*}
 
 \section{Riduzioni notevoli}
 
-\begin{definition}
-    una formula $<\Phi \left( x_1, \cdots, x_n \right)>$ è un'espressione totalmente parentesizzata, costruita su $\vec{x}$ e gli operatori (connettori) seguenti:
-    $\wedge, \vee, \neg, \to, \leftrightarrow$
+\begin{definition}[Formula]
     \label{def:formula}
+    Una formula $<\Phi \left( x_1, \cdots, x_n \right)>$ è un'espressione totalmente parentesizzata, costruita su $\vec{x}$ e gli operatori (connettori):
+    $\wedge, \vee, \neg, \to, \leftrightarrow$
 \end{definition}
 
-L'implicazione equivale a $x \to y \equiv ( \neg \, x ) \vee y$
+L'implicazione equivale a: $x \to y \equiv ( \neg \, x ) \vee y$
 \begin{equation*}
     \begin{array}[h]{cc|c}
         x & y & x \to y \\
@@ -817,7 +804,7 @@ L'implicazione equivale a $x \to y \equiv ( \neg \, x ) \vee y$
     \end{array}
 \end{equation*}
 
-L'equivalenza si riscrive come a
+L'equivalenza si riscrive come:
 $ x \leftrightarrow y \equiv 
 \left( x \wedge y \right)
 \vee
@@ -834,69 +821,64 @@ $
     \end{array}
 \end{equation*}
 
-TODO albero e formula di esempio
+% TODO albero e formula di esempio
 
-l'albero è la codifica della formula, posso scriverla come albero e l'albero lo codifico come grafo. quando si parla di codifiche ragionevoli, si finisce sempre alla codifica di insieme di interi, e le codifiche ragionevoli si scrivono a partire dagli interi . . .
+L'albero è la codifica della formula, la si può scrivere come albero e l'albero lo si codifica come grafo.
+% quando si parla di codifiche ragionevoli, si finisce sempre alla codifica di insieme di interi, e le codifiche ragionevoli si scrivono a partire dagli interi . . .
 
-si definisce assegnamento di valori di verita alle variabili di una formula per sat un vettore di valori 0 1, come bcsat, sotto un assegnamento di valori di verita la formula ha un valore vero o falso
+Come per $BC\_SAT$, si definisce assegnamento di valori di verità alle variabili di una formula per $SAT$ un vettore di valori $\setzo{*}$, e sotto un assegnamento di valori di verità la formula assume un valore vero o falso.
 
-si dice soddisfacibile se esiste b per cui vale 1
+Una formula si dice soddisfacibile se esiste $\vec{b}$ per cui assume valore $1$.
 
 \subsection{Da BC\_SAT a \textit{formula satisfiability} (SAT)}
+Si vuole provare che $SAT$ appartiene a $\bnpc$.
+\begin{align*}
+    SAT:& \\
+    \texttt{istanza:} \quad & <\Phi \left( x_1, \cdots, x_n \right)> \\
+    \texttt{domanda:} \quad & \Phi \text{ è soddisfacibile?}
+\end{align*}
 
-sat:
+Che $SAT$ sia in $\bnp$ è semplice da mostrare, è sufficiente scrivere un verificatore $V_{SAT}(x,y)$ per SAT (come ESERCIZIO, risali l'albero e trovi il valore alla radice). La computazione è lineare nella lunghezza della formula.
 
-istanza: $<\Phi \left( x_1, \cdots, x_n \right)>$
-
-domanda: $\Phi$ è soddisfacibile?
-
-sat appartiene a NPC va provato
-
-sat in NP semplice da mostrare, scrivi verificatore $V_{SAT}(x,y)$ per SAT come ESERCIZIO, risali l'albero e trovi il valore alla radice. computazione lineare nella lunghezza della formula
-
-vogliamo mostrare che sat è NP-hard, usando la transitività, prendo un problema noto in NPC o NPH e provare che questo problema noto si riduce al candidato SAT. ossia
+Va inoltre mostrato che $SAT$ è NP-hard, usando la transitività, si prende un problema noto in $\bnpc$ o $\bnph$ e si prova che il problema noto si riduce al candidato. In questo caso
 \begin{equation*}
     BC\_SAT \lp SAT
 \end{equation*}
+Nota: si riduce \textit{dal} noto all'ignoto. Se si sa che il lato sinistro è difficile, e si mostra che è più semplice dell'ignoto, l'ignoto deve essere difficile. L'altro verso è inutile, $BC\_SAT$ è $\bnph$, quindi tutti i problemi $\bnp$ si riducono ad esso.
 
-NOTA: si riduce DAL noto all'ignoto.
-
-so che sx è difficile, e mostro che è più semplice dell'ignoto, l'ignoto deve essere difficile.
-
-(l'altro verso è inutile, bcsat è NPH, quindi tutti i problemi NP si riducono ad esso)
+Si deve quindi trovare una formula calcolabile in tempo polinomiale che trasformi un'istanza di $BC\_SAT$ in un'istanza di $SAT$.
 
 \subsubsection{Scrittura naive della formula}
 
-mostra che la funzione di riduzione deve essere polinomiale
+% -> mostra che la funzione di riduzione deve essere polinomiale
 
-potrebbe sembrare che la soluzione sia un circuito che risolve la formula. posso ottenere la formula implementata da un circuito seguendo le operazioni compiute da sinistra a destra. arrivo in fondo al gate di uscita
+Una maniera intuitiva di scrivere la formula implementata da un circuito è semplicemente seguire le operazioni compiute, da sinistra a destra, fino ad arrivare al gate di uscita.
+% potrebbe sembrare che la soluzione sia un circuito che risolve la formula. posso ottenere la formula implementata da un circuito seguendo le operazioni compiute da sinistra a destra. arrivo in fondo al gate di uscita
 
-TODO disegni del circuito d'esempio...
+% TODO disegni del circuito d'esempio...
 
-$
-\left( 
-\left( 
-\left( x \wedge y \right)
-\vee z \right)
-\vee
-\left( \neg \, 
-\left( x \wedge y \right) \right)
-\right)
-$
+% $
+% \left( 
+% \left( 
+% \left( x \wedge y \right)
+% \vee z \right)
+% \vee
+% \left( \neg \, 
+% \left( x \wedge y \right) \right)
+% \right)
+% $
 
-noto che il problema sta nella replica esponenziale dei simboli, quando un output di un gate entra più volte come input, da circuito con pochi gate arrivo a una formula in cui il numero di simboli è esponenziale nella grandezza del circuito. quindi la funzione non è ctp.
-
-TODO ciruito critico disegno
-
-usando quattro gate per modulo, implemento 
-$
+Si nota che il problema sorge quando l'output di un gate viene utilizzato più volte come input di gate successivi, portando a una replica esponenziale dei simboli.
+% noto che il problema sta nella replica esponenziale dei simboli, quando un output di un gate entra più volte come input, da circuito con pochi gate arrivo a una formula in cui il numero di simboli è esponenziale nella grandezza del circuito. quindi la funzione non è ctp.
+% TODO ciruito critico disegno
+Un circuito patologico è il seguente, formato da $n$ moduli, ciascuno con $2$ input e altrettanti output, che implementano ciascuno la seguente funzione, usando quattro gate per modulo:
+$$
 o_2 = \left( x_1 \wedge \neg \, x_2 \right)
+\quad
 o_1 = \left( \neg \, x_1 \wedge x_2 \right)
-$
-
-in un modulo generico $i$
-
-$
+$$
+Per un modulo generico $i$
+$$
 \Phi_{i}^{u} \left( x_1, x_2 \right)
 = \left( 
 \Phi_{i-1}^{u} \left( x_1, x_2 \right)
@@ -905,22 +887,21 @@ $
 \Phi_{i-1}^{l} \left( x_1, x_2 \right)
 \right)
 \right)
-$
-
-sia $S(i)$ la taglia della funzione al passo $i$, si nota che al passo i contiene due funzioni del passo i-1 più altri simboli, per cui vale $S(i) \ge 2 S (i-1)$, in più vale $S(1)=c$ costante, e si crea una minorazione per ricorrenza che ha come soluzione $S(i) \ge c \cdot 2^i$, di conseguenzza dopo $n$ stati vale $S(n) \ge c \cdot 2^n$
+$$
+Sia $S(i)$ la taglia della funzione al passo $i$, si nota che al passo $i$ sono necessarie due funzioni del passo $i-1$ (più altri simboli) per scriverla, per cui vale $S(i) \ge 2 S (i-1)$, in più vale $S(1)=c$ costante, e si crea così una minorazione per ricorrenza che ha come soluzione $S(i) \ge c \cdot 2^i$, di conseguenzza dopo $n$ stati vale $S(n) \ge c \cdot 2^n$
 \begin{equation*}
     |< \Phi \left( x_1, x_2 \right) >|
     = \Omega \left( 2^{n} \right)
 \end{equation*}
-
-da una codifica $\Theta (n)$ si arriva ad una complessità esponenziale
+In questo modo, da una codifica di un circuito $\Theta (n)$ si arriva ad una formula esponenziale.
 
 \subsubsection{Scrittura efficiente della formula}
 
-il circuito si può vedere come grafo
-$c \equiv \left( I \cup G \cup \left\{ o \right\}, W \right)$
-associo le variabili $x$ agli input, e variabili addizionali $y_g$, una per ogni gate, che indica il valore di uscita ad un gate sotto una configurazione d'ingresso. Simuliamo la commutazione del circuito con una serie di equazione logiche dette clausole.
-Per esempio un gate AND di indice g con input $x_1^g, \cdots, x_k^g, y_1^g, \cdots, y_h^g$, dove y sono output di altri gate, avra fan in k+h, e si può scrivere la clausola associata che lega il valore di uscita al gate ai valori di ingresso
+Il circuito si può scrivere come grafo
+$C \equiv \left( I \cup G \cup \left\{ o \right\}, W \right)$
+in cui si associano le variabili $x$ agli input, e variabili addizionali $y_g$, una per ogni gate, che indicano il valore di uscita di un gate sotto una configurazione d'ingresso. Si può simulare la commutazione del circuito con una serie di equazione logiche dette clausole.
+
+Per esempio un gate $AND$ di indice $g$, con input $x_1^g, \cdots, x_k^g, y_1^g, \cdots, y_h^g$, dove y sono output di altri gate, avrà \textit{fan-in} $k+h$, e si può scrivere la clausola associata che lega il valore di uscita al gate ai valori di ingresso
 \begin{equation*}
 C_g \left( \vec{x}, \vec{y} \right) :
 \left( y_g \leftrightarrow
@@ -940,27 +921,19 @@ C_g \left( \vec{x}, \vec{y} \right) :
     \right)
 \right)
 \end{equation*}
-E si avrà una clausola per ogni gate. a questo punto si può definire una prima formula detta $Conf$ perche indica la configurazione di un circuito sotto un certo ingresso:
+E si avrà una clausola per ogni gate. A questo punto si può definire una prima formula, detta $Conf$ perché indica la configurazione di un circuito sotto un certo ingresso:
 \begin{equation*}
     Conf \left( \vec{x}, \vec{y} \right) =
     \bigwedge\limits_{g \in G}
     C_g \left( \vec{x}, \vec{y} \right)
 \end{equation*}
-Si prova per riduzione che vale il seguente teorema:
-\begin{theorem}
-    $ Conf ( \vec{b_1}, \vec{b_2} ) = 1 \Leftrightarrow $ sotto $\vec{b_1}$, $C( \vec{b_1} )$ commuta e ogni gate in uscita ha valore $( \vec{b_2} )_g$
-    \label{teo:commuta}
-\end{theorem}
-se si prende quella configurazione e si mettono dentro due assegnamenti di valori di verita per x e y, quella configurazione avra valore uno, la conf è and di formule, e vale uno quando tutte le formule sono vere, per cui sotto b1 l'output del circuito che rappresenta la left side dell'ea logica 
-
-nota che è sempre soddisfacibile, se si prende un circuito e lo si fa commutare, e si inseriscono come b1 b2 i valori letti, la formula sarà soddisfacibile
-(lo si prova per induzione, se è vero per gate di profondita i e cosi via TODO disegnino minimale)
-
-si vuole invece scrivere una formula che sia soddisfacibile solo se il circuito originale lo è, usando Conf come gadget.
-
-notiamo che esiste un gate particolare $g_o$ legato al filo d'uscita $y_{g_o}$
-
+Si prova che $ Conf ( \vec{b_1}, \vec{b_2} ) = 1 $ se e solo se sotto $\vec{b_1}$, $C( \vec{b_1} )$ commuta e ogni gate in uscita ha valore $( \vec{b_2} )_g$. Infatti, se si fa commutare un circuito e si inseriscono come $\vec{b_1}, \vec{b_2}$ i valori letti, tutte le clausole (legate alla corretta implementazione delle formule nei gate), saranno vere, e la $Conf$ è proprio la congiunzione delle clausole.
+% se si prende quella configurazione e si mettono dentro due assegnamenti di valori di verita per x e y, quella configurazione avra valore uno, la conf è and di formule, e vale uno quando tutte le formule sono vere, per cui sotto b1 l'output del circuito che rappresenta la left side dell'ea logica 
+% nota che è sempre soddisfacibile, se si prende un circuito e lo si fa commutare, e si inseriscono come b1 b2 i valori letti, la formula sarà soddisfacibile
+% (lo si prova per induzione, se è vero per gate di profondita i e cosi via TODO disegnino minimale)
+Si deve invece scrivere una formula che sia soddisfacibile solo quando il circuito originale lo è, usando $Conf$ come gadget. In particolare, esiste un gate particolare $g_o$ legato al filo d'uscita $y_{g_o}$
 \begin{equation*}
+    f:
     C \left( x_1, \cdots, x_n \right)
     \to
     \Phi \left( \vec{x}, \vec{y} \right) =
@@ -968,16 +941,16 @@ notiamo che esiste un gate particolare $g_o$ legato al filo d'uscita $y_{g_o}$
     Conf \left( \vec{x}, \vec{y} \right) \wedge y_{g_o}
     \right)
 \end{equation*}
-f è ctp perché ogni singola clausola ha simboli max pari agli elementi di circuito incidenti sul singolo gate, fan in più filo d'uscita più operatori che servono a connettere tra loro gli ingressi, al massimo 3 volte gli elementi che incidono sul gate. 
+La funzione è calcolabile in tempo polinomiale, perché ogni singola clausola ha al massimo un numero di simboli pari agli elementi di circuito incidenti sul singolo gate (\textit{fan-in}), più un filo d'uscita e gli operatori che servono a connettere tra loro gli ingressi, per un totale di al massimo 3 volte gli elementi che incidono sul gate. 
 \begin{equation*}
     | \Phi \left( \vec{x}, \vec{y} \right) | = \Theta \left( |<C>| \right)
 \end{equation*}
-
-ora mostrato
-
+Va ora mostrato che
 \begin{equation*}
     < C \left( x_1, \cdots, x_n \right) > \in BC\_SAT
+    \;
     \Leftrightarrow
+    \;
     < \Phi \left( \vec{x}, \vec{y} \right) > \in SAT
 \end{equation*}
 
@@ -998,11 +971,9 @@ ora mostrato
 
 \subsection{Da BC\_SAT a 3\_CNF\_SAT}
 
-Dimostra la NP completezza di un problema da cui poi si dimostrano molti altri problemi.
+Dimostra la NP-completezza di un problema da cui poi si dimostrano molti altri problemi, seguendo una riduzione per \textit{restrizione}: anche se si restringe a una formula con ingressi che sono sottoinsieme più piccolo degli ingressi, resta difficile.
 
-Con una riduzione per \textit{restrizione}: anche se si restringe a una formula con ingressi che sono sottoinsieme più piccolo degli ingressi, resta difficile.
-
-Spesso è interessante restringere finche diventa facile.
+Spesso è interessante restringere finché il problema diventa facile.
 
 \begin{definition}[Letterale]
     \label{def:letterale}
@@ -1015,7 +986,7 @@ Spesso è interessante restringere finche diventa facile.
     Nota: è valido avere un letterale e la sua negazione.
 \end{definition}
 
-\begin{definition}[Formula 3CNF]
+\begin{definition}[Formula 3-CNF]
     Una formula in $3-CNF$ è una congiunzione di clausole
     \begin{equation*}
         \Phi \left( x_1, \cdots, x_n \right) = 
@@ -1025,11 +996,11 @@ Spesso è interessante restringere finche diventa facile.
     \label{def:formulacnf}
 \end{definition}
 
-3-cnf-sat:
-
-istanza: $<\Phi \left( x_1, \cdots, x_n \right)>$ in 3-CNF
-
-domanda: $\Phi$ è soddisfacibile?
+\begin{align*}
+    3-CNF-SAT: & \\
+    \texttt{istanza:} \quad & <\Phi \left( x_1, \cdots, x_n \right)> \text{ in 3-CNF} \\
+    \texttt{domanda:} \quad & \Phi \text{ è soddisfacibile?}
+\end{align*}
 
 \section{Pezzi utili di \LaTeX{}}
 \begin{algorithm}[H]
