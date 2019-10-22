@@ -920,8 +920,8 @@ da una codifica $\Theta (n)$ si arriva ad una complessità esponenziale
 il circuito si può vedere come grafo
 $c \equiv \left( I \cup G \cup \left\{ o \right\}, W \right)$
 associo le variabili $x$ agli input, e variabili addizionali $y_g$, una per ogni gate, che indica il valore di uscita ad un gate sotto una configurazione d'ingresso. Simuliamo la commutazione del circuito con una serie di equazione logiche dette clausole.
-Per esempio un gate AND di indice g con input $x_1^g, \cdots, x_k^g, y_1^g, \cdots, y_h^g$, dove y sono output di altri gate, avra fa in k+h
-$
+Per esempio un gate AND di indice g con input $x_1^g, \cdots, x_k^g, y_1^g, \cdots, y_h^g$, dove y sono output di altri gate, avra fan in k+h, e si può scrivere la clausola associata che lega il valore di uscita al gate ai valori di ingresso
+\begin{equation*}
 C_g \left( \vec{x}, \vec{y} \right) :
 \left( y_g \leftrightarrow
     \left( x_1^g \wedge
@@ -939,23 +939,97 @@ C_g \left( \vec{x}, \vec{y} \right) :
         \right)
     \right)
 \right)
-$
-
+\end{equation*}
+E si avrà una clausola per ogni gate. a questo punto si può definire una prima formula detta $Conf$ perche indica la configurazione di un circuito sotto un certo ingresso:
 \begin{equation*}
     Conf \left( \vec{x}, \vec{y} \right) =
     \bigwedge\limits_{g \in G}
     C_g \left( \vec{x}, \vec{y} \right)
 \end{equation*}
-
-si chiama conf perche inica la configurazione di un circuito sotto un certo ingresso
-
+Si prova per riduzione che vale il seguente teorema:
 \begin{theorem}
     $ Conf ( \vec{b_1}, \vec{b_2} ) = 1 \Leftrightarrow $ sotto $\vec{b_1}$, $C( \vec{b_1} )$ commuta e ogni gate in uscita ha valore $( \vec{b_2} )_g$
     \label{teo:commuta}
 \end{theorem}
+se si prende quella configurazione e si mettono dentro due assegnamenti di valori di verita per x e y, quella configurazione avra valore uno, la conf è and di formule, e vale uno quando tutte le formule sono vere, per cui sotto b1 l'output del circuito che rappresenta la left side dell'ea logica 
 
-se si prende quella configurazione e si mettono dentro due assegnamenti di valori quella configurazione avra valore uno, la conf è and di formule, e vale uno quando tutte le formule sono vere, per cui sotto b1 l'output del circuito che rappresenta la left side 
+nota che è sempre soddisfacibile, se si prende un circuito e lo si fa commutare, e si inseriscono come b1 b2 i valori letti, la formula sarà soddisfacibile
+(lo si prova per induzione, se è vero per gate di profondita i e cosi via TODO disegnino minimale)
 
+si vuole invece scrivere una formula che sia soddisfacibile solo se il circuito originale lo è, usando Conf come gadget.
+
+notiamo che esiste un gate particolare $g_o$ legato al filo d'uscita $y_{g_o}$
+
+\begin{equation*}
+    C \left( x_1, \cdots, x_n \right)
+    \to
+    \Phi \left( \vec{x}, \vec{y} \right) =
+    \left( 
+    Conf \left( \vec{x}, \vec{y} \right) \wedge y_{g_o}
+    \right)
+\end{equation*}
+f è ctp perché ogni singola clausola ha simboli max pari agli elementi di circuito incidenti sul singolo gate, fan in più filo d'uscita più operatori che servono a connettere tra loro gli ingressi, al massimo 3 volte gli elementi che incidono sul gate. 
+\begin{equation*}
+    | \Phi \left( \vec{x}, \vec{y} \right) | = \Theta \left( |<C>| \right)
+\end{equation*}
+
+ora mostrato
+
+\begin{equation*}
+    < C \left( x_1, \cdots, x_n \right) > \in BC\_SAT
+    \Leftrightarrow
+    < \Phi \left( \vec{x}, \vec{y} \right) > \in SAT
+\end{equation*}
+
+\begin{proof}
+    ``$\Rightarrow$''
+    Il circuito è soddisfacibile, per cui $\exists \vec{b_1} : C ( \vec{b_1} ) = 1$.
+    Sia $\vec{b_2}$ il vettore dei valori assunti in uscita dai gate sotto $\vec{b_1}$.
+    Per costruzione di $Conf$ vale che $Conf ( \vec{b_1}, \vec{b_2} ) = 1$.
+    Inoltre $C(\vec{b_1})=1$ per cui $y_{g_o}=1$.
+    Dunque si ha che $Conf ( \vec{b_1}, \vec{b_2} ) \wedge y_{g_o} = 1 \Rightarrow ( \vec{b_1}, \vec{b_2} ) $ è un assegnamento che soddisfa $\Phi = f (<C>)$
+
+    ``$\Leftarrow$''
+    $f(<C>) \in SAT \Rightarrow \exists \vec{b_1}, \vec{b_2} : \Phi ( \vec{b_1}, \vec{b_2} ) = 1$.
+    La formula è una congiunzione per cui sono entrambe vere $Conf( \vec{b_1}, \vec{b_2} ) = 1$ e $y_{g_o} = 1 \Rightarrow C( \vec{b_1} ) = 1$.
+    La prima implica che $\vec{b_1}, \vec{b_2}$ è una configurazione corretta di $C$.
+    La seconda indica che sotto quella configurazione corretta, l'output dell'ultimo gate è $1$.
+\end{proof}
+
+\subsection{Da BC\_SAT a 3\_CNF\_SAT}
+
+Dimostra la NP completezza di un problema da cui poi si dimostrano molti altri problemi.
+
+Con una riduzione per \textit{restrizione}: anche se si restringe a una formula con ingressi che sono sottoinsieme più piccolo degli ingressi, resta difficile.
+
+Spesso è interessante restringere finche diventa facile.
+
+\begin{definition}[Letterale]
+    \label{def:letterale}
+    Dato un insieme di variabili $\{ x_1, x_n \}$, un letterale è una variabile $x_j$ o la sua negazione $\bar{x_j}$.
+\end{definition}
+
+\begin{definition}[Clausola]
+    \label{def:clausola}
+    Una clausola è la disgiunzione di tre letterali distinti $C_j =y_j^1 \vee y_j^2 \vee y_j^3$.
+    Nota: è valido avere un letterale e la sua negazione.
+\end{definition}
+
+\begin{definition}[Formula 3CNF]
+    Una formula in $3-CNF$ è una congiunzione di clausole
+    \begin{equation*}
+        \Phi \left( x_1, \cdots, x_n \right) = 
+        \bigwedge\limits_{j=1}^{m}
+        C_j
+    \end{equation*}
+    \label{def:formulacnf}
+\end{definition}
+
+3-cnf-sat:
+
+istanza: $<\Phi \left( x_1, \cdots, x_n \right)>$ in 3-CNF
+
+domanda: $\Phi$ è soddisfacibile?
 
 \section{Pezzi utili di \LaTeX{}}
 \begin{algorithm}[H]
