@@ -995,12 +995,91 @@ Spesso è interessante restringere finché il problema diventa facile.
     \end{equation*}
     \label{def:formulacnf}
 \end{definition}
-
+Il problema della soddisfacibilità di una formula $3-CNF$ è semplicemente
 \begin{align*}
     3-CNF-SAT: & \\
     \texttt{istanza:} \quad & <\Phi \left( x_1, \cdots, x_n \right)> \text{ in 3-CNF} \\
     \texttt{domanda:} \quad & \Phi \text{ è soddisfacibile?}
 \end{align*}
+La riduzione si esegue da $BC\_SAT$:
+\begin{equation*}
+    BC\_SAT \lp 3-CNF-SAT
+\end{equation*}
+È necessario un preprocessing del circuito, che, senza perdita di generalità, viene trasformato in un circuito con \textit{fan-in} massimo dei gate pari a 2, che implementa la stessa funzione booleana $C \equiv C'$. Si sfrutta l'associatività delle operazioni $AND$ e $OR$, e si sostituiscono i gate con più di 2 ingressi con una cascata di gate, ciascuno da 2 ingressi. La taglia al massimo triplica, sono necessari infatti $k-1$ gate e fili di uscita aggiuntivi $|<C'>| \le 3 \, |<C>|$.
+
+La formula che descrive il circuito è
+$
+    Conf \left( \vec{x}, \vec{y} \right) \wedge y_o
+$
+le possibili clausole sono di quattro tipi, legate alla tipologia di gate e all'output.
+\begin{align*}
+    \texttt{NOT:} & \quad y_i \leftrightarrow \neg \, w_i \\
+    \texttt{AND:} & \quad y_i \leftrightarrow w_i^1 \wedge w_i^2 \\
+    \texttt{OR:} & \quad y_i \leftrightarrow w_i^1 \vee w_i^2 \\
+    \texttt{output:} & \quad y_o
+\end{align*}
+Queste clausole si possono trasformare in formato $3-CNF$, come congiunzione di disgiunzioni (prodotto di somme), ciascuna con tre letterali distinti.
+\begin{align*}
+    y_i \leftrightarrow \neg \, w_i & \equiv
+    \left( y_i \wedge w_i \right)
+    \vee
+    \left( \neg \, y_i \wedge \neg \, w_i \right)
+    \\
+    y_i \leftrightarrow w_i^1 \wedge w_i^2 & \equiv
+    \left( \neg \, y_i \wedge w_i^1 \right)
+    \vee
+    \left( \neg \, y_i \wedge w_i^2 \right)
+    \vee
+    \left( y_i \wedge \neg \, w_i^1 \wedge \neg \, w_i^2 \right)
+    \\
+    y_i \leftrightarrow w_i^1 \vee w_i^2 & \equiv ESERCIZIO\\
+    y_o & \equiv ESERCIZIO
+\end{align*}
+Occorre un ulteriore passaggio ``cosmetico'' per far comparire \textit{tre} letterali distinti in disgiunzione, aumentando artificialmente il numero di variabili booleane in modo che
+\begin{equation*}
+    \Phi \left( \vec{x} \right)
+    \leadsto
+    \Phi \left( \vec{x}, \vec{z} \right)
+    : \forall \vec{z}, \,
+    \Phi \left( \vec{x}, \vec{z} \right)
+    =
+    \Phi \left( \vec{x} \right)
+\end{equation*}
+per esempio:
+\begin{align*}
+    \left( \bar{y_i} \vee w_i \right)
+    &= 
+    \left( \bar{y_i} \vee w_i \right)
+    \vee 0
+    & 0 \text{ è il neutro della disgiunzione} &
+    \\
+    &= 
+    \left( \bar{y_i} \vee w_i \right)
+    \vee
+    \left( z \wedge \bar{z} \right)
+    & \text{lo si sostituisce con contraddizione} &
+    \\
+    &= 
+    \left( \bar{y_i} \vee w_i \vee z \right)
+    \wedge
+    \left( \bar{y_i} \vee w_i \vee \bar{z} \right)
+    & \text{usando la distributiva} &
+\end{align*}
+Per il caso dell'output, questo processo viene applicato due volte, ottenendo 4 clausole da 3 letterali.
+% Il numero di clausole è lineare,
+
+Quindi 
+$ Conf \left( \vec{x}, \vec{y} \right) \wedge y_o $
+può essere espressa come una formula
+$ \Phi \left( \vec{x}, \vec{y}, \vec{z} \right) $
+che è in $3-CNF$, la cui taglia è polinomiale nella taglia del circuito:
+\begin{equation*}
+    | \Phi \left( \vec{x}, \vec{y}, \vec{z} \right) | = \Theta \left( |<C>| \right)
+\end{equation*}
+
+TODO conclusione riduzione pag 20.9 21.0
+
+
 
 \section{Pezzi utili di \LaTeX{}}
 \begin{algorithm}[H]
