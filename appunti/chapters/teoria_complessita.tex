@@ -267,6 +267,7 @@ La codifica unaria quindi maschera l'algoritmo come molto buono, nascondendo la 
 
 
 \section{Classi di problemi}
+\label{sse:classidiprob}
 
 \subsection{Decisione in tempo polinomiale}
 % pag 9.5
@@ -414,7 +415,8 @@ Sotto l'ipotesi $\bp{} \neq \bnp{} $, si trova una classe di linguaggi $\bnpc{} 
 % TODO aggiungi disegno insiemi p np
 
 
-\section{Riducibilità}
+\section{Riducibilità, relazione d'ordine $\lp$}
+\label{sse:relazioneordinelp}
 % pag 12
 
 Dati due problemi
@@ -1072,13 +1074,173 @@ Quindi
 $ Conf \left( \vec{x}, \vec{y} \right) \wedge y_o $
 può essere espressa come una formula
 $ \Phi \left( \vec{x}, \vec{y}, \vec{z} \right) $
-che è in $3-CNF$, la cui taglia è polinomiale nella taglia del circuito:
+che è in $3-CNF$, la cui taglia è lineare nella taglia del circuito:
 \begin{equation*}
     | \Phi \left( \vec{x}, \vec{y}, \vec{z} \right) | = \Theta \left( |<C>| \right)
 \end{equation*}
 
-TODO conclusione riduzione pag 20.9 21.0
+% TODO conclusione riduzione pag 20.9 21.0
+Il circuito è soddisfacibile se e solo se la formula 
+$ Conf \left( \vec{x}, \vec{y} \right) \wedge y_o $
+è soddisfacibile, e questa corrisponde a 
+$ \Phi \left( \vec{x}, \vec{y}, \vec{z} \right) $,
+e questo prova che $3-CNF-SAT$ è un problema NP-completo.
 
+Anche formule semplici sono difficili da soddisfare. Cosa c'entra quel 3? Nell'ambito delle riduzioni per l'NP-completezza si usano le restrizioni il più possibile per capire dov'è il punto di passaggio tra polinomialità e non polinomialità (sotto l'ipotesi $\bp \ne \bnp$). Per quanto riguarda le formule in forma normale congiuntiva, il passaggio è proprio 3, si dimostra che $2-CNF-SAT \in \bp$ (si studia un problema di flusso sul grafo associato al circuito).
+
+Se la riduzione per restrizione è complicata, perché si deve provare che il problema un po' più facile di quello NP-completo è ancora NP-completo, se si lavora per generalizzazione le cose sono più semplici: se su un sottoinsieme di istanze il problema è già difficile, resta difficile su insiemi più ampi (sotto alcune ipotesi).
+
+\subsection{Clique}
+% TODO pag 21
+
+\begin{definition}[Clique]
+    \label{def:clique}
+    Sia $G=(V,E)$ un grafo non orientato. Una clique di taglia $k$ è un sottoinsieme di vertici $V'$, con $V' \subseteq V$ e $|V'| = k$ totalmente connesso.
+    \begin{equation*}
+        V' \subseteq V : 
+        \left( |V'| = k \right)
+        \wedge
+        \left( 
+            \forall u, v \in V, u \ne v :
+            \left( u \in V' \right) \wedge \left( v \in V' \right)
+            \Rightarrow
+            \left\{ u,v \right\} \in E
+        \right)
+    \end{equation*}
+\end{definition}
+Si pone come problema decisionale
+\begin{align*}
+    CLIQUE: & \\
+    \texttt{istanza:} \quad & <G=(V,E), \, k> \\
+    \texttt{domanda:} \quad & G \text{ ha una clique di taglia } k
+\end{align*}
+Si dimostra che $CLIQUE \in \bnpc$.
+
+Per dimostrare che $CLIQUE \in \bnp$ è sufficiente esibire un verificatore, che dati $k$ nodi controlli che i $k^2$ archi tra loro siano presenti.
+
+Per dimostrare che $CLIQUE \in \bnph$ si riduce da $3-CNF-SAT$ a $CLIQUE$ (sempre \textit{dal} noto difficile all'ignoto), cercando una riduzione dalle formule $3-CNF$ ad un grafo.
+\begin{equation*}
+    3-CNF-SAT \lp CLIQUE
+\end{equation*}
+Ricordiamo che una formula $3-CNF$ è nella forma
+\begin{equation*}
+    \Phi \left( x_1, \cdots, x_n \right) = 
+    \bigwedge\limits_{j=1}^{m}
+    C_j
+    \quad
+    \text{con}
+    \quad
+    C_j = y_j^1 \vee y_j^2 \vee y_j^3
+\end{equation*}
+Si cerca una formula, calcolabile in tempo polinomiale, che trasformi una formula in un grafo in modo che, se $\Phi$ è soddisfacibile, c'è una clique di taglia $k$ nel grafo.
+\begin{equation*}
+    f : \Phi \to G_{\Phi} = \left( V_{\Phi} , E_{\Phi} \right), \, k_{\Phi}
+\end{equation*}
+Si fissa $k_{\Phi} = m$ pari al numero di clausole, e si crea un vertice per ogni istanza di letterale (uno per ogni letterale in ogni clausola) per un totale di $3m$ vertici:
+$$
+V_{\Phi} = 
+\left\{ 
+% \{
+v_j^1 \vee v_j^2 \vee v_j^3
+: 1 \le i \le m
+\right\}
+% \}
+\quad
+v_i^J \leftrightarrow y_i^j, 
+1 \le i \le m,
+1 \le j \le 3
+$$
+Per definire l'insieme degli archi $E_{\Phi}$ si considera l'arco come gadget, che mette una relazione tra due letterali se quei due letterali possono essere entrambi veri sotto uno stesso assegnamento di verità.
+
+Negativa: quando due letterali \textit{non} possono essere contemporaneamente veri sotto lo stesso assegnamento di verità? Solo nel caso in cui uno è la negazione dell'altro ($x_h, \overline{x_h}$).
+
+Com'è fatta una formula normale congiuntiva? Da una congiunzione di clausole disgiuntive, per cui per essere soddisfatta deve esserci almeno un letterale vero per ogni clausola.
+
+Con gli archi si identificano un insieme di letterali, uno per clausola, che sono in relazione tra loro in modo da poter essere entrambi veri sotto lo stesso assegnamento di verità, e questa sarà una clique. E se c'è questa clique, tutti i letterali possono essere messi a vero sotto lo stesso assegnamento di verità e soddisfare la formula.
+
+Si trasforma così il concetto di soddisfacibilità di una formula $3-CNF$, in un concetto relativo alla clique.
+
+L'idea si formalizza definendo $E_{\Phi}$
+\begin{equation*}
+    E_{\Phi} : 
+    \left\{ 
+        v_{i_1}^{\,j_1}
+        ,
+        v_{i_2}^{\,j_2}
+    \right\}
+    \in E_{\Phi} \Leftrightarrow
+    \begin{cases}
+        i_1 \ne i_2 
+        & \text{clausole diverse}
+        \\
+        y_{i_1}^{\,j_1}
+        \ne
+        \neg \,
+        % \overline{
+            y_{i_2}^{\,j_2}
+        % }
+        & \text{non uno negazione dell'altro}
+    \end{cases}
+\end{equation*}
+Si definisce così $A_f$, quadratica nella taglia della formula.
+
+% TODO formula e grafo d'esempio pag 22.9 23
+Va dimostrato formalmente che:
+\begin{equation*}
+    < \Phi > \: \in 3-CNF-SAT
+    \Leftrightarrow
+    f \left( \Phi \right) = 
+    < G_{\Phi} = \left( V_{\Phi} , E_{\Phi} \right), \, k_{\Phi} >
+    \: \in CLIQUE
+\end{equation*}
+\begin{proof}
+    ``$\Rightarrow$''
+    Per la soddisfacibilità della formula, 
+    $ \exists \vec{b} \in \setzo{m} : \Phi ( \vec{b} ) = 1 $,
+    ovvero ogni clausola ha almeno un letterale vero sotto $\vec{b}$, che viene indicato $ y_{i}^{\,j_i} $.
+    Si selezionano i vertici corrispondenti
+    $ V' = \{ v_{i}^{\,j_i} : 1 \le i \le m \} $,
+    che formano una clique di taglia $k$.
+    Si supponga per assurdo che non sia una clique, allora
+    $
+        y_{i_1}^{\,j_{i_1}}
+        = \neg \,
+        y_{i_2}^{\,j_{i_2}}
+    $
+
+    ``$\Leftarrow$''
+\end{proof}
+
+\subsection{Independent Set - Vertex Cover}
+% TODO pag 24
+
+\subsection{Subset Sum}
+% TODO pag 26
+
+\subsection{Testing}
+% TODO pag 30
+
+\subsection{Knapsack}
+% TODO pag 36
+
+\section{Varie}
+I linguaggi NP ammettono decisore con complessità esponenziale, pag 31.
+Lo metterei in \ref{sse:classidiprob}
+TODO
+
+Halting problem è NPH, pag 32.
+Lo metterei in fondo a \ref{sse:relazioneordinelp}
+TODO
+
+Se riduco a linguaggio NP, anche il membro sinistro è NP, pag 33.
+Lo metterei in \ref{sse:relazioneordinelp}, dopo il teorema \ref{teo:relazioneordine}
+TODO
+
+\section{Linguaggi complementari}
+% pag 34
+
+\subsection{Classe Co-NP}
+% pag 35
 
 
 \section{Pezzi utili di \LaTeX{}}
