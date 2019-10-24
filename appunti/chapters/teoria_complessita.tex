@@ -1201,14 +1201,44 @@ Va dimostrato formalmente che:
     Si selezionano i vertici corrispondenti
     $ V' = \{ v_{i}^{\,j_i} : 1 \le i \le m \} $,
     che formano una clique di taglia $k$.
-    Si supponga per assurdo che non sia una clique, allora
-    $
+    Si supponga per assurdo che non sia una clique, allora devono esistere due vertici di indice $i_1, i_2$ non connessi, che implica che i letterali associati devono avere valore opposto (per costruzione del grafo)
+    \begin{equation*}
+        \left\{ 
+            v_{i_1}^{\,j_{i_1}}
+            ,
+            v_{i_2}^{\,j_{i_2}}
+        \right\}  \notin E
+        \quad
+        \Rightarrow
+        \quad
         y_{i_1}^{\,j_{i_1}}
         = \neg \,
         y_{i_2}^{\,j_{i_2}}
-    $
+    \end{equation*}
+    Ma sotto l'assegnamento $\vec{b}$ entrambi i letterali sono veri, il che porta ad un assurdo.
 
     ``$\Leftarrow$''
+    Si costruisce da una clique un assegnamento di valori di verità che soddisfa la formula. La clique è 
+    $
+    V' = \{ 
+        v_{i_1}^{\,j_{1}}
+        , \cdots,
+        v_{i_m}^{\,j_{m}}
+    \}
+    $,
+    con $k_{\Phi} = m$.
+    Gli indici $i_1, \cdots, i_m$ sono una permutazione, uno per ogni clausola altrimenti non potrebbe esserci l'arco, da cui $i_h \ne i_k$ per $ h \ne k$. Si assegnano i valori a $\vec{b}$, per $1 \le k \le m$, nel seguente modo:
+    \begin{equation*}
+        b_k = 
+        \begin{cases}
+            1 & \text{ se } 
+            y_{i_k}^{\,j_{k}} = x_h \\
+            0 & \text{ se } 
+            y_{i_k}^{\,j_{k}} = \neg \, x_h 
+        \end{cases}
+    \end{equation*}
+    Questo non necessariamente definisce i valori per tutti i $b_i$, ci può essere uno stesso letterale che soddisfa più clausole. Se ci sono valori non assegnati, li si pone a un valore arbitrario.
+    Non può succedere che lo stesso valore $b_i$ venga associato una volta a 0 una volta ad 1, perché ci sarebbero due letterali nella clique che sono uno la negazione dell'altro. Dopo questo assegnamento, c'è un letterale vero per ogni clausola, per cui $\Phi ( \vec{b} ) = 1$, e la forula è soddisfacibile.
 \end{proof}
 
 \subsection{Independent Set - Vertex Cover}
