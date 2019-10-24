@@ -40,9 +40,9 @@ Problemi $\bpi{}$ per cui si può provare che la complessità di ogni algoritmo 
 I problemi per cui si riesce a dimostrare questa proprietà sono però molto pochi, in genere problemi artificiali legati ai linguaggi.
 
 \subsubsection{Problemi che non ammettono algoritmi di risoluzione}
-Ricordiamo che un algoritmo è una procedura \textit{terminante}. Per esempio l'\textit{halting problem}, si definisce come:
+Ricordiamo che un algoritmo è una procedura \emph{terminante}. Per esempio l'\emph{halting problem}, si definisce come:
 \begin{equation*}
-    \bi{}_{H} = \left\{ <MT,x> \right\}
+    \bi{}_{H} = \left\{ \langle MT,x \rangle \right\}
     \;\;
     \bs{}_{H} = \left\{ \texttt{Sì, No} \right\}
 \end{equation*}
@@ -52,8 +52,8 @@ TODO mancano pezzi
 
 \subsubsection{Problemi intrattabili}
 
-Sono problemi per cui non esiste né un algoritmo $A_{\bpi{}}$ che li risolva, e neppure un \textit{lower bound} esponenziale.
-Tuttavia c'è forte evidenza che il \textit{lower bound} esista, infatti si può provare che tutti i problemi in questa classe sono equivalenti, e questa proprietà di chiusura spinge verso la loro difficoltà.
+Sono problemi per cui non esiste né un algoritmo $A_{\bpi{}}$ che li risolva, e neppure un \emph{lower bound} esponenziale.
+Tuttavia c'è forte evidenza che il \emph{lower bound} esista, infatti si può provare che tutti i problemi in questa classe sono equivalenti, e questa proprietà di chiusura spinge verso la loro difficoltà.
 
 \section{Problemi Decisionali}
 % pag 4.2
@@ -84,36 +84,36 @@ Un problema decisionale presenta un insieme delle soluzioni ridotto a due elemen
     \bpi{}_{D} : \bi{} \to \left\{ \texttt{Sì, No} \right\}
 \end{equation*}
 
-\subsubsection{\textit{Shortest Unweighted Path}}
+\subsubsection{\emph{Shortest Unweighted Path}}
 % pag 4.5
-% Il problema è definito sull'istanza $<G=(V,E), s, t>$, dove $V \subseteq \mathbb{N}$ finito (i nodi sono identificati con numeri naturali), $E \subseteq V \times V$ (gli archi sono coppie ordinate di vertici), $s, t \in V$. L'insieme delle soluzioni è $\mathbb{N}^*$, e una soluzione generica è $s=<v_1, \dots, v_k$, dove $v_i \in V, v_1=s, v_k=t$ e $\left( v_i, v_{i+1} \right) \in E, 1 \leq i < k$.
+% Il problema è definito sull'istanza $\langle G=(V,E), s, t \rangle$, dove $V \subseteq \mathbb{N}$ finito (i nodi sono identificati con numeri naturali), $E \subseteq V \times V$ (gli archi sono coppie ordinate di vertici), $s, t \in V$. L'insieme delle soluzioni è $\mathbb{N}^*$, e una soluzione generica è $s=<v_1, \dots, v_k$, dove $v_i \in V, v_1=s, v_k=t$ e $\left( v_i, v_{i+1} \right) \in E, 1 \leq i < k$.
 La restrizione ad un insieme binario di soluzioni non comporta una perdita di generalità, per esempio, si consideri il problema di trovare un cammino minimo tra due nodi in un grafo:
 \begin{align*}
-    \texttt{istanza:} \quad & <G=(V,E), s, t> \\
+    \texttt{istanza:} \quad & \langle G=(V,E), s, t \rangle \\
     \text{dove} \quad & V \subseteq \mathbb{N} \quad \text{finito (i nodi sono identificati con numeri naturali)} \\
     & E \subseteq V \times V \quad \text{(gli archi sono coppie ordinate di vertici)} \\
     & s, t \in V \\
-    \texttt{soluzioni:} \quad & s=<v_1, \dots, v_k> \in \mathbb{N}^* \\
+    \texttt{soluzioni:} \quad & s=\langle v_1, \dots, v_k \rangle \in \mathbb{N}^* \\
     i \, \bpi{} s \text{ se } \quad & 
     % \text{dove} \quad &
     v_i \in V \\
     & v_1=s, \: v_k=t \\
     & \left( v_i, v_{i+1} \right) \in E, 1 \leq i < k \\
     i \, \bpi{} \, \varepsilon \text{ se } \quad & \text{non esiste cammino tra $s$ e $t$ in $G$} \\
-    \texttt{costo:} \quad & c\left( < v_1, \ldots, v_k > \right) = k-1 \\
+    \texttt{costo:} \quad & c\left( \langle  v_1, \ldots, v_k  \rangle \right) = k-1 \\
     & c( \varepsilon ) = \infty \\
     \intertext{A questo problema di ottimizzazione si può associare un problema decisionale, arricchendo l'istanza con un limite superiore alla lunghezza del cammino}
-    \texttt{istanza:} \quad & <G=(V,E), s, t, k> \\
+    \texttt{istanza:} \quad & \langle G=(V,E), s, t, k \rangle \\
     \texttt{domanda:} \quad & \text{esiste un cammino tra $s$ e $t$ in $G$, di lunghezza $\leq k$?} \\
 \end{align*}
 Avendo un algoritmo $A_{KUP}$ che risolva il problema decisionale, si può costruire facilmente un algoritmo che risolva $SUP$, usando $KUP$ come subroutine; l'algoritmo termina, perché si stanno cercando cammini semplici, quindi di lunghezza massima pari al numero di nodi meno uno.
 \begin{algorithm}[H]
 \caption{Shortest Unweighted Path}\label{alg:sup}
 \begin{algorithmic}[1]
-    \Procedure{$A_{SUP}$}{$<G=(V,E), s, t>$}
+    \Procedure{$A_{SUP}$}{$\langle G=(V,E), s, t \rangle$}
         \State $m \gets |V|$
         \For{$k \gets 0 $ to $ m-1 $ }
-        \If{\Call{$A_{KUP}$}{$<G=(V,E), s, t, k>$} = \texttt{Sì}}
+        \If{\Call{$A_{KUP}$}{$\langle G=(V,E), s, t, k \rangle$} = \texttt{Sì}}
                 \State return $k$
             \EndIf
         \EndFor
@@ -123,21 +123,21 @@ Avendo un algoritmo $A_{KUP}$ che risolva il problema decisionale, si può costr
 \end{algorithm}
 Per quanto riguarda la complessità, si possono considerare le due istanze come di taglia paragonabile
 \begin{equation*}
-    |<G, s, t, k>| = \Theta \left( |<G, s, t>| \right)
+    |\langle G, s, t, k \rangle| = \Theta \left( |\langle G, s, t \rangle| \right)
 \end{equation*}
 e assumendo $KUP$ polinomiale
 \begin{equation*}
-    T_{KUP} = O \left( |<G, s, t, k>|^{h} \right)
+    T_{KUP} = O \left( |\langle G, s, t, k \rangle|^{h} \right)
 \end{equation*}
 e considerando che il numero di archi è limitato dalla taglia dell'istanza
 \begin{equation}
-    m = O \left( |<G, s, t>| \right)
+    m = O \left( |\langle G, s, t \rangle| \right)
     \label{eq:tagliamgst}
 \end{equation}
 si ottiene che
 \begin{align*}
-    T_{SUP} \left( |<G, s, t>| \right) &= O \left( |<G, s, t>||<G, s, t>|^{h} \right) \\
-    &= O \left( |<G, s, t>|^{h+1} \right)
+    T_{SUP} \left( |\langle G, s, t \rangle| \right) &= O \left( |\langle G, s, t \rangle||\langle G, s, t \rangle|^{h} \right) \\
+    &= O \left( |\langle G, s, t \rangle|^{h+1} \right)
 \end{align*}
 per cui se si riesce a risolvere il problema decisionale si può risolvere anche il problema di ottimizzazione.
 
@@ -150,8 +150,8 @@ Un problema astratto generico è definito quindi come
     \bpi{}_{A} : \bi{} \to \left\{ \texttt{Sì, No} \right\}
 \end{equation*}
 Come si evidenzia nell'equazione \ref{eq:tagliamgst}, c'è un forte legame tra taglia dell'istanza e complessità dell'algoritmo. Va quindi definito precisamente il concetto di codifica di un'istanza.
-\begin{definition}[\textit{Encoding} (codifica)]\label{def:codifica}
-L'\textit{encoding} è una funzione invertibile (iniettiva)
+\begin{definition}[\emph{Encoding} (codifica)]\label{def:codifica}
+L'\emph{encoding} è una funzione invertibile (iniettiva)
 \begin{equation*}
     e : \bi{} \to \setzo{*}
 \end{equation*}
@@ -182,19 +182,19 @@ Il problema concreto corrisponde ad un linguaggio formale
 In questo modo lo spazio dei problemi è reso uniforme.
 
 \subsubsection{Problema della codifica}
-La complessità di un algoritmo è legata alla codifica scelta, infatti secondo il modello di costo di una \textit{Random Access Machine} in cui tutte le istruzioni hanno costo $1$:
+La complessità di un algoritmo è legata alla codifica scelta, infatti secondo il modello di costo di una \emph{Random Access Machine} in cui tutte le istruzioni hanno costo $1$:
 \begin{equation}
     T_{A_{\bpi{}_{C}}} (n) = \max_{|x|=n} \left\{ \text{\# di passi impiegati da } A_{\bpi{}_{C}} (x) \right\}
     \label{eq:compltaglia}
 \end{equation}
-e in questa formula il parametro indipendente è la taglia dell'\textit{encoding}: $n=|e(i)|$
+e in questa formula il parametro indipendente è la taglia dell'\emph{encoding}: $n=|e(i)|$
 
 \subsubsection{Codifica dei numeri naturali positivi}
 Si consideri l'insieme $\mathbb{N} - \left\{ 0 \right\}$ e un suo elemento generico $m$. Due codifiche possibili sono quella binaria e quella unaria.
 
 Per la codifica binaria:
 \begin{equation*}
-    e_b (m) = <a_{k-1}, \cdots, a_0 > \quad \text{con} \quad k = \left\lfloor \log_2 m \right\rfloor + 1
+    e_b (m) = \langle a_{k-1}, \cdots, a_0  \rangle \quad \text{con} \quad k = \left\lfloor \log_2 m \right\rfloor + 1
 \end{equation*}
 e la lunghezza di un'istanza risulta logaritmica rispetto al valore
 \begin{equation*}
@@ -204,7 +204,7 @@ In realtà la codifica è indipendente dalla base, varia solamente per una costa
 
 Per la codifica unaria:
 \begin{equation*}
-    e_u (m) = < \underbrace{1, \cdots, 1}_m >
+    e_u (m) = \langle  \underbrace{1, \cdots, 1}_m  \rangle
 \end{equation*}
 e risultano istanze di lunghezza lineare rispetto al valore $m$
 \begin{equation}
@@ -218,9 +218,9 @@ ed esponenziale rispetto alla codifica binaria:
 
 Un semplice problema che evidenzia l'importanza della codifica è l'algoritmo che esegue la somma dei primi $m$ numeri interi:
 \begin{algorithm}[H]
-\caption{\textit{Gauss}}\label{alg:gauss}
+\caption{\emph{Gauss}}\label{alg:gauss}
 \begin{algorithmic}[1]
-    \Procedure{\textit{Gauss}}{$m$}
+    \Procedure{\emph{Gauss}}{$m$}
         \State $sum \gets 0$
         \For{$i \gets 1 $ to $ m $ }
             \State $sum \gets sum + i$
@@ -235,21 +235,21 @@ Ricordando che la complessità va espressa in funzione della taglia dell'istanza
 
 Nel caso della codifica unaria:
 \begin{equation*}
-    \Theta \left( m \right) = T_{G}^{u} \left( |<e_u(m)>| \right)
+    \Theta \left( m \right) = T_{G}^{u} \left( |\langle e_u(m) \rangle| \right)
 \end{equation*}
 che componendo con l'equazione \ref{eq:coduncomp} risulta
 \begin{equation*}
     T_{G}^{u} \left( n \right) = \Theta\left( n \right)
 \end{equation*}
-ossia una complessità lineare nella taglia dell'istanza (che corrisponde al \textit{valore} dell'ingresso).
+ossia una complessità lineare nella taglia dell'istanza (che corrisponde al \emph{valore} dell'ingresso).
 
 Per la codifica binaria
 \begin{equation*}
-    \Theta \left( m \right) = T_{G}^{b} \left( |<e_b(m)>| \right)
+    \Theta \left( m \right) = T_{G}^{b} \left( |\langle e_b(m) \rangle| \right)
 \end{equation*}
 ma in questo caso il valore è legato in maniera esponenziale alla lunghezza dell'istanza
 \begin{equation*}
-    m = \Theta \left( 2^{|<e_b(m)>|} \right)
+    m = \Theta \left( 2^{|\langle e_b(m) \rangle|} \right)
 \end{equation*}
 per cui risulta una complessità esponenziale dell'algoritmo, rispetto alla lunghezza della codifica dell'istanza
 \begin{equation*}
@@ -260,9 +260,9 @@ Come esempio numerico, si pensi alla differenza tra $1024$ e $10$, e come $2^{10
 
 La codifica unaria quindi maschera l'algoritmo come molto buono, nascondendo la complessità nella codifica stessa.
 
-\begin{definition}[\textit{Encoding} conciso]
+\begin{definition}[\emph{Encoding} conciso]
     \label{def:encodingconciso}
-    Con le parentesi angolate $<\cdots>$ si indica l'uso di una codifica \textit{concisa} e \textit{ragionevole} dell'istanza.
+    Con le parentesi angolate $\langle \cdots \rangle$ si indica l'uso di una codifica \emph{concisa} e \emph{ragionevole} dell'istanza.
 \end{definition}
 
 
@@ -273,7 +273,7 @@ La codifica unaria quindi maschera l'algoritmo come molto buono, nascondendo la 
 % pag 9.5
 
 % MAYBE spostare questa definizione prima, dove introduce il legame linguaggio/algoritmo/problema
-Considerando un problema $\bpi{}_{C}$ e un algoritmo $A_{\bpi{}_{C}}$ che risolve il problema, si dice che il linguaggio \textit{deciso} o \textit{accettato} da $A_{\bpi{}_{C}}$ è
+Considerando un problema $\bpi{}_{C}$ e un algoritmo $A_{\bpi{}_{C}}$ che risolve il problema, si dice che il linguaggio \emph{deciso} o \emph{accettato} da $A_{\bpi{}_{C}}$ è
 \begin{equation*}
     L_{\bpi{}_{C}} = \left\{ x \in \setzo{*} : A_{\bpi{}_{C}}(x) = 1 \right\}
 \end{equation*}
@@ -303,14 +303,14 @@ ossia l'insieme di stringhe per cui la computazione ha esito positivo.
 \subsection{Verifica in tempo polinomiale}
 % pag 10
 
-La classe $\bnp{}$ non viene caratterizzata utilizzando automi non deterministici, ma analizzando la complessità della \textit{verifica} della correttezza di una soluzione di un dato problema, senza preoccuparsi di come si è trovata questa soluzione.
+La classe $\bnp{}$ non viene caratterizzata utilizzando automi non deterministici, ma analizzando la complessità della \emph{verifica} della correttezza di una soluzione di un dato problema, senza preoccuparsi di come si è trovata questa soluzione.
 
-Si consideri il problema di trovare un circuito \textit{Hamiltoniano} in un grafo non orientato:
+Si consideri il problema di trovare un circuito \emph{Hamiltoniano} in un grafo non orientato:
 \begin{align*}
-    \texttt{istanza:} \quad & <G=(V,E)> \\
+    \texttt{istanza:} \quad & \langle G=(V,E) \rangle \\
     \text{dove} \quad & G \text{ grafo non orientato} \\
     \texttt{domanda:} \quad & G \text{ contiene un ciclo semplice che tocca tutti i nodi?} \\
-    \texttt{soluzioni:} \quad & s=<v_1, \dots, v_k> \in \mathbb{N}^* \\
+    \texttt{soluzioni:} \quad & s=\langle v_1, \dots, v_k \rangle \in \mathbb{N}^* \\
     i \, \bpi{} s \text{ se } \quad & 
     v_i \in V \\
     & v_1 = v_k \\
@@ -322,11 +322,11 @@ In questo caso la soluzione è difficile da trovare, ma verificare se un cammino
 \caption{Verificatore per Hamiltonian}\label{alg:verifyh}
 \begin{algorithmic}[1]
     \Procedure{VERIFY\_H}{$x, y$}
-        \If{$x \neq <G=(V,E)>$}
+        \If{$x \neq \langle G=(V,E) \rangle$}
         \Comment{verifico $x$ sia istanza ben formata}
             \State return $0$
         \EndIf
-        \If{$x \neq <v_1, v_2, \cdots, v_{|V|+1}>$}
+        \If{$x \neq \langle v_1, v_2, \cdots, v_{|V|+1} \rangle$}
         \Comment{verifico $y$ codifichi un cammino valido }
             \State return $0$
         \EndIf
@@ -357,7 +357,7 @@ In questo caso la soluzione è difficile da trovare, ma verificare se un cammino
         \exists \bar{y} : V( \bar{x}, \bar{y}) = 1
     \end{equation*}
     % $
-    $\bar{y}$ si dice \textit{certificato} per $\bar{x}$
+    $\bar{y}$ si dice \emph{certificato} per $\bar{x}$
 \end{definition}
 
 \begin{definition}[Linguaggio verificato]
@@ -386,7 +386,7 @@ In questo caso la soluzione è difficile da trovare, ma verificare se un cammino
     \end{equation*}
 \end{definition}
 
-% \section{$\bp{}$ \textit{vs} $\bnp{}$}
+% \section{$\bp{}$ \emph{vs} $\bnp{}$}
 \subsection{P vs NP}
 \label{sss:pvsnp}
 % pag 11.8
@@ -438,23 +438,23 @@ Per rispondere a $\bpi{}_1$ si usa la risposta a $\bpi{}_2$, da cui si intuisce 
 \bpi_2
 \end{equation*}
 
-Si consideri di nuovo il problema di \textit{Hamilton} e la sua relazione con il \textit{Travelling Salesman Problem}:
+Si consideri di nuovo il problema di \emph{Hamilton} e la sua relazione con il \emph{Travelling Salesman Problem}:
 \begin{align*}
     \text{Hamilton:} & \quad \\
-    \texttt{istanza:} \quad & <G=(V,E)> \\
+    \texttt{istanza:} \quad & \langle G=(V,E) \rangle \\
     \texttt{domanda:} \quad & G \text{ contiene un ciclo semplice che tocca tutti i nodi?} \\
     \text{TSP:} & \quad \\
-    \texttt{istanza:} \quad & <G_C=(V,E_C), w, k> \\
+    \texttt{istanza:} \quad & \langle G_C=(V,E_C), w, k \rangle \\
     \text{dove} \quad & G_C \text{ grafo completo non orientato} \\
     & w : E \to \mathbb{N} - \left\{ 0 \right\} \\
     & k \in \mathbb{N} \\
-    \texttt{domanda:} \quad & G \text{ contiene un ciclo \textit{Hamiltoniano} di costo $\leq k$?} \\
-    \text{dove} \quad &  c(<v_1, \cdots, v_{|V|+1}>) = \sum_{i=1}^{|V|} w(v_i, v_{i+1} )  \\
+    \texttt{domanda:} \quad & G \text{ contiene un ciclo \emph{Hamiltoniano} di costo $\leq k$?} \\
+    \text{dove} \quad &  c(\langle v_1, \cdots, v_{|V|+1} \rangle) = \sum_{i=1}^{|V|} w(v_i, v_{i+1} )  \\
 \end{align*}
-Dall'istanza di \textit{Hamilton} generica 
-$i_1 = <G=(V,E)>$
-si ottiene con facilità l'istanza del \textit{Travelling Salesman Problem}
-$i_2 = <G_C=(V,E_C), w, k>$
+Dall'istanza di \emph{Hamilton} generica 
+$i_1 = \langle G=(V,E) \rangle$
+si ottiene con facilità l'istanza del \emph{Travelling Salesman Problem}
+$i_2 = \langle G_C=(V,E_C), w, k \rangle$
 \begin{itemize}[parsep=0pt,partopsep=0pt,topsep=2pt]
     \item[--] si aggiungono archi come necessario per rendere completo il grafo
     \item[--] $w(e) = 
@@ -465,7 +465,7 @@ $i_2 = <G_C=(V,E_C), w, k>$
         $
     \item[--] $k = |V|$
 \end{itemize}
-In questo modo, se $G$ è \textit{Hamiltoniano}, esiste un ciclo di costo $|V|$ e TSP risponde \texttt{Sì}. Se invece serve un arco in $E_C - E$, il costo salirebbe, andando oltre $k$.
+In questo modo, se $G$ è \emph{Hamiltoniano}, esiste un ciclo di costo $|V|$ e TSP risponde \texttt{Sì}. Se invece serve un arco in $E_C - E$, il costo salirebbe, andando oltre $k$.
 
 \begin{definition}[Calcolabile in tempo polinomiale]
     \label{def:funzionectp}
@@ -498,7 +498,7 @@ In questo modo, se $G$ è \textit{Hamiltoniano}, esiste un ciclo di costo $|V|$ 
 \end{definition}
 Note: 
 \begin{itemize}[noitemsep,parsep=0pt,partopsep=0pt,topsep=0pt]
-    \item $f$ \textit{deve} essere calcolabile in tempo polinomiale.
+    \item $f$ \emph{deve} essere calcolabile in tempo polinomiale.
     \item tutto $L_1$ deve essere mappato in $L_2$
     \item tutto il complementare di $L_1$ deve essere mappato nel complementare di $L_2$
 \end{itemize}
@@ -575,7 +575,7 @@ L'immagine nel caso più estremo può anche essere di due soli punti, tutta la c
         L & \in \bnp \\
         L & \in \bnph
     \end{align*}
-    I problemi NP-completi sono i più difficili \textit{nella} classe $\bnp$
+    I problemi NP-completi sono i più difficili \emph{nella} classe $\bnp$
 \end{definition}
 
 \begin{corollario}[P=NP]
@@ -605,9 +605,9 @@ Dimostrare che un problema è NP-completo non è semplice, vanno infatti provate
     \item $L \in \bnp$
     \item $\forall L' \in \bnp, L' \lp L$
 \end{enumerate}
-La prima è ragionevole, ed è sufficiente esibire un verificatore $V_L(x,y)$. La seconda invece è estremamente pesante, perché è necessaria una catena infinita di riduzioni per provare che \textit{per ogni} $L'$ la relazione sia verificata.
+La prima è ragionevole, ed è sufficiente esibire un verificatore $V_L(x,y)$. La seconda invece è estremamente pesante, perché è necessaria una catena infinita di riduzioni per provare che \emph{per ogni} $L'$ la relazione sia verificata.
 
-Si procede quindi in modo diverso: supponendo che un linguaggio \textit{sia} in $\bnpc$, è sufficiente una singola riduzione per provare che il linguaggio candidato sia NP-completo.
+Si procede quindi in modo diverso: supponendo che un linguaggio \emph{sia} in $\bnpc$, è sufficiente una singola riduzione per provare che il linguaggio candidato sia NP-completo.
 
 Ovvero, se $\bar{L} \in \bnpc$, vale $L_C \in \bnpc$?
 
@@ -624,9 +624,9 @@ Va quindi provato per un linguaggio $\bar{L}$ che
 $\forall L' \in \bnp, L' \lp \bar{L}$
 e lo si potrà poi utilizzare per mostrare che altri linguaggi sono NP-completi.
 
-\subsection{Circuiti \textit{booleani}}
+\subsection{Circuiti \emph{booleani}}
 
-Un circuito \textit{booleano}, o circuito combinatorio, è un'interconnessione di gate \textit{senza cicli}, in cui l'output di un gate può essere input di uno o più gate. I fili che non provengono da gate sono gli input del circuito, e i fili che non entrano in gate sono gli output del circuito. Verranno considerati solo circuiti con un singolo output.
+Un circuito \emph{booleano}, o circuito combinatorio, è un'interconnessione di gate \emph{senza cicli}, in cui l'output di un gate può essere input di uno o più gate. I fili che non provengono da gate sono gli input del circuito, e i fili che non entrano in gate sono gli output del circuito. Verranno considerati solo circuiti con un singolo output.
 
 % TODO tipi di gate e disegno gate pag 16.5
 
@@ -637,21 +637,21 @@ Il circuito si può scrivere come funzione $C \left( x_1, \cdots, x_k \right)$, 
 
 % TODO esempio di circuito e grafo isomorfo pag 16.8
 
-Si indica con \textit{fan-in} il massimo numero di ingressi ad un gate, e con \textit{fan-out} il massimo numero di gate raggiuni da un output di un gate.
+Si indica con \emph{fan-in} il massimo numero di ingressi ad un gate, e con \emph{fan-out} il massimo numero di gate raggiuni da un output di un gate.
 
-Assegnando dei valori di verità $\vec{b} \in \setzo{k}$ agli input di un circuito, si dice che questo \textit{commuta}, ossia assume una certa configurazione di valori su ogni filo, che si indica
+Assegnando dei valori di verità $\vec{b} \in \setzo{k}$ agli input di un circuito, si dice che questo \emph{commuta}, ossia assume una certa configurazione di valori su ogni filo, che si indica
 \begin{equation*}
     Config(C) = \vec{h} \in \setzo{m}
 \end{equation*}
 
-Un circuito di dice \textit{soddisfacibile} se
+Un circuito di dice \emph{soddisfacibile} se
 \begin{equation*}
     \exists \,\vec{b} \in \setzo{k} : C ( \, \vec{b} \,) = 1
 \end{equation*}
 
 Il problema di stabilire la soddisfacibilità di un circuito è stato risolto da $Cook$ nel 1971, ed è stato dimostrato essere NP-completo.
 \begin{align*}
-    \text{istanza:} \quad & < C \left( x_1, \cdots, x_k \right) > \\
+    \text{istanza:} \quad & \langle  C \left( x_1, \cdots, x_k \right)  \rangle \\
     \text{domanda:} \quad & C \text{ è soddisfacibile?}
 \end{align*}
 
@@ -660,7 +660,7 @@ Un verificatore per il problema è semplice da implementare, e risulta lineare n
 \caption{Soddisfacibilità di un circuito}\label{alg:cooksoddisfa}
 \begin{algorithmic}[1]
     \Procedure{VERIFY\_BC\_SAT}{$x,y$}
-        \State * controllare se $x = < I \cup G \cup \left\{ o \right\}, W >$ è aciclico *
+        \State * controllare se $x = \langle  I \cup G \cup \left\{ o \right\}, W  \rangle$ è aciclico *
         \State * controllare se $y = < W_1, \cdots, W_{|W|}$ corrisponde ad un valore per filo *
         \State * controlla la validità della configurazione, per ogni gate in $G$ l'output del gate deve implementare la funzione correttamente *
         \State * controlla se il valore di uscita è uno: $W_o = 1$*
@@ -668,7 +668,7 @@ Un verificatore per il problema è semplice da implementare, e risulta lineare n
 \end{algorithmic}
 \end{algorithm}
 
-\subsection{Problema della \textit{boolean circuit satisfiability} (BC\_SAT)}
+\subsection{Problema della \emph{boolean circuit satisfiability} (BC\_SAT)}
 
 Il problema per cui si dimostra per prima l'appartenenza a $\bnpc$ è quello di stabilire se un circuito booleano sia soddisfacibile o meno, ovvero se esistano input al circuito tali per cui l'output risulti 1.
 
@@ -683,10 +683,10 @@ Il linguaggio $L \in \bnp$ è generico, si sa solo che esiste un verificatore $V
         (la complessità della verifica è polinomiale)
 \end{itemize}
 
-L'idea della riduzione di \textit{Cook} è di costruire, per ogni verificatore $V_L$ e istanza (stringa) $x$, un circuito $C_{V_L,x}$ (ovvero un'istanza di $BC\_SAT$), tale che
+L'idea della riduzione di \emph{Cook} è di costruire, per ogni verificatore $V_L$ e istanza (stringa) $x$, un circuito $C_{V_L,x}$ (ovvero un'istanza di $BC\_SAT$), tale che
 \begin{itemize}
     \item se $x \in L$, quando il circuito riceve in ingresso il certificato $y_x$ associato ad $x$, segnerà in output $1$ e sarà quindi un circuito soddisfacibile
-    \item se $x \notin L$ (la stringa è un'istanza negativa del linguaggio), non esiste nessun certificato $y_x$ per cui il circuito segnerà in output $1$ e il circuito sarà \textit{non} soddisfacibile
+    \item se $x \notin L$ (la stringa è un'istanza negativa del linguaggio), non esiste nessun certificato $y_x$ per cui il circuito segnerà in output $1$ e il circuito sarà \emph{non} soddisfacibile
 \end{itemize}
 Formalmente:
 \begin{equation*}
@@ -694,7 +694,7 @@ Formalmente:
 \end{equation*}
 Si crea quindi una corrispondenza tra il generico linguaggio basato sul verificatore e il problema della soddisfacibilità.
 
-Il circuito $C_{V_L,x}$ è costruito sul modello di calcolatore $C_{RAM}$ (\textit{random access machine}). Per implementare i registri di memoria e le istruzioni però, questo modello utilizza retroazioni (\textit{feedback}), che sono vietate in un circuito combinatorio. Questo problema viene risolto giustapponendo un numero di circuiti $C_{RAM}$ pari al numero di computazioni necessarie, dove una parte degli input rappresentano la memoria e lo stato dei registri ottenuti in output al passo precedente.
+Il circuito $C_{V_L,x}$ è costruito sul modello di calcolatore $C_{RAM}$ (\emph{random access machine}). Per implementare i registri di memoria e le istruzioni però, questo modello utilizza retroazioni (\emph{feedback}), che sono vietate in un circuito combinatorio. Questo problema viene risolto giustapponendo un numero di circuiti $C_{RAM}$ pari al numero di computazioni necessarie, dove una parte degli input rappresentano la memoria e lo stato dei registri ottenuti in output al passo precedente.
 
 La trasformazione avviene in tempo polinomiale: si deve copiare $C_{RAM}$ in maniera proporzionale alla lunghezza della computazione. Per quanto riguarda la grandezza del singolo circuito, questa dipende fondamentalemnte dal numero di input, che è lineare negli input $x,y$ del verificatore, e quindi è polinomiale nella lunghezza di $x$ ($y$ è gia limitato rispetto a $x$ in modo polinomiale).
 
@@ -704,7 +704,7 @@ Ricapitolando, se $x$ è positiva allora esiste un input polinomiale che inserit
 
 Va quindi esibita una funzione $f$, calcolabile in tempo polinomiale, che associa ad ogni stringa un circuito
 \begin{equation*}
-    f_l : x \in \setzo{*} \to f(x) = <C_{V_{L}},x>
+    f_l : x \in \setzo{*} \to f(x) = \langle C_{V_{L}},x \rangle
 \end{equation*}
 tale per cui
 \begin{equation*}
@@ -712,10 +712,10 @@ tale per cui
 \end{equation*}
 e $f(x) \in BC\_SAT$ significa che $C_{V_{L}}$ è soddisfacibile.
 
-A livello macroscopico gli input di $<C_{V_{L}},x>$ sono legati al possibile certificato e l'output è associato al valore del verificatore.
+A livello macroscopico gli input di $\langle C_{V_{L}},x \rangle$ sono legati al possibile certificato e l'output è associato al valore del verificatore.
 % TODO disegno black box
 
-Il circuito che rappresenta un singolo passo elementare della computazione di un $C_{RAM}$ si dice \textit{gadget}, i cui ingressi e taglia possono essere studiati più a fondo: 
+Il circuito che rappresenta un singolo passo elementare della computazione di un $C_{RAM}$ si dice \emph{gadget}, i cui ingressi e taglia possono essere studiati più a fondo: 
 
 % --------- transcript audio fine lezione 3
 % Idea riduzione di Cook, simile a riduzione di SAT
@@ -737,7 +737,7 @@ Il circuito che rappresenta un singolo passo elementare della computazione di un
 
 % il circuito è associato al sottocircuito, detto gadget, che simula il singolo passo di computazione.
 
-Gli ingressi al primo livello del circuito sono valori precisi che rappresentano: il codice del verificatore, il valore di x, la memoria (inizializzata a 0) e i registri (program counter...). Questi input permettono di simulare una memoria, per ogni ingresso corrisponde un filo d'uscita, che indica lo stato della memoria in uscita dopo il passo appena eseguito della macchina RAM. Il \textit{gadget} è il circuito che implementa una singola transizione di stato: in base al valore del PC, estrae ed esegue l'istruzione associata (load, somma...). Tutte queste operazioni si possono implementare con circuiti combinatori.
+Gli ingressi al primo livello del circuito sono valori precisi che rappresentano: il codice del verificatore, il valore di x, la memoria (inizializzata a 0) e i registri (program counter...). Questi input permettono di simulare una memoria, per ogni ingresso corrisponde un filo d'uscita, che indica lo stato della memoria in uscita dopo il passo appena eseguito della macchina RAM. Il \emph{gadget} è il circuito che implementa una singola transizione di stato: in base al valore del PC, estrae ed esegue l'istruzione associata (load, somma...). Tutte queste operazioni si possono implementare con circuiti combinatori.
 
 Se il circuito fosse troppo grande rispetto all'ingresso, la funzione potrebbe non essere calcolabile in tempo polinomiale, dovendo generare circuiteria di taglia esponenziale. Si deve mostrare che il circuito si può realizzare in uno spazio polinomiale rispetto a $|x|$.
 
@@ -790,7 +790,7 @@ Questa catena vale in entrambe le direzioni, e quindi prova che
 
 \begin{definition}[Formula]
     \label{def:formula}
-    Una formula $<\Phi \left( x_1, \cdots, x_n \right)>$ è un'espressione totalmente parentesizzata, costruita su $\vec{x}$ e gli operatori (connettori):
+    Una formula $\langle \Phi \left( x_1, \cdots, x_n \right) \rangle$ è un'espressione totalmente parentesizzata, costruita su $\vec{x}$ e gli operatori (connettori):
     $\wedge, \vee, \neg, \to, \leftrightarrow$
 \end{definition}
 
@@ -832,11 +832,11 @@ Come per $BC\_SAT$, si definisce assegnamento di valori di verità alle variabil
 
 Una formula si dice soddisfacibile se esiste $\vec{b}$ per cui assume valore $1$.
 
-\subsection{Da BC\_SAT a \textit{formula satisfiability} (SAT)}
+\subsection{Da BC\_SAT a \emph{formula satisfiability} (SAT)}
 Si vuole provare che $SAT$ appartiene a $\bnpc$.
 \begin{align*}
     SAT:& \\
-    \texttt{istanza:} \quad & <\Phi \left( x_1, \cdots, x_n \right)> \\
+    \texttt{istanza:} \quad & \langle \Phi \left( x_1, \cdots, x_n \right) \rangle \\
     \texttt{domanda:} \quad & \Phi \text{ è soddisfacibile?}
 \end{align*}
 
@@ -846,7 +846,7 @@ Va inoltre mostrato che $SAT$ è NP-hard, usando la transitività, si prende un 
 \begin{equation*}
     BC\_SAT \lp SAT
 \end{equation*}
-Nota: si riduce \textit{dal} noto all'ignoto. Se si sa che il lato sinistro è difficile, e si mostra che è più semplice dell'ignoto, l'ignoto deve essere difficile. L'altro verso è inutile, $BC\_SAT$ è $\bnph$, quindi tutti i problemi $\bnp$ si riducono ad esso.
+Nota: si riduce \emph{dal} noto all'ignoto. Se si sa che il lato sinistro è difficile, e si mostra che è più semplice dell'ignoto, l'ignoto deve essere difficile. L'altro verso è inutile, $BC\_SAT$ è $\bnph$, quindi tutti i problemi $\bnp$ si riducono ad esso.
 
 Si deve quindi trovare una formula calcolabile in tempo polinomiale che trasformi un'istanza di $BC\_SAT$ in un'istanza di $SAT$.
 
@@ -892,7 +892,7 @@ $$
 $$
 Sia $S(i)$ la taglia della funzione al passo $i$, si nota che al passo $i$ sono necessarie due funzioni del passo $i-1$ (più altri simboli) per scriverla, per cui vale $S(i) \ge 2 S (i-1)$, in più vale $S(1)=c$ costante, e si crea così una minorazione per ricorrenza che ha come soluzione $S(i) \ge c \cdot 2^i$, di conseguenzza dopo $n$ stati vale $S(n) \ge c \cdot 2^n$
 \begin{equation*}
-    |< \Phi \left( x_1, x_2 \right) >|
+    |\langle  \Phi \left( x_1, x_2 \right)  \rangle|
     = \Omega \left( 2^{n} \right)
 \end{equation*}
 In questo modo, da una codifica di un circuito $\Theta (n)$ si arriva ad una formula esponenziale.
@@ -903,7 +903,7 @@ Il circuito si può scrivere come grafo
 $C \equiv \left( I \cup G \cup \left\{ o \right\}, W \right)$
 in cui si associano le variabili $x$ agli input, e variabili addizionali $y_g$, una per ogni gate, che indicano il valore di uscita di un gate sotto una configurazione d'ingresso. Si può simulare la commutazione del circuito con una serie di equazione logiche dette clausole.
 
-Per esempio un gate $AND$ di indice $g$, con input $x_1^g, \cdots, x_k^g, y_1^g, \cdots, y_h^g$, dove y sono output di altri gate, avrà \textit{fan-in} $k+h$, e si può scrivere la clausola associata che lega il valore di uscita al gate ai valori di ingresso
+Per esempio un gate $AND$ di indice $g$, con input $x_1^g, \cdots, x_k^g, y_1^g, \cdots, y_h^g$, dove y sono output di altri gate, avrà \emph{fan-in} $k+h$, e si può scrivere la clausola associata che lega il valore di uscita al gate ai valori di ingresso
 \begin{equation*}
 C_g \left( \vec{x}, \vec{y} \right) :
 \left( y_g \leftrightarrow
@@ -943,17 +943,17 @@ Si deve invece scrivere una formula che sia soddisfacibile solo quando il circui
     Conf \left( \vec{x}, \vec{y} \right) \wedge y_{g_o}
     \right)
 \end{equation*}
-La funzione è calcolabile in tempo polinomiale, perché ogni singola clausola ha al massimo un numero di simboli pari agli elementi di circuito incidenti sul singolo gate (\textit{fan-in}), più un filo d'uscita e gli operatori che servono a connettere tra loro gli ingressi, per un totale di al massimo 3 volte gli elementi che incidono sul gate. 
+La funzione è calcolabile in tempo polinomiale, perché ogni singola clausola ha al massimo un numero di simboli pari agli elementi di circuito incidenti sul singolo gate (\emph{fan-in}), più un filo d'uscita e gli operatori che servono a connettere tra loro gli ingressi, per un totale di al massimo 3 volte gli elementi che incidono sul gate. 
 \begin{equation*}
-    | \Phi \left( \vec{x}, \vec{y} \right) | = \Theta \left( |<C>| \right)
+    | \Phi \left( \vec{x}, \vec{y} \right) | = \Theta \left( |\langle C \rangle| \right)
 \end{equation*}
 Va ora mostrato che
 \begin{equation*}
-    < C \left( x_1, \cdots, x_n \right) > \in BC\_SAT
+    \langle  C \left( x_1, \cdots, x_n \right)  \rangle \in BC\_SAT
     \;
     \Leftrightarrow
     \;
-    < \Phi \left( \vec{x}, \vec{y} \right) > \in SAT
+    \langle  \Phi \left( \vec{x}, \vec{y} \right)  \rangle \in SAT
 \end{equation*}
 
 \begin{proof}
@@ -962,10 +962,10 @@ Va ora mostrato che
     Sia $\vec{b_2}$ il vettore dei valori assunti in uscita dai gate sotto $\vec{b_1}$.
     Per costruzione di $Conf$ vale che $Conf ( \vec{b_1}, \vec{b_2} ) = 1$.
     Inoltre $C(\vec{b_1})=1$ per cui $y_{g_o}=1$.
-    Dunque si ha che $Conf ( \vec{b_1}, \vec{b_2} ) \wedge y_{g_o} = 1 \Rightarrow ( \vec{b_1}, \vec{b_2} ) $ è un assegnamento che soddisfa $\Phi = f (<C>)$
+    Dunque si ha che $Conf ( \vec{b_1}, \vec{b_2} ) \wedge y_{g_o} = 1 \Rightarrow ( \vec{b_1}, \vec{b_2} ) $ è un assegnamento che soddisfa $\Phi = f (\langle C \rangle)$
 
     ``$\Leftarrow$''
-    $f(<C>) \in SAT \Rightarrow \exists \vec{b_1}, \vec{b_2} : \Phi ( \vec{b_1}, \vec{b_2} ) = 1$.
+    $f(\langle C \rangle) \in SAT \Rightarrow \exists \vec{b_1}, \vec{b_2} : \Phi ( \vec{b_1}, \vec{b_2} ) = 1$.
     La formula è una congiunzione per cui sono entrambe vere $Conf( \vec{b_1}, \vec{b_2} ) = 1$ e $y_{g_o} = 1 \Rightarrow C( \vec{b_1} ) = 1$.
     La prima implica che $\vec{b_1}, \vec{b_2}$ è una configurazione corretta di $C$.
     La seconda indica che sotto quella configurazione corretta, l'output dell'ultimo gate è $1$.
@@ -973,7 +973,7 @@ Va ora mostrato che
 
 \subsection{Da BC\_SAT a 3\_CNF\_SAT}
 
-Dimostra la NP-completezza di un problema da cui poi si dimostrano molti altri problemi, seguendo una riduzione per \textit{restrizione}: anche se si restringe a una formula con ingressi che sono sottoinsieme più piccolo degli ingressi, resta difficile.
+Dimostra la NP-completezza di un problema da cui poi si dimostrano molti altri problemi, seguendo una riduzione per \emph{restrizione}: anche se si restringe a una formula con ingressi che sono sottoinsieme più piccolo degli ingressi, resta difficile.
 
 Spesso è interessante restringere finché il problema diventa facile.
 
@@ -1000,14 +1000,14 @@ Spesso è interessante restringere finché il problema diventa facile.
 Il problema della soddisfacibilità di una formula $3-CNF$ è semplicemente
 \begin{align*}
     3-CNF-SAT: & \\
-    \texttt{istanza:} \quad & <\Phi \left( x_1, \cdots, x_n \right)> \text{ in 3-CNF} \\
+    \texttt{istanza:} \quad & \langle \Phi \left( x_1, \cdots, x_n \right) \rangle \text{ in 3-CNF} \\
     \texttt{domanda:} \quad & \Phi \text{ è soddisfacibile?}
 \end{align*}
 La riduzione si esegue da $BC\_SAT$:
 \begin{equation*}
     BC\_SAT \lp 3-CNF-SAT
 \end{equation*}
-È necessario un preprocessing del circuito, che, senza perdita di generalità, viene trasformato in un circuito con \textit{fan-in} massimo dei gate pari a 2, che implementa la stessa funzione booleana $C \equiv C'$. Si sfrutta l'associatività delle operazioni $AND$ e $OR$, e si sostituiscono i gate con più di 2 ingressi con una cascata di gate, ciascuno da 2 ingressi. La taglia al massimo triplica, sono necessari infatti $k-1$ gate e fili di uscita aggiuntivi $|<C'>| \le 3 \, |<C>|$.
+È necessario un preprocessing del circuito, che, senza perdita di generalità, viene trasformato in un circuito con \emph{fan-in} massimo dei gate pari a 2, che implementa la stessa funzione booleana $C \equiv C'$. Si sfrutta l'associatività delle operazioni $AND$ e $OR$, e si sostituiscono i gate con più di 2 ingressi con una cascata di gate, ciascuno da 2 ingressi. La taglia al massimo triplica, sono necessari infatti $k-1$ gate e fili di uscita aggiuntivi $|\langle C' \rangle| \le 3 \, |\langle C \rangle|$.
 
 La formula che descrive il circuito è
 $
@@ -1037,7 +1037,7 @@ Queste clausole si possono trasformare in formato $3-CNF$, come congiunzione di 
     y_i \leftrightarrow w_i^1 \vee w_i^2 & \equiv ESERCIZIO\\
     y_o & \equiv ESERCIZIO
 \end{align*}
-Occorre un ulteriore passaggio ``cosmetico'' per far comparire \textit{tre} letterali distinti in disgiunzione, aumentando artificialmente il numero di variabili booleane in modo che
+Occorre un ulteriore passaggio ``cosmetico'' per far comparire \emph{tre} letterali distinti in disgiunzione, aumentando artificialmente il numero di variabili booleane in modo che
 \begin{equation*}
     \Phi \left( \vec{x} \right)
     \leadsto
@@ -1076,7 +1076,7 @@ può essere espressa come una formula
 $ \Phi \left( \vec{x}, \vec{y}, \vec{z} \right) $
 che è in $3-CNF$, la cui taglia è lineare nella taglia del circuito:
 \begin{equation*}
-    | \Phi \left( \vec{x}, \vec{y}, \vec{z} \right) | = \Theta \left( |<C>| \right)
+    | \Phi \left( \vec{x}, \vec{y}, \vec{z} \right) | = \Theta \left( |\langle C \rangle| \right)
 \end{equation*}
 
 % TODO conclusione riduzione pag 20.9 21.0
@@ -1107,18 +1107,18 @@ Se la riduzione per restrizione è complicata, perché si deve provare che il pr
             \left\{ u,v \right\} \in E
         \right)
     \end{equation*}
-\end{definition}
-Si pone come problema decisionale
+Si pone come problema decisionale:
 \begin{align*}
     CLIQUE: & \\
-    \texttt{istanza:} \quad & <G=(V,E), \, k> \\
-    \texttt{domanda:} \quad & G \text{ ha una clique di taglia } k
+    \texttt{istanza:} \quad & \langle G=(V,E), \, k \rangle \\
+    \texttt{domanda:} \quad & G \text{ ha una clique di taglia } k?
 \end{align*}
+\end{definition}
 Si dimostra che $CLIQUE \in \bnpc$.
 
 Per dimostrare che $CLIQUE \in \bnp$ è sufficiente esibire un verificatore, che dati $k$ nodi controlli che i $k^2$ archi tra loro siano presenti.
 
-Per dimostrare che $CLIQUE \in \bnph$ si riduce da $3-CNF-SAT$ a $CLIQUE$ (sempre \textit{dal} noto difficile all'ignoto), cercando una riduzione dalle formule $3-CNF$ ad un grafo.
+Per dimostrare che $CLIQUE \in \bnph$ si riduce da $3-CNF-SAT$ a $CLIQUE$ (sempre \emph{dal} noto difficile all'ignoto), cercando una riduzione dalle formule $3-CNF$ ad un grafo.
 \begin{equation*}
     3-CNF-SAT \lp CLIQUE
 \end{equation*}
@@ -1152,7 +1152,7 @@ v_i^J \leftrightarrow y_i^j,
 $$
 Per definire l'insieme degli archi $E_{\Phi}$ si considera l'arco come gadget, che mette una relazione tra due letterali se quei due letterali possono essere entrambi veri sotto uno stesso assegnamento di verità.
 
-Negativa: quando due letterali \textit{non} possono essere contemporaneamente veri sotto lo stesso assegnamento di verità? Solo nel caso in cui uno è la negazione dell'altro ($x_h, \overline{x_h}$).
+Negativa: quando due letterali \emph{non} possono essere contemporaneamente veri sotto lo stesso assegnamento di verità? Solo nel caso in cui uno è la negazione dell'altro ($x_h, \overline{x_h}$).
 
 Com'è fatta una formula normale congiuntiva? Da una congiunzione di clausole disgiuntive, per cui per essere soddisfatta deve esserci almeno un letterale vero per ogni clausola.
 
@@ -1187,10 +1187,10 @@ Si definisce così $A_f$, quadratica nella taglia della formula.
 % TODO formula e grafo d'esempio pag 22.9 23
 Va dimostrato formalmente che:
 \begin{equation*}
-    < \Phi > \: \in 3-CNF-SAT
+    \langle  \Phi  \rangle \: \in 3-CNF-SAT
     \Leftrightarrow
     f \left( \Phi \right) = 
-    < G_{\Phi} = \left( V_{\Phi} , E_{\Phi} \right), \, k_{\Phi} >
+    \langle  G_{\Phi} = \left( V_{\Phi} , E_{\Phi} \right), \, k_{\Phi}  \rangle
     \: \in CLIQUE
 \end{equation*}
 \begin{proof}
@@ -1244,6 +1244,87 @@ Va dimostrato formalmente che:
 \subsection{Independent Set - Vertex Cover}
 % TODO pag 24
 
+\begin{definition}[\emph{Independent Set}]
+    \label{def:indset}
+    Sia $G=(V,E)$ un grafo non orientato. Un \emph{independent set} di taglia $k$ è un sottoinsieme di vertici $V'$, con $V' \subseteq V$ e $|V'| = k$
+    in cui ogni coppia di vertici distinti in $V'$ \emph{non} è collegata da un arco.
+    \begin{equation*}
+        V' \subseteq V : 
+        \left( |V'| = k \right)
+        \wedge
+        \left( 
+            \forall u, v \in V, u \ne v :
+            \left( u \in V' \right) \wedge \left( v \in V' \right)
+            \Rightarrow
+            \left\{ u,v \right\} \notin E
+        \right)
+    \end{equation*}
+Si pone come problema decisionale:
+\begin{align*}
+    IS: & \\
+    \texttt{istanza:} \quad & \langle G=(V,E), \, k \rangle \\
+    \texttt{domanda:} \quad & G \text{ ha un \emph{independent set} di taglia } k?
+\end{align*}
+\end{definition}
+
+\begin{definition}[\emph{Vertex Cover}]
+    \label{def:vertcov}
+    Sia $G=(V,E)$ un grafo non orientato. Un \emph{vertex cover} di taglia $k$ è un sottoinsieme di vertici $V'$, con $V' \subseteq V$ e $|V'| = k$
+    in cui ogni ogni arco in $E$ ha almeno un estremo in $V'$.
+    \begin{equation*}
+        V' \subseteq V : 
+        \left( |V'| = k \right)
+        \wedge
+        \left( 
+            \forall u, v \in V, u \ne v :
+            \left\{ u,v \right\} \in E
+            \Rightarrow
+            \left( u \in V' \right) \vee \left( v \in V' \right)
+        \right)
+    \end{equation*}
+Si pone come problema decisionale:
+\begin{align*}
+    VC: & \\
+    \texttt{istanza:} \quad & \langle G=(V,E), \, k \rangle \\
+    \texttt{domanda:} \quad & G \text{ ha un \emph{vertex cover} di taglia } k?
+\end{align*}
+\end{definition}
+
+Si dimostra che $IS \in \bnpc$ e $VC \in \bnpc$, riducendo da $CLIQUE$.
+
+Come gadget si sfrutta il grafo complementare:
+\begin{definition}[Grafo complementare]
+    \label{def:grafocomplementare}
+    Dato un grafo 
+    $G = (V, E)$
+    il suo complementare 
+    $G^C = (V, E^C)$
+    è definito come
+    \begin{equation*}
+        \forall u, v \in V, u \ne v :
+        \left\{ u,v \right\} \in E^C
+        \Leftrightarrow
+        \left\{ u,v \right\} \notin E
+    \end{equation*}
+    e vale $G^{C^{C}} = G$
+\end{definition}
+
+\subsubsection{\emph{Independent Set}}
+
+Quando in $G$ è presente una clique, tutti gli archi fra i nodi della clique sono presenti. Nel grafo complementare tutti gli archi sono rimossi, e i vertici della clique sono l'\emph{independent set} cercato.
+\begin{equation*}
+    CLIQUE \lp IS
+\end{equation*}
+Si trasforma un'istanza di $CLIQUE$ in una di $IS$
+\begin{equation*}
+    f : \langle G = (V,E), k \rangle  \to  \langle G^C = (V,E^C), k \rangle
+\end{equation*}
+La trasformazione è quasi sintattica:
+\begin{align*}
+    x = \langle G = (V,E), k \rangle \in CLIQUE \Leftrightarrow &
+\end{align*}
+
+
 \subsection{Subset Sum}
 % TODO pag 26
 
@@ -1282,13 +1363,13 @@ TODO
         \Comment{BASE}
             \State *risolvo direttamente*
         \EndIf
-        \State $<i_1, i_2, \dots, i_k> \gets A_D(i)$ 
+        \State $\langle i_1, i_2, \dots, i_k \rangle \gets A_D(i)$ 
         \Comment{DIVIDE}
         \For{$j \gets 1 $ to $ k $ }
         \Comment{RECURSE}
             \State $s_j \gets $ \Call{D\&C}{$i_j$}
         \EndFor
-        \State $s \gets A_C(<s_1, s_2, \dots, s_k>)$
+        \State $s \gets A_C(\langle s_1, s_2, \dots, s_k \rangle)$
         \Comment{CONQUER}
         \State return $s$
     \EndProcedure
