@@ -1241,8 +1241,29 @@ Va dimostrato formalmente che:
     Non può succedere che lo stesso valore $b_i$ venga associato una volta a 0 una volta ad 1, perché ci sarebbero due letterali nella clique che sono uno la negazione dell'altro. Dopo questo assegnamento, c'è un letterale vero per ogni clausola, per cui $\Phi ( \vec{b} ) = 1$, e la forula è soddisfacibile.
 \end{proof}
 
-\subsection{Independent Set - Vertex Cover}
+\subsection{\emph{Independent Set - Vertex Cover}}
 % TODO pag 24
+
+Si dimostra che $IS \in \bnpc$ e $VC \in \bnpc$, riducendo da $CLIQUE$.
+
+In entrambe le riduzioni come gadget si sfrutta il grafo complementare:
+\begin{definition}[Grafo complementare]
+    \label{def:grafocomplementare}
+    Dato un grafo 
+    $G = (V, E)$
+    il suo complementare 
+    $G^C = (V, E^C)$
+    è definito come
+    \begin{equation*}
+        \forall u, v \in V, u \ne v :
+        \left\{ u,v \right\} \in E^C
+        \Leftrightarrow
+        \left\{ u,v \right\} \notin E
+    \end{equation*}
+    e vale $G^{C^{C}} = G$
+\end{definition}
+
+\subsubsection{\emph{Independent Set}}
 
 \begin{definition}[\emph{Independent Set}]
     \label{def:indset}
@@ -1267,6 +1288,48 @@ Si pone come problema decisionale:
 \end{align*}
 \end{definition}
 
+Quando in $G$ è presente una clique, tutti gli archi fra i nodi della clique sono presenti. Nel grafo complementare tutti gli archi sono rimossi, e i vertici della clique sono l'\emph{independent set} cercato.
+\begin{proof}[Dimostrazione $ CLIQUE \lp IS $ ]
+Si trasforma un'istanza di $CLIQUE$ in una di $IS$
+\begin{equation*}
+    f : \langle G = (V,E), k \rangle  \to  \langle G^C = (V,E^C), k \rangle
+\end{equation*}
+La trasformazione è quasi sintattica:
+\begin{align*}
+    &
+    x = \langle G = (V,E), k \rangle \in CLIQUE \Leftrightarrow
+    \\
+    % definizione di clique
+    \Leftrightarrow &
+    \exists V' \subseteq V : 
+    \left( |V'| = k \right)
+    \wedge
+    \left( 
+        \forall u, v \in V, u \ne v :
+        \left( u \in V' \right) \wedge \left( v \in V' \right)
+        \Rightarrow
+        \left\{ u,v \right\} \in E
+    \right)
+    \\
+    % definizione di is taglia k
+    \Leftrightarrow &
+    \exists V' \subseteq V : 
+    \left( |V'| = k \right)
+    \wedge
+    \left( 
+        \forall u, v \in V, u \ne v :
+        \left( u \in V' \right) \wedge \left( v \in V' \right)
+        \Rightarrow
+        \left\{ u,v \right\} \notin E^C
+    \right)
+    \\
+    \Leftrightarrow &
+    f(x) = \langle G^C = (V,E^C), k \rangle \in IS
+\end{align*}
+\end{proof}
+
+\subsubsection{\emph{Vertex Cover}}
+
 \begin{definition}[\emph{Vertex Cover}]
     \label{def:vertcov}
     Sia $G=(V,E)$ un grafo non orientato. Un \emph{vertex cover} di taglia $k$ è un sottoinsieme di vertici $V'$, con $V' \subseteq V$ e $|V'| = k$
@@ -1290,39 +1353,72 @@ Si pone come problema decisionale:
 \end{align*}
 \end{definition}
 
-Si dimostra che $IS \in \bnpc$ e $VC \in \bnpc$, riducendo da $CLIQUE$.
+Nel grafo complementare, i nodi \emph{esterni} alla clique devono essere connessi a nodi nella clique. Infatti, se non fosse vero, sarebbero isolati dalla clique nel complementare, ossia interni alla clique nel grafo originale.
 
-Come gadget si sfrutta il grafo complementare:
-\begin{definition}[Grafo complementare]
-    \label{def:grafocomplementare}
-    Dato un grafo 
-    $G = (V, E)$
-    il suo complementare 
-    $G^C = (V, E^C)$
-    è definito come
-    \begin{equation*}
+\begin{proof}[Dimostrazione $ CLIQUE \lp VC $ ]
+Si trasforma un'istanza di $CLIQUE$ in una di $VC$
+\begin{equation*}
+    f : \langle G = (V,E), k \rangle  \to  \langle G^C = (V,E^C), |V|-k \rangle
+\end{equation*}
+La trasformazione è nuovamente una serie di equivalenze:
+\begin{align*}
+    &
+    x = \langle G = (V,E), k \rangle \in CLIQUE \Leftrightarrow
+    \\
+    % definizione di clique
+    \Leftrightarrow &
+    \exists V' \subseteq V : 
+    \left( |V'| = k \right)
+    \wedge
+    \left( 
+        \forall u, v \in V, u \ne v :
+        \left( u \in V' \right) \wedge \left( v \in V' \right)
+        \Rightarrow
+        \left\{ u,v \right\} \in E
+    \right)
+    % \\
+    \intertext{usando la contropositiva ($a \Rightarrow b \leadsto \neg b \Rightarrow \neg a$)}
+    \Leftrightarrow &
+    \exists V' \subseteq V : 
+    \left( |V'| = k \right)
+    \wedge
+    \left( 
+        \forall u, v \in V, u \ne v :
+        \left\{ u,v \right\} \notin E
+        \Rightarrow
+        \left( u \notin V' \right) \vee \left( v \notin V' \right)
+    \right)
+    \\
+    \Leftrightarrow &
+    \exists V' \subseteq V : 
+    \left( |V'| = k \right)
+    \wedge
+    \left( 
         \forall u, v \in V, u \ne v :
         \left\{ u,v \right\} \in E^C
-        \Leftrightarrow
-        \left\{ u,v \right\} \notin E
-    \end{equation*}
-    e vale $G^{C^{C}} = G$
-\end{definition}
-
-\subsubsection{\emph{Independent Set}}
-
-Quando in $G$ è presente una clique, tutti gli archi fra i nodi della clique sono presenti. Nel grafo complementare tutti gli archi sono rimossi, e i vertici della clique sono l'\emph{independent set} cercato.
-\begin{equation*}
-    CLIQUE \lp IS
-\end{equation*}
-Si trasforma un'istanza di $CLIQUE$ in una di $IS$
-\begin{equation*}
-    f : \langle G = (V,E), k \rangle  \to  \langle G^C = (V,E^C), k \rangle
-\end{equation*}
-La trasformazione è quasi sintattica:
-\begin{align*}
-    x = \langle G = (V,E), k \rangle \in CLIQUE \Leftrightarrow &
+        \Rightarrow
+        \left( u \notin V' \right) \vee \left( v \notin V' \right)
+    \right)
+    \\
+    \intertext{considerando $V'' = V - V'$}
+    \Leftrightarrow &
+    \exists V'' : % = V - V' :
+    \left( |V''| = |V|-k \right)
+    \wedge
+    \left( 
+        \forall u, v \in V, u \ne v :
+        \left\{ u,v \right\} \in E^C
+        \Rightarrow
+        \left( u \in V'' \right) \vee \left( v \in V'' \right)
+    \right)
+    \\
+    \intertext{e $V''$ è il \emph{vertex cover} rispetto al grafo complementare}
+    \Leftrightarrow &
+    f(x) = \langle G^C = (V,E^C), |V|-k \rangle \in VC
 \end{align*}
+\end{proof}
+
+Le riduzioni valgono in tutte le permutazioni, per ESERCIZIO si provi ad esempio che $VC \lp IS$
 
 
 \subsection{Subset Sum}
