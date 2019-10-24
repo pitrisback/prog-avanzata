@@ -1454,15 +1454,45 @@ e $2m$ numeri dalle clausole, $C_j \leadsto s_j, s_j'$, per cui l'insieme risult
 \begin{equation*}
     S = \left\{ v_i, v_i', s_j, s_j', 1 \le i \le n, 1 \le j \le m \right\}
 \end{equation*}
-I numeri $v_i, v_i'$ si generano dalle variabili
-\begin{equation*}
-    \begin{array}[h]{c|ccc|cccc|}
-        %     |                     |                             |
-              &        & i &        &        & j_1 &        & j_2 \\
-        v_i = & \cdots & 1 & \cdots & \cdots & 1   & \cdots & 1   \\
-        \hline
-    \end{array}
-\end{equation*}
+I $2n$ numeri $v_i, v_i'$ si generano dalle $n$ variabili $x_1, \cdots, x_n$
+% \begin{equation*}
+    % \begin{array}[h]{cccccccccc}
+        % %     |                              |                                     |
+              % &        &        & i &        &        &        & j_1 &        & j_2 \\
+        % v_i = & \vline & \cdots & 1 & \cdots & \vline & \cdots & 1   & \cdots & 1   \\
+        % \cline{3-10}
+    % \end{array}
+% \end{equation*}
+% \begin{equation*}
+    % v_i = \underbrace{
+        % 0 \cdots 
+        % \overbrace{1}^{i}
+        % \cdots 0
+    % }_{n}
+% \end{equation*}
+\begin{center}
+    \begin{tabular}[h]{*{14}{c}}
+                &   &        & i &        &   &        &   &        &$j_1$&        &$j_2$&        &    \\
+       \cline{2-14}
+        $v_i$ = & 0 & \ldots & 1 & \ldots & 0 & \vline & 0 & \ldots & 1   & \ldots & 1   & \ldots & 0  \\
+       \cline{2-14}
+                & \multicolumn{5}{c}{$n$ cifre}&\vline & \multicolumn{7}{c}{$m$ cifre}
+    \end{tabular}
+\end{center}
+Delle prime $n$ cifre, l'unica posta a $1$ è la i-esima, relativa alla variabile $x_i$ da cui si stanno generando i due numeri. Delle ultime $m$, sono poste ad $1$ le posizioni relative alle clausole $C_{j_1}, C_{j_2}, \cdots$ che contengono il letterale $x_i$ diretto. Al contrario, nei numeri $v_i'$, vengono poste a $1$ le cifre dove il letterale compare negato.
+\\
+I $2m$ numeri $s_j, s_j'$ si generano dalle $m$ clausole $C_1, \cdots, C_m$
+\begin{center}
+    \begin{tabular}[h]{*{14}{c}}
+                &   &        &   &        &   &        &   &        &$j$ &        &   &        &    \\
+       \cline{2-14}
+        $s_j$ = & 0 & \ldots &   & \ldots & 0 & \vline & 0 & \ldots & 1  & \ldots &   & \ldots & 0  \\
+       $s_j'$ = & 0 & \ldots &   & \ldots & 0 & \vline & 0 & \ldots & 2  & \ldots &   & \ldots & 0  \\
+       \cline{2-14}
+                & \multicolumn{5}{c}{$n$ cifre}&\vline & \multicolumn{7}{c}{$m$ cifre}
+    \end{tabular}
+\end{center}
+Le prime $n$ cifre sono tutte poste a $0$. Nelle ultime $m$, si assegna $1$ alla posizione $j$ relativa alla clausola $C_j$ da cui si generano i due numeri. Per $s_j'$, si assegna il valore $2$.
 
 
 \subsection{Testing}
