@@ -1423,6 +1423,47 @@ Le riduzioni valgono in tutte le permutazioni, per ESERCIZIO si provi ad esempio
 
 \subsection{Subset Sum}
 % TODO pag 26
+Nell'ambito della \emph{integer arithmetic}, ci si chiede se, dato un insieme di naturali, esista un sottoinsieme che sommi ad un \emph{target}.
+\begin{align*}
+    SS: & \\
+    \texttt{istanza:} \quad & \langle S,t \rangle \\
+    \text{dove} \quad & S \subseteq \mathbb{N} - \left\{ 0 \right\} \text{ finito} \\
+    & t \subseteq \mathbb{N} - \left\{ 0 \right\} \\
+    \texttt{domanda:} \quad & \exists \, S' \subseteq S : \sum_{s \in S'}^{} s = t \, ?
+\end{align*}
+Nota: sono numeri interi, la taglia è legata al numero di bit necessari per rappresentarli.
+
+Si prova che $SS \in \bnph$ riducendo da $3-CNF-SAT$.
+\begin{equation*}
+    3-CNF-SAT \lp SS
+\end{equation*}
+Si aggiungono due ipotesi su $\Phi$ che non fanno perdere di generalità:
+\begin{itemize}[noitemsep,parsep=0pt,partopsep=0pt,topsep=0pt]
+    \item[--] $\Phi$ non contiene clausole in cui compaiono $x_h$ e $\bar{x_h}$ come letterali, è una clausola sempre vera che viene rimossa
+    \item[--] ogni variabile $x_i$ compare diretta o negata in una clausola, le variabili inutilizzate vengono rimosse dalla lista di variabili indipendenti, in modo da non generare numeri uguali
+\end{itemize}
+Dalla formula si generano numeri decimali (la codifica differisce solo per una costante dalla binaria), di lunghezza $n+m$ cifre, dove $n = | \vec{x} |$ e $m$ è pari al numero di clausole. Vengono prodotti $2n+2m$ numeri, per una taglia pari a $(2n+2m)(m+n)+(m+n)$, ottenendo un'istanza di taglia
+\begin{equation*}
+    | \langle S_{\Phi}, t_{\Phi} \rangle | = \Theta \left( \left( n+m \right)^2 \right) =
+    \Theta \left( | \langle \Phi \rangle | \right)
+\end{equation*}
+Nel corso della somma, non si vogliono generare riporti, in modo da poter vedere le colonne come indipendenti.
+\\
+Si generano $2n$ numeri dalle variabili, $x_i \leadsto v_i, v_i'$
+e $2m$ numeri dalle clausole, $C_j \leadsto s_j, s_j'$, per cui l'insieme risulta
+\begin{equation*}
+    S = \left\{ v_i, v_i', s_j, s_j', 1 \le i \le n, 1 \le j \le m \right\}
+\end{equation*}
+I numeri $v_i, v_i'$ si generano dalle variabili
+\begin{equation*}
+    \begin{array}[h]{c|ccc|cccc|}
+        %     |                     |                             |
+              &        & i &        &        & j_1 &        & j_2 \\
+        v_i = & \cdots & 1 & \cdots & \cdots & 1   & \cdots & 1   \\
+        \hline
+    \end{array}
+\end{equation*}
+
 
 \subsection{Testing}
 % TODO pag 30
