@@ -574,8 +574,8 @@ L'immagine nel caso più estremo può anche essere di due soli punti, tutta la c
 \end{theorem}
 
 \begin{proof}
-    La prima ipotesi $\left( L_1 \lp L_2 \right)$ implica che esiste una funzione $f(x)$ calcolabile in tempo polinomiale per cui $x \in L_1 \Leftrightarrow f(x) \in L_2 $ e $ T_{A_{f}} (|x|) = O \left( |x|^{k_1} \right) $ \\
-    La seconda ipotesi $ \left( L_2 \in \bp \right) $ implica l'esistenza di un algoritmo $A_{L_{2}}(x)$ che decide $L_2$, con $ T_{A_{L_{2}}} (|x|) = O \left( |x|^{k_2} \right) $ \\
+    La prima ipotesi $( L_1 \lp L_2 )$ implica che esiste una funzione $f(x)$ calcolabile in tempo polinomiale per cui $x \in L_1 \Leftrightarrow f(x) \in L_2 $ e $ T_{A_{f}} (|x|) = O ( |x|^{k_1} ) $ \\
+    La seconda ipotesi $ ( L_2 \in \bp ) $ implica l'esistenza di un algoritmo $A_{L_{2}}(x)$ che decide $L_2$, con $ T_{A_{L_{2}}} (|x|) = O ( |x|^{k_2} ) $ \\
     Allora è sufficiente esibire il decisore per $L_1$, che compone riduzione e decisione, dimostrando che è effettivamente un decisore per $L_1$, ed è polinomiale.
 \begin{algorithm}[H]
 \caption{Decisore per $L_1$}\label{alg:decisorel1}
@@ -613,6 +613,55 @@ L'immagine nel caso più estremo può anche essere di due soli punti, tutta la c
         A_{L_1} (x) = 0
     \end{equation*}
 \end{proof}
+
+\begin{theorem}[Riduzione a $\bnp$]
+    \label{teo:riduzioneanp}
+    Siano $L_1, L_2 \subseteq \setzo{*}$, vale che
+    \begin{equation*}
+        \left( L_1 \lp L_2 \right) \wedge \left( L_2 \in \bnp \right) \Rightarrow L_1 \in \bnp
+    \end{equation*}
+\end{theorem}
+\begin{proof}
+    La prima ipotesi $( L_1 \lp L_2 )$ implica che esiste una funzione $f(x)$ calcolabile in tempo polinomiale per cui $x \in L_1 \Leftrightarrow f(x) \in L_2 $ e $ T_{A_{f}} (|x|) = O ( |x|^{k_f} ) $
+    \\
+    La seconda ipotesi $ \left( L_2 \in \bnp \right) $ implica l'esistenza di un verificatore $V_{L_{2}}(x)$ che verifica $L_2$,
+    con $ |y| = O ( |x|^{k_1} ) $ e 
+    con $ T_{V_{L_{2}}} (|x|, |y|) = O ( ( |x|+|y| )^{k_2} ) $
+    \begin{algorithm}[H]
+    \caption{Verificatore per $L_1$}\label{alg:verificatorel1}
+    \begin{algorithmic}[1]
+        \Procedure{V\_L1}{$x,y$}
+            \State return $V_{L_2} (A_f (x), y)$
+        \EndProcedure
+    \end{algorithmic}
+    \end{algorithm}
+    Dove $A_f(x) = f(x)$
+    e, per costruzione, 
+    $
+        \forall x \in L_1 \Rightarrow f(x) \in L_2 : \exists y : 
+        V_{L_2} (f (x), y) = 1
+    $
+    Senza perdita di generalità, si possono suppore le costanti maggiori di uno, $k_f, k_1, k_2 \geq 1$, l'analisi a cui si è interessati è in ogni modo al caso peggiore.
+    La lunghezza dell'output di $f$ è al massimo pari al suo tempo di esecuzione, se viene prodotto un bit a passo, ed è questa la taglia rispetto a cui viene limitato il certificato:
+    $ |f(x)| = O ( |x|^{k_f} ) $
+    e quindi
+    \begin{equation*}
+        |y| = O \left( \left( |x|^{k_f} \right)^{k_1} \right)
+    \end{equation*}
+    e la complessità risulta
+    \begin{align*}
+        T_{V_{L_{1}}} (|x|, |y|)
+        &= T_{V_{L_{2}}} (|f(x)|, |y|)
+        \\
+        &= O \left( \left( |x|^{k_f} + |y| \right)^{k_1} \right)
+        \\
+        &= O \left( \left( |x| + |y| \right)^{k_f k_1} \right)
+    \end{align*}
+    È stato ottenuto un verificatore polinomiale per cui se la stringa appartiene al linguaggio, questo ritorna 1.
+    Resta da verificare che se la stringa non appartiene al linguaggio, il verificatore non ritorna mai 1. Ed è vero perché se $x \notin L_1 \Rightarrow f(x) \notin L_2$ e quando la stringa non appartiene al linguaggio il verificatore ritorna sempre 0.
+\end{proof}
+
+
 
 \subsubsection{Proprietà della relazione tra linguaggi}
 \begin{itemize}
@@ -1719,10 +1768,6 @@ TODO
 \section{Varie}
 Halting problem è NPH, pag 32.
 Lo metterei in fondo a \ref{sse:relazioneordinelp}
-TODO
-
-Se riduco a linguaggio NP, anche il membro sinistro è NP, pag 33.
-Lo metterei in \ref{sse:relazioneordinelp}, dopo il teorema \ref{teo:relazioneordine}
 TODO
 
 Avendo a disposizione un algoritmo polinomiale (decisore) per SS, progettare un algoritmo FINDSS che ritorna l'insieme, pag 37.
