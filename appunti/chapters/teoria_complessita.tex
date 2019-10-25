@@ -317,17 +317,18 @@ Si consideri il problema di trovare un circuito \emph{Hamiltoniano} in un grafo 
     & \left( v_i, v_{i+1} \right) \in E, 1 \leq i < k \\
     & v_i \neq v_j , 1 \leq i < j < k
 \end{align*}
-In questo caso la soluzione è difficile da trovare, ma verificare se un cammino sia valido è facile, infatti:
+In questo caso la soluzione è difficile da trovare, ma verificare se un cammino sia valido è facile, infatti si può esibire un algoritmo polinomiale che verifichi la correttezza di un certificato:
 \begin{algorithm}[H]
 \caption{Verificatore per Hamiltonian}\label{alg:verifyh}
 \begin{algorithmic}[1]
     \Procedure{VERIFY\_H}{$x, y$}
+        \Comment{verifico:}
         \If{$x \neq \langle G=(V,E) \rangle$}
-        \Comment{verifico $x$ sia istanza ben formata}
+        \Comment{che $x$ sia istanza ben formata}
             \State return $0$
         \EndIf
         \If{$x \neq \langle v_1, v_2, \cdots, v_{|V|+1} \rangle$}
-        \Comment{verifico $y$ codifichi un cammino valido }
+        \Comment{che $y$ codifichi un cammino valido }
             \State return $0$
         \EndIf
         \If{$ v_1 \neq v_{|V|+1}$}
@@ -339,8 +340,8 @@ In questo caso la soluzione è difficile da trovare, ma verificare se un cammino
             \State return $0$
         \EndIf
         \For{$i \gets 1 $ to $ |V| $ }
-        % \Comment{}
             \If{$ ( v_i , v_{i+1} ) \notin E $  }
+            \Comment{che esistano gli archi del cammino}
                 \State return $0$
             \EndIf
         \EndFor
@@ -373,18 +374,77 @@ In questo caso la soluzione è difficile da trovare, ma verificare se un cammino
     $L$ è un linguaggio verificato in tempo polinomiale se
     \begin{itemize}
         \item $ \exists \, V_L (x,y) : L_{V_{L}} = L$
-        \item $ \forall x \in L, \; \exists y : V_L(x,y) = 1 \wedge |y| = O \left( |x|^{k_{1}} \right) $ per qualche $k_1 \geq 0$ costante (il certificato non può essere troppo esteso rispetto all'istanza)
-        \item $ T_{V_{L}} (|x|, |y|) = O \left( \left( |x|+|y| \right)^{k_{2}} \right)$ per qualche $k_2 \geq 0$ costante (tempo del verificatore polinomiale negli ingressi)
+        \item $ \forall x \in L, \; \exists y :
+            \left( 
+            V_L(x,y) = 1
+            \right)
+            \wedge
+            \left( 
+            |y| = O \left( |x|^{k_{1}} \right)
+            \right)
+            $ per qualche $k_1 \geq 0$ costante (il certificato non può essere troppo esteso rispetto all'istanza)
+        \item $
+            T_{V_{L}} (|x|, |y|) = O \left( \left( |x|+|y| \right)^{k_{2}} \right)
+            $ per qualche $k_2 \geq 0$ costante (tempo del verificatore polinomiale nella taglia degli ingressi)
     \end{itemize}
 \end{definition}
 
-\begin{definition}
+\begin{definition}[Classe NP]
     \label{def:classenp}
     La classe di problemi $\bnp{}$ è l'insieme
     \begin{equation*}
         \bnp{} = \left\{ L \subseteq \setzo{*} \to \setzo{} |\, L \text{ è verificato in tempo polinomiale}\right\}
     \end{equation*}
 \end{definition}
+
+\subsubsection{Solutore per problemi $\bnp$}
+% pag 31
+
+I problemi $\bnp$ sono difficili ma sempre risolvibili, si può esibire un algoritmo finito e deterministico che li risolva, anche se di complessità elevata.
+Se un linguaggio è in $\bnp$, esiste un verificatore $V_L ( x,y )$ con due garanzie enunciate in \ref{def:verificapolinomiale}, sulla taglia del certificato e il tempo di esecuzione.
+Senza perdita di generalità, si possono suppore le costanti entrambe maggiori di uno, $k_1, k_2 \geq 1$, l'analisi a cui si è interessati è in ogni modo al caso peggiore.
+Esplicitamente, la taglia del verificatore è limitata da
+$ |y| \leq c |x|^{k_1} $.
+Si possono quindi provare tutti i candidati certificati di taglia inferiore in maniera esaustiva.
+\begin{algorithm}[H]
+\caption{Algoritmo per problemi $\bnp$}\label{alg:solutorenp}
+\begin{algorithmic}[1]
+    \Procedure{A\_NP}{$i$}
+        \ForAll{$y \in \bigcup\limits_{i=0}^{c |x|^{k_1}} \setzo{i} $}
+            \If{$V_L (x, y) = 1$}
+                \State return $1$
+            \EndIf
+        \EndFor
+        \State return $0$
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+Il numero di esecuzioni è pari a 
+\begin{equation*}
+    \sum_{i=0}^{c |x|^{k_1}} 2^i =
+    O \left(
+        2^{c |x|^{k_1}}
+    \right)
+\end{equation*}
+Il tempo impiegato dal verificatore è, ricordando che la taglia del certificato è limitata da
+$
+    |y| = O \left( |x|^{k_{1}} \right)
+$
+\begin{equation*}
+    T_{V_{L}} (|x|, |y|) =
+    O \left( \left( |x|+|y| \right)^{k_{2}} \right) = 
+    O \left( |x|^{k_1 k_2} \right)
+\end{equation*}
+La complessità del solutore risulta quindi
+\begin{equation*}
+    T_{A_{NP}} (|x|) =
+    O \left(
+        |x|^{k_1 k_2}
+        \,
+        2^{c |x|^{k_1}}
+    \right)
+\end{equation*}
+È da notare che, se $k_1 = 0$, ovvero il certificato è di taglia costante, e la complessità risulta polinomiale.
 
 % \section{$\bp{}$ \emph{vs} $\bnp{}$}
 \subsection{P vs NP}
@@ -1657,10 +1717,6 @@ Riduzione da VC a DS, pag 40.
 TODO
 
 \section{Varie}
-I linguaggi NP ammettono decisore con complessità esponenziale, pag 31.
-Lo metterei in \ref{sse:classidiprob}
-TODO
-
 Halting problem è NPH, pag 32.
 Lo metterei in fondo a \ref{sse:relazioneordinelp}
 TODO
