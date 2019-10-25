@@ -1483,17 +1483,120 @@ Delle prime $n$ cifre, l'unica posta a $1$ è la i-esima, relativa alla variabil
 \\
 I $2m$ numeri $s_j, s_j'$ si generano dalle $m$ clausole $C_1, \cdots, C_m$
 \begin{center}
-    \begin{tabular}[h]{*{14}{c}}
-                &   &        &   &        &   &        &   &        &$j$ &        &   &        &    \\
-       \cline{2-14}
-        $s_j$ = & 0 & \ldots &   & \ldots & 0 & \vline & 0 & \ldots & 1  & \ldots &   & \ldots & 0  \\
-       $s_j'$ = & 0 & \ldots &   & \ldots & 0 & \vline & 0 & \ldots & 2  & \ldots &   & \ldots & 0  \\
-       \cline{2-14}
-                & \multicolumn{5}{c}{$n$ cifre}&\vline & \multicolumn{7}{c}{$m$ cifre}
+    \begin{tabular}[h]{*{10}{c}}
+                &   &        &   &        &   &        &$j$ &        &     \\
+       \cline{2-10}
+        $s_j$ = & 0 & \ldots & 0 & \vline & 0 & \ldots & 1  & \ldots &  0  \\
+       $s_j'$ = & 0 & \ldots & 0 & \vline & 0 & \ldots & 2  & \ldots &  0  \\
+       \cline{2-10}
+                & \multicolumn{3}{c}{$n$ cifre}
+                                 & \vline & \multicolumn{5}{c}{$m$ cifre}
     \end{tabular}
 \end{center}
 Le prime $n$ cifre sono tutte poste a $0$. Nelle ultime $m$, si assegna $1$ alla posizione $j$ relativa alla clausola $C_j$ da cui si generano i due numeri. Per $s_j'$, si assegna il valore $2$.
-
+\\
+Ci sono al massimo 5 numeri che contribuiscono a una posizione.
+Per le prime $n$ cifre, la posizione $i$ è posta ad 1 solo nei due numeri $v_i, v_i'$.
+Nella ultime $m$ cifre, la posizione $j$ è posta ad uno solo nei 3 numeri $v_i / v_i'$ associati ai letterali che compaiono nella clausola $C_j$, e i 2 numeri $s_j$ generati dalla clausola stessa.
+La somma massima che si può ottenere, e il target che si sceglie sono
+\begin{center}
+    \begin{tabular}[h]{*{8}{c}}
+       \cline{2-8}
+       somma massima & 2 & \ldots & 2 & \vline & 6 & \ldots  & 6  \\
+       target        & 1 & \ldots & 1 & \vline & 4 & \ldots  & 4  \\
+       \cline{2-8}
+                     & \multicolumn{3}{c}{$n$ cifre}
+                                      &\vline  & \multicolumn{3}{c}{$m$ cifre}
+    \end{tabular}
+\end{center}
+\begin{proof}
+    ``$\Rightarrow$''
+    Per la soddisfacibilità della formula, 
+    $ \exists \vec{b} \in \setzo{n} : \Phi ( \vec{b} ) = 1 $,
+    in cui tutte le clausole hanno almeno un letterale vero.
+    Si costruisce da questo assegnamento il sottoinsieme $S'$ cercato.
+    Si selezionano prima $n$ numeri $v$
+    \begin{equation*}
+        \forall i, 1 \le i \le n \text{ se }
+        b_i = 
+        \begin{cases}
+            1 & \text{prendo } v_i \\
+            0 & \text{prendo } v_i' \\
+        \end{cases}
+    \end{equation*}
+    Avendo scelto un numero per ogni variabile, le prime $n$ cifre sommano tutte a 1.
+    Nelle $m$ cifre meno significative la somma è \emph{almeno} 1. La formula sotto $\vec{b}$ è soddisfatta, per cui per ogni clausola (colonna $j$) almeno uno dei letterali deve essere vero, che corrisponde ad un 1 nel numero selezionato.
+    Nella somma parziale quindi i valori possono essere tra 1 e 3, in base al numero di letterali veri nella clausola corrispondente.
+    Si selezionano quindi dei numeri $s$ come necessario per raggiungere il target:
+    \begin{equation*}
+        \text{se somma parziale }
+         = 
+        \begin{cases}
+            1 & \text{prendo } s_j, s_j' \\
+            2 & \text{prendo } s_j' \\
+            3 & \text{prendo } s_j \\
+        \end{cases}
+    \end{equation*}
+    I numeri sommano al target, e l'insieme $S'$ è stato trovato.
+    
+    ``$\Leftarrow$''
+    Se si conosce un'istanza positiva di $SS$, allora la formula è soddisfacibile 
+    \begin{equation*}
+        f \left( \Phi \right) = 
+        \langle
+        S_{\Phi}, t_{\Phi}
+        \rangle \in SS
+        \Rightarrow
+        \exists \, S' : \sum_{s \in S'}^{} s = 1 \cdots 1 \, 4 \cdots 4
+    \end{equation*}
+    Osservando le $n$ cifre più significative, $S'$ deve contenere, per ogni $i$, esattamente un numero tra $v_i$ e $v_i'$, e $S'$ induce $\vec{b}$ per $\Phi$.
+    Infatti, $s_j, s_j'$ contribuiscono al massimo 3 nella somma, e per arrivare a 4 in tute le $m$ cifre finali è necessario almeno un 1 dai $v_i, v_i'$, e quei contributi rappresentano letterali veri sotto quell'assegnamento per ogni clausola, soddisfacendo così la formula.
+\end{proof}
+Come esempio, si consideri la formula seguente in $3-CNF-SAT$
+\begin{equation*}
+    \Phi \left( x_1, x_2, x_3 \right) = 
+    \left( x_1 \vee \bar{x_2} \vee x_3 \right)
+    \wedge
+    \left( x_1 \vee x_2 \vee x_3 \right)
+\end{equation*}
+I numeri generati risultano:
+\begin{center}
+    \begin{tabular}[h]{c|ccc|cc}
+               & $x_1$ & $x_2$ & $x_3$ & $C_1$ & $C_2$ \\
+        \hline
+        $v_1$  & 1 & 0 & 0 & 1 & 1 \\
+        $v_1'$ & 1 & 0 & 0 & 0 & 0 \\
+        $v_2$  & 0 & 1 & 0 & 0 & 1 \\
+        $v_2'$ & 0 & 1 & 0 & 1 & 0 \\
+        $v_3$  & 0 & 0 & 1 & 1 & 1 \\
+        $v_3'$ & 0 & 0 & 1 & 0 & 0 \\
+        \hline
+        $s_1$  & 0 & 0 & 0 & 1 & 0 \\
+        $s_1'$ & 0 & 0 & 0 & 2 & 0 \\
+        $s_2$  & 0 & 0 & 0 & 0 & 1 \\
+        $s_2'$ & 0 & 0 & 0 & 0 & 2 \\
+        \hline
+        target & 1 & 1 & 1 & 4 & 4 \\
+    \end{tabular}
+\end{center}
+Se la formula è soddisfacibile, il sottoinsieme esiste. Dall'assegnamento $\vec{b} = (1,1,0)$ si costruisce quindi l'insieme seguendo i passi indicati:
+\begin{center}
+    \begin{tabular}[h]{cc|ccc|cc}
+                         &        & $x_1$ & $x_2$ & $x_3$ & $C_1$ & $C_2$ \\
+        \hline
+        $\vec{b}_1 = 1 $ & $v_1$  & 1 & 0 & 0 & 1 & 1 \\
+        $\vec{b}_2 = 1 $ & $v_2$  & 0 & 1 & 0 & 0 & 1 \\
+        $\vec{b}_3 = 0 $ & $v_3'$ & 0 & 0 & 1 & 0 & 0 \\
+        \hline
+        \multicolumn{2}{c}{target parziale}  & 1 & 1 & 1 & 1 & 2 \\
+        \hline
+        $C_1 = 1$ & $s_1$  & 0 & 0 & 0 & 1 & 0 \\
+                  & $s_1'$ & 0 & 0 & 0 & 2 & 0 \\
+        $C_2 = 2$ & $s_2'$ & 0 & 0 & 0 & 0 & 2 \\
+        \hline
+        \multicolumn{2}{c}{target} & 1 & 1 & 1 & 4 & 4 \\
+    \end{tabular}
+\end{center}
 
 \subsection{Testing}
 % TODO pag 30
