@@ -1601,8 +1601,45 @@ Se la formula è soddisfacibile, il sottoinsieme esiste. Dall'assegnamento $\vec
 
 \subsection{Testing}
 % pag 30
-Riduzione da BCSAT a TESTING, pag 31.
-TODO
+% Riduzione da BCSAT a TESTING, pag 31.
+% TODO
+
+Si vuole mostrare che $TESTING \in \bnpc$.
+L'appartenenza a $\bnp$ è facile, un certificato è un input che produce output diversi dai due circuiti, e si verifica facendo commutare i due circuiti.
+\begin{align*}
+    TESTING: & \\
+    \texttt{istanza:} \quad & \langle
+    C_1 \left( x_1, \ldots, x_n \right),
+    C_2 \left( x_1, \ldots, x_n \right)
+    \rangle \\
+    \texttt{domanda:} \quad & \exists \, \vec{b} \in \setzo{n} :
+    C_1 \left( \vec{b} \, \right) \ne C_2 \left( \vec{b} \, \right)
+\end{align*}
+Si riduce da $BC\_SAT$.
+Dato un circuito, se ne devono produrre due tali che, quando l'originale è soddisfacibile, abbiano risultati diversi, e quando non è soddisfacibile abbiano risultati uguali.
+\begin{equation*}
+    f : 
+    \langle
+    C_1 \left( \vec{x} \right)
+    \rangle
+    \to
+    \langle
+    C_1 \left( \vec{x} \right),
+    C_2 \left( \vec{x} \right)
+    \rangle
+\end{equation*}
+Se come circuito $C_2$ si sceglie un gate $AND$, in cui si manda come input $x_1$ e la suo negazione, questo avrà sempre 0 come output.
+\\
+Quindi se $C_1$ è soddisfacibile, 
+$ C_1 \left( \vec{x} \right) = 1 $
+e 
+$ C_2 \left( \vec{x} \right) = 0 $,
+che è un'istanza positiva di $TESTING$.
+Se $C_1$ non è soddisfacibile, 
+$ C_1 \left( \vec{x} \right) = 0 $
+e 
+$ C_2 \left( \vec{x} \right) = 0 $,
+che è un'istanza negativa di $TESTING$.
 
 \subsection{Knapsack}
 % pag 36
@@ -1674,12 +1711,20 @@ Definizione classe Co-NP, pag 35.
     Un algoritmo è una procedura computazionale finita (terminante) e deterministica, specificata come una sequenza di passi elementari (istruzioni) estratte da un insieme standard associato a un modello computazionale (astrazione di un computer) che trasforma in maniera univoca un ingresso in un uscita.
 \end{definition}
 
-Look here 
+Guarda che so fare
 \begin{equation*}
     \setzo{m}
     \quad
     \setzo{}
 \end{equation*}
+
+\begin{align*}
+    SS: & \\
+    \texttt{istanza:} \quad & \langle S,t \rangle \\
+    \text{dove} \quad & S \subseteq \mathbb{N} - \left\{ 0 \right\} \text{ finito} \\
+    & t \subseteq \mathbb{N} - \left\{ 0 \right\} \\
+    \texttt{domanda:} \quad & \exists \, S' \subseteq S : \sum_{s \in S'}^{} s = t \, ?
+\end{align*}
 
 \begin{itemize}[noitemsep,parsep=0pt,partopsep=0pt,topsep=0pt]
     \item[--] $L_A = L$ (il linguaggio deciso da $A$ è $L$)
