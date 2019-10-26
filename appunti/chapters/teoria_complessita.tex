@@ -43,12 +43,29 @@ I problemi per cui si riesce a dimostrare questa proprietà sono però molto poc
 Ricordiamo che un algoritmo è una procedura \emph{terminante}. Per esempio l'\emph{halting problem}, si definisce come:
 \begin{equation*}
     \bi{}_{H} = \left\{ \langle MT,x \rangle \right\}
-    \;\;
+    \quad
     \bs{}_{H} = \left\{ \texttt{Sì, No} \right\}
 \end{equation*}
-
-TODO mancano pezzi
-
+Il problema della fermata risponde \texttt{Sì} se, dati in input una macchina di Turing e un input, la computazione termina.
+\begin{equation*}
+    i = 
+    \langle
+    MT, x
+    \rangle
+    \:
+    \bpi
+    \:
+    s = 
+    \begin{cases}
+        \texttt{Sì} & \text{ se $MT(x)$ termina} \\
+        \texttt{No} & \text{ altrimenti}
+    \end{cases}
+\end{equation*}
+La difficoltà di questo problema è dovuta alla richiesta che l'eventuale algoritmo solutore debba valere per \emph{tutti} gli input.
+Molto informalmente, dato un programma $f$ che decide se le computazioni terminano, si può sempre trovare un programma patologico $g$ che, passato a $f$ insieme ad un input $x$, fa poi per quell'input l'opposto di quello che $f$ predice.
+% \begin{equation*}
+    % g(x) \ne f(g,x)
+% \end{equation*}
 
 \subsubsection{Problemi intrattabili}
 
@@ -100,7 +117,7 @@ La restrizione ad un insieme binario di soluzioni non comporta una perdita di ge
     & v_1=s, \: v_k=t \\
     & \left( v_i, v_{i+1} \right) \in E, 1 \leq i < k \\
     i \, \bpi{} \, \varepsilon \text{ se } \quad & \text{non esiste cammino tra $s$ e $t$ in $G$} \\
-    \texttt{costo:} \quad & c\left( \langle  v_1, \ldots, v_k  \rangle \right) = k-1 \\
+    \texttt{costo:} \quad & c\left( \langle  v_1, \ldots, v_k  \rangle \right) = k - 1 \\
     & c( \varepsilon ) = \infty \\
     \intertext{A questo problema di ottimizzazione si può associare un problema decisionale, arricchendo l'istanza con un limite superiore alla lunghezza del cammino}
     \texttt{istanza:} \quad & \langle G=(V,E), s, t, k \rangle \\
@@ -121,6 +138,7 @@ Avendo un algoritmo $A_{KUP}$ che risolva il problema decisionale, si può costr
     \EndProcedure
 \end{algorithmic}
 \end{algorithm}
+\noindent
 Per quanto riguarda la complessità, si possono considerare le due istanze come di taglia paragonabile
 \begin{equation*}
     |\langle G, s, t, k \rangle| = \Theta \left( |\langle G, s, t \rangle| \right)
@@ -194,7 +212,7 @@ Si consideri l'insieme $\mathbb{N} - \left\{ 0 \right\}$ e un suo elemento gener
 
 Per la codifica binaria:
 \begin{equation*}
-    e_b (m) = \langle a_{k-1}, \cdots, a_0  \rangle \quad \text{con} \quad k = \left\lfloor \log_2 m \right\rfloor + 1
+    e_b (m) = \langle a_{k_1}, \cdots, a_0  \rangle \quad \text{con} \quad k = \left\lfloor \log_2 m \right\rfloor + 1
 \end{equation*}
 e la lunghezza di un'istanza risulta logaritmica rispetto al valore
 \begin{equation*}
@@ -215,6 +233,8 @@ ed esponenziale rispetto alla codifica binaria:
 \begin{equation*}
     |e_u(m)| = \Theta \left( 2^{|e_b(m)|} \right)
 \end{equation*}
+
+\subsubsection{Relazione tra codifica e complessità}
 
 Un semplice problema che evidenzia l'importanza della codifica è l'algoritmo che esegue la somma dei primi $m$ numeri interi:
 \begin{algorithm}[H]
@@ -419,6 +439,7 @@ Si possono quindi provare tutti i candidati certificati di taglia inferiore in m
     \EndProcedure
 \end{algorithmic}
 \end{algorithm}
+\noindent
 Il numero di esecuzioni è pari a 
 \begin{equation*}
     \sum_{i=0}^{c |x|^{k_1}} 2^i =
@@ -475,9 +496,9 @@ Sotto l'ipotesi $\bp{} \neq \bnp{} $, si trova una classe di linguaggi $\bnpc{} 
 % TODO aggiungi disegno insiemi p np
 
 
-\section{Riducibilità, relazione d'ordine $\lp$}
-\label{sse:relazioneordinelp}
-% pag 12
+\section{Problemi NP-completi}
+
+\subsection{Riduzione tra linguaggi}
 
 Dati due problemi
 $\bpi{}_1$
@@ -541,7 +562,7 @@ In questo modo, se $G$ è \emph{Hamiltoniano}, esiste un ciclo di costo $|V|$ e 
 
 \begin{definition}[Riducibilità]
     \label{def:riducibilita}
-    Il linguaggio $L_1$ si riduce al linguaggio $L_2$
+    Il linguaggio $L_1$ si riduce al linguaggio $L_2$ (si riduce da $L_1$ a $L_2$)
     \begin{equation*}
         L_1 \lp L_2
     \end{equation*}
@@ -565,6 +586,10 @@ Note:
 % TODO disegno 13.8
 L'immagine nel caso più estremo può anche essere di due soli punti, tutta la complessità in questo caso è annidata in $f$.
 
+\subsection{Relazione d'ordine $\lp$}
+\label{sss:relazioneordinelp}
+% pag 12
+
 \begin{theorem}[Relazione d'ordine]
     \label{teo:relazioneordine}
     Siano $L_1, L_2 \subseteq \setzo{*}$, la relazione d'ordine fra linguaggi è indicata da
@@ -585,6 +610,7 @@ L'immagine nel caso più estremo può anche essere di due soli punti, tutta la c
     \EndProcedure
 \end{algorithmic}
 \end{algorithm}
+\noindent
     Per quanto riguarda la polinomialità dell'algoritmo, la complessità risulta composta da due parti, la prima dovuta all'invocazione di $A_f$, la seconda dovuta alla chiamata di $A_{L_2}$ su $f(x)$:
     \begin{equation*}
         T_{A_{L_{1}}}(|x|) = O \left( |x|^{k_1} \right) + O \left( \left( |x|^{k_1} \right)^{k_2} \right)
@@ -635,6 +661,7 @@ L'immagine nel caso più estremo può anche essere di due soli punti, tutta la c
         \EndProcedure
     \end{algorithmic}
     \end{algorithm}
+    \noindent
     Dove $A_f(x) = f(x)$
     e, per costruzione, 
     $
@@ -658,10 +685,9 @@ L'immagine nel caso più estremo può anche essere di due soli punti, tutta la c
         &= O \left( \left( |x| + |y| \right)^{k_f k_1} \right)
     \end{align*}
     È stato ottenuto un verificatore polinomiale per cui se la stringa appartiene al linguaggio, questo ritorna 1.
-    Resta da verificare che se la stringa non appartiene al linguaggio, il verificatore non ritorna mai 1. Ed è vero perché se $x \notin L_1 \Rightarrow f(x) \notin L_2$ e quando la stringa non appartiene al linguaggio il verificatore ritorna sempre 0.
+    \\
+    Resta da provare che se la stringa non appartiene al linguaggio, il verificatore per $L_1$ non ritorna mai 1. Ed è vero perché se $x \notin L_1 \Rightarrow f(x) \notin L_2$ e quando la stringa non appartiene al linguaggio il verificatore per $L_2$ ritorna sempre 0.
 \end{proof}
-
-
 
 \subsubsection{Proprietà della relazione tra linguaggi}
 \begin{itemize}
@@ -669,21 +695,28 @@ L'immagine nel caso più estremo può anche essere di due soli punti, tutta la c
     \item $\lp$ è transitiva: $(L_1 \lp L_2) \wedge (L_2 \lp L_3) \Rightarrow (L_1 \lp L_3)$, la composizione di due funzioni polinomiali è polinomiale
 \end{itemize}
 
+\subsection{Linguaggi NP-hard e NP-completi}
+
 \begin{definition}[NP-hard]
     \label{def:nphard}
-    Un linguaggio $L \subseteq \setzo{*}$ si dice NP-hard se
+    Un linguaggio $L \subseteq \setzo{*}$ si dice NP-hard ($L \in \bnph$) se tutti i linguaggi NP si riducono ad esso:
     \begin{equation*}
-        \forall L' \in \bnp \quad \to \quad L' \lp L
+        \forall L' \in \bnp \Rightarrow  L' \lp L
     \end{equation*}
 \end{definition}
 
 \begin{definition}[NP-completo]
     \label{def:npcompleto}
-    Un linguaggio $L \subseteq \setzo{*}$ si dice NP-completo se
-    \begin{align*}
-        L & \in \bnp \\
-        L & \in \bnph
-    \end{align*}
+    Un linguaggio $L \subseteq \setzo{*}$ si dice NP-completo, e si indica $L \in \bnpc$, se
+    \begin{equation*}
+        \left( 
+        L \in \bnp 
+        \right)
+        \wedge
+        \left( 
+        L \in \bnph
+        \right)
+    \end{equation*}
     I problemi NP-completi sono i più difficili \emph{nella} classe $\bnp$
 \end{definition}
 
@@ -691,9 +724,7 @@ L'immagine nel caso più estremo può anche essere di due soli punti, tutta la c
     Se esistesse un linguaggio NP-completo in $\bp$ le classi $\bp, \bnp$ sarebbero equivalenti
     \begin{equation*}
         \exists L \in \left( \bnpc \cap \bp \right)
-        \quad
         \Rightarrow
-        \quad
         \bp = \bnp
     \end{equation*}
 \end{corollario}
@@ -707,12 +738,81 @@ L'immagine nel caso più estremo può anche essere di due soli punti, tutta la c
 
 La teoria della complessità strutturale studia, sotto l'ipotesi $\bp \ne \bnp$, che tipologie di problemi intermedi siano esistenti, e si può costruire un'intera gerarchia infinita di complessità dei problemi.
 
+\subsubsection{Halting problem è $\bnph$}
+% pag 32
+
+Il problema della fermata vuole decidere se, per un dato input, uno pseudocodice termini o meno la sua esecuzione.
+\begin{align*}
+    \texttt{istanza:} \quad & \langle C, x \rangle
+    \\
+    \text{dove} \quad & C \text{ è uno \emph{pseudocodice} a un input}
+    \\
+    \texttt{domanda:} \quad & C (x) \text{ termina?}
+\end{align*}
+Questo problema è indecidibile.
+
+Si può dimostrare che $HALTING \in \bnph$, verificando che
+\begin{equation*}
+    \forall L \in \bnp
+    \Rightarrow
+    L \lp HALTING
+\end{equation*}
+\begin{proof}
+    Il linguaggio è NP, quindi esiste un verificatore per cui $
+    V_L ( x,y ) = 1
+    $ e si ha una garanzia sulla taglia del certificato: $|y| \leq c |x|^{k_1}$
+    \\
+    Si cerca una funzione che generi il codice $C$ a partire dal verificatore $V_L$
+    \begin{equation*}
+        f : x \to \langle C_{V_L},x \rangle
+    \end{equation*}
+    \begin{algorithm}[H]
+        \caption{Trasformazione in istanza di $HALTING$}\label{alg:trasfhalt}
+        \begin{algorithmic}[1]
+            \Procedure{C\_VL}{$z$}
+            \ForAll{$|y| \leq c |z|^{k_1}$}
+            \If{$V_L (z,y) = 1$}
+            \State return $1$
+            \EndIf
+            \EndFor
+            \While{true}
+            \State $z \gets z$
+            \EndWhile
+            \EndProcedure
+        \end{algorithmic}
+    \end{algorithm}
+    \noindent
+    E questo algoritmo termina se e solo se esiste un certificato valido
+    \begin{align*}
+        x \in L
+        & \Leftrightarrow
+        \exists \, y : 
+        \left( 
+            |y| \leq c |x|^{k_1}
+        \right)
+        \wedge
+        \left( 
+            V_L ( x,y ) = 1
+        \right)
+        \\
+        & \Leftrightarrow
+        C_{V_L} (x)
+        \text{ termina}
+        \\
+        & \Leftrightarrow
+        f(x) \in HALTING
+    \end{align*}
+\end{proof}
+
+
 \section{Problemi NP-completi}
+
+\subsection{Caratteristiche di un problema NP-completo}
 
 Dimostrare che un problema è NP-completo non è semplice, vanno infatti provate due proprietà per verificare che $L \in \bnpc$:
 \begin{enumerate}
     \item $L \in \bnp$
-    \item $\forall L' \in \bnp, L' \lp L$
+    \item $\forall L' \in \bnp \Rightarrow L' \lp L$
 \end{enumerate}
 La prima è ragionevole, ed è sufficiente esibire un verificatore $V_L(x,y)$. La seconda invece è estremamente pesante, perché è necessaria una catena infinita di riduzioni per provare che \emph{per ogni} $L'$ la relazione sia verificata.
 
@@ -732,6 +832,8 @@ si può applicare la proprietà transitiva della relazione $\lp$ per cui
 Va quindi provato per un linguaggio $\bar{L}$ che
 $\forall L' \in \bnp, L' \lp \bar{L}$
 e lo si potrà poi utilizzare per mostrare che altri linguaggi sono NP-completi.
+
+Il problema per cui si dimostra per prima l'appartenenza a $\bnpc$ è quello di stabilire se un circuito booleano sia soddisfacibile o meno, ovvero se esistano input al circuito tali per cui l'output risulti 1.
 
 \subsection{Circuiti \emph{booleani}}
 
@@ -758,30 +860,32 @@ Un circuito di dice \emph{soddisfacibile} se
     \exists \,\vec{b} \in \setzo{k} : C ( \, \vec{b} \,) = 1
 \end{equation*}
 
+\subsection{Problema della \emph{boolean circuit satisfiability} (BC\_SAT)}
+
 Il problema di stabilire la soddisfacibilità di un circuito è stato risolto da $Cook$ nel 1971, ed è stato dimostrato essere NP-completo.
 \begin{align*}
-    \text{istanza:} \quad & \langle  C \left( x_1, \cdots, x_k \right)  \rangle \\
-    \text{domanda:} \quad & C \text{ è soddisfacibile?}
+    \texttt{istanza:} \quad & \langle  C \left( x_1, \cdots, x_k \right)  \rangle \\
+    \texttt{domanda:} \quad & C \text{ è soddisfacibile?}
 \end{align*}
-
 Un verificatore per il problema è semplice da implementare, e risulta lineare nella taglia del circuito:
 \begin{algorithm}[H]
 \caption{Soddisfacibilità di un circuito}\label{alg:cooksoddisfa}
 \begin{algorithmic}[1]
     \Procedure{VERIFY\_BC\_SAT}{$x,y$}
-        \State * controllare se $x = \langle  I \cup G \cup \left\{ o \right\}, W  \rangle$ è aciclico *
-        \State * controllare se $y = < W_1, \cdots, W_{|W|}$ corrisponde ad un valore per filo *
+        \State * controlla se $x = \langle  I \cup G \cup \left\{ o \right\}, W  \rangle$ è aciclico *
+        \State * controlla se $y = 
+        \langle
+        W_1, \cdots, W_{|W|}
+        \rangle
+        $ corrisponde ad un valore per filo *
         \State * controlla la validità della configurazione, per ogni gate in $G$ l'output del gate deve implementare la funzione correttamente *
         \State * controlla se il valore di uscita è uno: $W_o = 1$*
+        \State return $1$
     \EndProcedure
 \end{algorithmic}
 \end{algorithm}
-
-\subsection{Problema della \emph{boolean circuit satisfiability} (BC\_SAT)}
-
-Il problema per cui si dimostra per prima l'appartenenza a $\bnpc$ è quello di stabilire se un circuito booleano sia soddisfacibile o meno, ovvero se esistano input al circuito tali per cui l'output risulti 1.
-
-Va quindi provato che 
+\noindent
+Resta quindi da provare che 
 $$
 \forall L \in \bnp, \; L \lp L_{BC\_SAT}
 $$
@@ -791,7 +895,7 @@ Il linguaggio $L \in \bnp$ è generico, si sa solo che esiste un verificatore $V
     \item $ T_{V_{L}} (|x|, |y|) = O \left( \left( |x|+|y| \right)^{k_{2}} \right)$ 
         (la complessità della verifica è polinomiale)
 \end{itemize}
-
+\noindent
 L'idea della riduzione di \emph{Cook} è di costruire, per ogni verificatore $V_L$ e istanza (stringa) $x$, un circuito $C_{V_L,x}$ (ovvero un'istanza di $BC\_SAT$), tale che
 \begin{itemize}
     \item se $x \in L$, quando il circuito riceve in ingresso il certificato $y_x$ associato ad $x$, segnerà in output $1$ e sarà quindi un circuito soddisfacibile
@@ -802,13 +906,12 @@ Formalmente:
     x \in L \Rightarrow \exists y_x : V_L \left( x, y_x \right) = 1 \Rightarrow C_{V_L,x} \left( y_x \right) = 1
 \end{equation*}
 Si crea quindi una corrispondenza tra il generico linguaggio basato sul verificatore e il problema della soddisfacibilità.
-
+\\
 Il circuito $C_{V_L,x}$ è costruito sul modello di calcolatore $C_{RAM}$ (\emph{random access machine}). Per implementare i registri di memoria e le istruzioni però, questo modello utilizza retroazioni (\emph{feedback}), che sono vietate in un circuito combinatorio. Questo problema viene risolto giustapponendo un numero di circuiti $C_{RAM}$ pari al numero di computazioni necessarie, dove una parte degli input rappresentano la memoria e lo stato dei registri ottenuti in output al passo precedente.
-
+\\
 La trasformazione avviene in tempo polinomiale: si deve copiare $C_{RAM}$ in maniera proporzionale alla lunghezza della computazione. Per quanto riguarda la grandezza del singolo circuito, questa dipende fondamentalemnte dal numero di input, che è lineare negli input $x,y$ del verificatore, e quindi è polinomiale nella lunghezza di $x$ ($y$ è gia limitato rispetto a $x$ in modo polinomiale).
-
+\\
 Ricapitolando, se $x$ è positiva allora esiste un input polinomiale che inserito nel circuito fa ritornare $1$; se $x$ è negativa, nessun input farà mai commutare il circuito a $1$, il che comporta la riduzione da $L$ a $BC\_SAT$.
-
 % TODO disegno cram affiancati pag 18.6
 
 Va quindi esibita una funzione $f$, calcolabile in tempo polinomiale, che associa ad ogni stringa un circuito
@@ -820,12 +923,11 @@ tale per cui
     x \in L \Leftrightarrow f(x) \in BC\_SAT
 \end{equation*}
 e $f(x) \in BC\_SAT$ significa che $C_{V_{L}}$ è soddisfacibile.
-
+\\
 A livello macroscopico gli input di $\langle C_{V_{L}},x \rangle$ sono legati al possibile certificato e l'output è associato al valore del verificatore.
 % TODO disegno black box
 
 Il circuito che rappresenta un singolo passo elementare della computazione di un $C_{RAM}$ si dice \emph{gadget}, i cui ingressi e taglia possono essere studiati più a fondo: 
-
 % --------- transcript audio fine lezione 3
 % Idea riduzione di Cook, simile a riduzione di SAT
 % Dato un verificatore vl e una stringa x, creo un circuito (istanza di bcsat) che chiamo CVLx, che ha un numero di
@@ -841,18 +943,16 @@ Il circuito che rappresenta un singolo passo elementare della computazione di un
 % --> memoria inizializzata in maniera coerente, e negli input la stringa y, che varia.
 % implementa la logica che serve per implementare i passi elementari del modello computazionale ram. ad esempio addizione/moltiplicazione, unita aritmetico logica, salti condizionati... logica combinatoria e stato dei valori memorizzati, ma ho solo la parte combinatoria. si mettono quindi in sequenza tanti circuiti uguali, la memoria viene propagata passando dagli input dello stato precedente l'output per lo stato successivo. il circuito finale è la giustapposizione di tanti circuiti cram.
 % la trasformazione è in tempo polinomiale: devo copiare cram in maniera proporzionale alla lunghezza della computazione. quanto è grande il singolo circuito? dipende fondamentalemnte dal numero di input, lineare negli input x y del verificatore. e quindi è polinomiale nella lunghezza di x (y è gia limitato a polinomio)
-
 % --------- transcript audio inizio lezione 4
-
 % il circuito è associato al sottocircuito, detto gadget, che simula il singolo passo di computazione.
-
+\\
 Gli ingressi al primo livello del circuito sono valori precisi che rappresentano: il codice del verificatore, il valore di x, la memoria (inizializzata a 0) e i registri (program counter...). Questi input permettono di simulare una memoria, per ogni ingresso corrisponde un filo d'uscita, che indica lo stato della memoria in uscita dopo il passo appena eseguito della macchina RAM. Il \emph{gadget} è il circuito che implementa una singola transizione di stato: in base al valore del PC, estrae ed esegue l'istruzione associata (load, somma...). Tutte queste operazioni si possono implementare con circuiti combinatori.
-
+\\
 Se il circuito fosse troppo grande rispetto all'ingresso, la funzione potrebbe non essere calcolabile in tempo polinomiale, dovendo generare circuiteria di taglia esponenziale. Si deve mostrare che il circuito si può realizzare in uno spazio polinomiale rispetto a $|x|$.
 
 Per quanto riguarda gli ingressi, il certificato di un linguaggio in $\bnp$ è limitato a lunghezza polinomiale rispetto a $x$ da una qualche costante $k_1$. La memoria di cui può fare uso non può essere più grande del numero di passi che esegue il verificatore, potendo toccare al più una cella di memoria per passo.
 Il tempo associato al verificatore è polinomiale in $|x|+|y|$ rispetto a $k_2$, la memoria non supera quindi questa quantità, e lo stesso per i registri.
-
+\\
 Il numero totale di input è quindi limitato da
 \begin{equation*}
     \# input =
@@ -860,6 +960,7 @@ Il numero totale di input è quindi limitato da
     =
     O \left( |x|^{k_3} \right)
 \end{equation*}
+
 Un circuito che realizza una computazione su questo numero di input ha al più taglia polinomiale, in quanto la taglia dei circuiti necessari ad implementare le funzioni necessarie (e.g. addizionatori, moltiplicatori) è al più polinomiale (di grado 2)
 \begin{equation*}
     |C_{RAM}| =
@@ -870,9 +971,9 @@ Un circuito che realizza una computazione su questo numero di input ha al più t
     =
     O \left( |x|^{k_5} \right)
 \end{equation*}
-
+\\
 Per emulare una computazione, si costruisce quindi una cascata di gadget, e il valore associato a $return \; V_L$ viene selezionato come bit in memoria che è output dell'intero circuito.
-
+\\
 Il numero di gadget deve essere sufficiente per eseguire la computazione sugli input $x$ e $y$, e la complessità del verificatore è polinomiale
 \begin{equation*}
     T_{V_{L}} (|x|, |y|) = O \left( \left( |x|+|y| \right)^{k_{2}} \right) = 
@@ -1116,7 +1217,7 @@ La riduzione si esegue da $BC\_SAT$:
 \begin{equation*}
     BC\_SAT \lp 3-CNF-SAT
 \end{equation*}
-È necessario un preprocessing del circuito, che, senza perdita di generalità, viene trasformato in un circuito con \emph{fan-in} massimo dei gate pari a 2, che implementa la stessa funzione booleana $C \equiv C'$. Si sfrutta l'associatività delle operazioni $AND$ e $OR$, e si sostituiscono i gate con più di 2 ingressi con una cascata di gate, ciascuno da 2 ingressi. La taglia al massimo triplica, sono necessari infatti $k-1$ gate e fili di uscita aggiuntivi $|\langle C' \rangle| \le 3 \, |\langle C \rangle|$.
+È necessario un preprocessing del circuito, che, senza perdita di generalità, viene trasformato in un circuito con \emph{fan-in} massimo dei gate pari a 2, che implementa la stessa funzione booleana $C \equiv C'$. Si sfrutta l'associatività delle operazioni $AND$ e $OR$, e si sostituiscono i gate con più di 2 ingressi con una cascata di gate, ciascuno da 2 ingressi. La taglia al massimo triplica, sono necessari infatti $k - 1$ gate e fili di uscita aggiuntivi $|\langle C' \rangle| \le 3 \, |\langle C \rangle|$.
 
 La formula che descrive il circuito è
 $
@@ -1767,7 +1868,7 @@ TODO
 
 \section{Varie}
 Halting problem è NPH, pag 32.
-Lo metterei in fondo a \ref{sse:relazioneordinelp}
+Lo metterei in fondo a \ref{sss:relazioneordinelp}
 TODO
 
 Avendo a disposizione un algoritmo polinomiale (decisore) per SS, progettare un algoritmo FINDSS che ritorna l'insieme, pag 37.
@@ -1806,6 +1907,8 @@ Definizione classe Co-NP, pag 35.
     \EndProcedure
 \end{algorithmic}
 \end{algorithm}
+\noindent
+Testo non identato!
 
 
 \begin{definition}[Algoritmo]\label{def:algex}
