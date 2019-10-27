@@ -2046,8 +2046,45 @@ Per dimostrare che $KNAPSACK \in \bnph$, si riduce da \emph{Subset Sum}.
 
 \subsection{Long Path}
 % pag 36
-Riduzione da HAMILTON a LONGPATH, pag 39.
-TODO
+Il problema del \emph{Long Path} si definisce come
+\begin{align*}
+    LONG-PATH: & \\
+    \texttt{istanza:} \quad &
+    \langle
+    G = (V,E), k, u, v
+    \rangle
+    \\
+    \texttt{domanda:} \quad &
+    \text{ esiste in $G$ un cammino semplice tra $u$ e $v$ di lunghezza $\geq k$?}
+\end{align*}
+
+Il certificato per il problema è il cammino, di facile verifica.
+
+Per provare che $LONG-PATH$ è NP-hard, si riduce da $HAMILTON$.
+
+\begin{proof}[Dimostrazione $HAMILTON \lp LONG-PATH$]
+    Se $
+    \langle
+    G = (V,E)
+    \rangle
+    $ ha un circuito Hamiltoniano, si vuole trovare un cammino nell'istanza trasformata.
+    Si sceglie un nodo arbitrario $x$ del ciclo Hamiltoniano, e lo si sdoppia nei nodi $u_x, v_x$ di inizio e fine del cammino cercato.
+    Il ciclo Hamiltoniano usa due archi distinti $u_i, u_j$ dell'adiacenza di $x$, essendo semplice.
+    \\
+    \emph{Nota bene}: se nella funzione di trasformazione si genera l'istanza di \emph{Long Path} usando i due specifici archi, si ottiene una riduzione \emph{non} polinomiale, perché l'identificazione degli archi richiede la soluzione di Hamilton.
+    \\
+    Si connettono quindi i due nuovi nodi a tutti i vicini di $x$.
+    \begin{equation*}
+        f :
+        \langle
+        G = (V,E)
+        \rangle
+        \to
+        \langle
+        G' = (V',E',u_x, v_x, |V|)
+        \rangle
+    \end{equation*}
+\end{proof}
 
 \subsection{Dominating Set}
 % pag 36
