@@ -1862,8 +1862,81 @@ che è un'istanza negativa di $TESTING$.
 
 \subsection{Knapsack}
 % pag 36
-Riduzione da SS a KNAPSACK, pag 36.
-TODO
+Il problema di \emph{Knapsack} si definisce come
+\begin{align*}
+    KNAPSACK: & \\
+    \texttt{istanza:} \quad & \langle
+    \vec{a},
+    b, 
+    \vec{c},
+    k
+    \rangle \\
+    \text{dove} \quad  
+    & \vec{a}
+    \text{ è un vettore di pesi}
+    \\
+    & b
+    \text{ è il peso massimo}
+    \\
+    & \vec{c}
+    \text{ è un vettore di profitti}
+    \\
+    & k
+    \text{ è il profitto minimo}
+    \\
+    & 
+    \vec{a}, \vec{c} \in \mathbb{N}^* ;
+    |\vec{a}| = |\vec{c} \,|
+    \\
+    & 
+    b,k \in \mathbb{N}
+    \\
+    \texttt{domanda:} \quad &
+    \text{esiste un sottoinsieme di oggetti } \subseteq \left\{ 1, 2, \ldots, m \right\}
+    \\
+    &
+    \text{con peso complessivo $\leq b$ e profitto complessivo $\geq k$?}
+\end{align*}
+La prova dell'appartenenza di Knapsack a NP è facile, è sufficiente esibire un insieme e calcolarne peso e profitto.
+\\
+Per dimostrare che $KNAPSACK \in \bnph$, si riduce da \emph{Subset Sum}.
+\begin{proof}[Dimostrazione $SS \lp KNAPSACK$]
+    Data un'istanza di $SS: $, se ne genera una di $KNAPSACK$ nel seguente modo
+    \begin{align*}
+        f :
+        &
+        \langle
+        \vec{s}, t
+        \rangle
+        \to
+        \langle
+        \vec{s}, t,
+        \vec{s}, t
+        \rangle
+        \\
+        \text{assegnando: }
+        &
+        b = k = t
+        \\
+        &
+        a_i = c_i = s_i, \forall i
+        \intertext{in questo modo}
+        \exists S = \left\{ s_{i_1}, \ldots, s_{i_l} \right\} :
+        &
+        \sum_{j=1}^{l} s_{i_j} = t
+        \intertext{implica, nell'istanza trasformata}
+        \sum_{j=1}^{l} a_{i_j} =
+        &
+        \sum_{j=1}^{l} s_{i_j} = t \leq t
+        \\
+        \sum_{j=1}^{l} c_{i_j} =
+        &
+        \sum_{j=1}^{l} s_{i_j} = t \geq t
+    \end{align*}
+    che soddisfano le richieste di $KNAPSACK$.
+    \\
+    Data un'istanza di $KNAPSACK$ in questa forma, si vede subito che l'insieme scelto somma al target, e risolve $SS$.
+\end{proof}
 
 \subsection{Long Path}
 % pag 36
