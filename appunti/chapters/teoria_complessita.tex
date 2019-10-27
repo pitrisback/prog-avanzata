@@ -2051,7 +2051,7 @@ Il problema del \emph{Long Path} si definisce come
     LONG-PATH: & \\
     \texttt{istanza:} \quad &
     \langle
-    G = (V,E), k, u, v
+    G = (V,E), u, v, k
     \rangle
     \\
     \texttt{domanda:} \quad &
@@ -2074,16 +2074,50 @@ Per provare che $LONG-PATH$ è NP-hard, si riduce da $HAMILTON$.
     \emph{Nota bene}: se nella funzione di trasformazione si genera l'istanza di \emph{Long Path} usando i due specifici archi, si ottiene una riduzione \emph{non} polinomiale, perché l'identificazione degli archi richiede la soluzione di Hamilton.
     \\
     Si connettono quindi i due nuovi nodi a tutti i vicini di $x$.
-    \begin{equation*}
+    \begin{align*}
         f :
         \langle
         G = (V,E)
         \rangle
+        &
         \to
         \langle
         G' = (V',E',u_x, v_x, |V|)
         \rangle
-    \end{equation*}
+        \\
+        V' &= 
+        V - \left\{ x \right\} \cup \left\{ u_x, v_x \right\}
+        \\
+        E' &= E - 
+        \left\{ \left\{ x, u \right\} \in E \right\}
+        \\
+        & \quad \quad
+        \cup \left\{ \left\{ u_x, u \right\} : \left\{ x, u \right\} \in E \right\}
+        \\
+        & \quad \quad
+        \cup \left\{ \left\{ v_x, u \right\} : \left\{ x, u \right\} \in E \right\}
+    \end{align*}
+    ``$\Rightarrow$''
+    $
+        \langle
+        G = (V,E)
+        \rangle
+        \in HAMILTON
+        \Rightarrow
+    $ esiste cammino semplice di lunghezza $|V|$:
+    Dato il ciclo semplice $
+        C = \langle \cdots, u_1, x, u_2, \cdots \rangle
+    $ allora $
+        \Pi = \langle u_x, u_2, \cdots, u_1, v_x \rangle
+    $ è un cammino semplice da $u_x$ a $v_x$, che tocca tutti i $|V|+1$ vertici del grafo trasformato, per un totale di $|\Pi|=|V|$ archi.
+    Gli archi $
+        \{ u_x, u_2 \}
+    $ e $
+        \{ u_1, v_x \}
+    $ sono diversi perché il ciclo era semplice, e si è quindi trovato il cammino cercato.
+    \\
+    ``$\Leftarrow$''
+    Dato un cammino semplice di lunghezza $|V|$ da $u_x$ a $v_x$, collassando i due nodi si ottiene un ciclo semplice di lunghezza $|V|$, che è il ciclo Hamiltoniano cercato.
 \end{proof}
 
 \subsection{Dominating Set}
