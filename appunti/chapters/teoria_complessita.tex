@@ -1692,7 +1692,7 @@ I $2n$ numeri $v_i, v_i'$ si generano dalle $n$ variabili $x_1, \cdots, x_n$
                 & \multicolumn{5}{c}{$n$ cifre}&\vline & \multicolumn{7}{c}{$m$ cifre}
     \end{tabular}
 \end{center}
-Delle prime $n$ cifre, l'unica posta a $1$ è la i-esima, relativa alla variabile $x_i$ da cui si stanno generando i due numeri. Delle ultime $m$, sono poste ad $1$ le posizioni relative alle clausole $C_{j_1}, C_{j_2}, \cdots$ che contengono il letterale $x_i$ diretto. Al contrario, nei numeri $v_i'$, vengono poste a $1$ le cifre dove il letterale compare negato.
+Delle prime $n$ cifre, l'unica posta a $1$ è la $i$-esima, relativa alla variabile $x_i$ da cui si stanno generando i due numeri. Delle ultime $m$, sono poste ad $1$ le posizioni relative alle clausole $C_{j_1}, C_{j_2}, \cdots$ che contengono il letterale $x_i$ diretto. Al contrario, nei numeri $v_i'$, vengono poste a $1$ le cifre dove il letterale compare negato.
 \\
 I $2m$ numeri $s_j, s_j'$ si generano dalle $m$ clausole $C_1, \cdots, C_m$
 \begin{center}
@@ -1813,9 +1813,111 @@ Se la formula è soddisfacibile, il sottoinsieme esiste. Dall'assegnamento $\vec
 
 \subsubsection{Identificare l'insieme usando il decisore}
 
-Avendo a disposizione un algoritmo polinomiale (decisore) per SS, progettare un algoritmo FINDSS che ritorna l'insieme, pag 37.
-Lo metterei in fondo a \ref{sss:subsetsum}, dopo l'esemio.
-TODO
+Si supponga di avere a disposizione un algoritmo $
+A_{SS} ( \langle S, t \rangle )
+$ per \emph{Subset Sum} polinomiale, che risolve il problema decisionale.
+\\
+Si vuole progettare un algoritmo $
+FIND\_SS  ( \langle S, t \rangle )
+$ che ritorna, se esiste, il sottoinsieme $S'$ che somma al target.
+
+Per prima cosa dovrà eliminare le istanze negative, poi andrà a modificare l'istanza, verificando se togliendo man mano elementi si riesce ancora ad ottenere il target. In questo modo, si lasiano solo gli elementi cruciali, che formeranno l'insieme cercato.
+
+\begin{algorithm}[H]
+\caption{Soluzione di \emph{Subset Sum}}\label{alg:findss}
+\begin{algorithmic}[1]
+    \Procedure{FIND\_SS}{$ \langle S, t \rangle $}
+        \If{\Call{$A_{SS}$}{$ \langle S, t \rangle $} = \texttt{`No'}}
+            \State return $\nexists S'$
+        \EndIf
+        \State $n \gets |S|$
+        \State * $S = \left\{ s_1, \cdots, s_n \right\}$ *
+        \State $\bar{S} \gets S$
+        \For{$i \gets 1 $ to $ n $ }
+            \If{\Call{$A_{SS}$}{$ \langle \bar{S} - \left\{ s_i \right\}, t \rangle $} = \texttt{`Sì'}}
+                \State $\bar{S} \gets \bar{S} - \left\{ s_i \right\}$
+            \EndIf
+        \EndFor
+        \State return $\bar{S}$
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+La complessità è data dalle $n$ esecuzioni di $A_{SS}$, che è polinomiale,
+\begin{align*}
+    T_{FIND\_SS}
+    \left(
+        | \langle S, t \rangle | \right)
+        &= 
+        O \left( n \cdot
+        T_{A_{SS}}
+        \left( | \langle S, t \rangle | \right)
+    \right)
+    \intertext{la taglia dell'insieme è limitata dalla taglia dell'istanza
+        $n = |S| = O
+        \left( | \langle S, t \rangle | \right)
+    $}
+    &= 
+    O \left(
+        | \langle S, t \rangle |
+        \cdot
+        T_{A_{SS}}
+        \left( | \langle S, t \rangle | \right)
+    \right)
+    \intertext{il decisore è polinomiale $
+        T_{A_{SS}}
+        \left( | \langle S, t \rangle | \right)
+        = 
+        O
+        \left( | \langle S, t \rangle |^k \right)
+    $}
+    &= 
+    O \left(
+        | \langle S, t \rangle |^{k+1}
+    \right)
+\end{align*}
+
+Si mantiene invariante l'ipotesi che ci sia il sottoinsieme cercato nell'insieme corrente.
+Sia $\bar{S_i}$ l'insieme $\bar{S}$ alla fine dell'iterazione $i$-esima ($\bar{S_0} = \bar{S}$).
+Ad ogni iterazione, vale $
+    | \langle \bar{S_i}, t \rangle |
+    \in SS
+$ ovvero $
+    \exists S' \in \bar{S_i} : \sum_{s \in S'} s = t
+$. Si nota che $
+    \bar{S_0} \subseteq
+    \bar{S_1} \subseteq
+    \cdots \subseteq
+    \bar{S_n}
+$. Va mostrato che $
+    \bar{S_n} = S'
+$, ovvero non contiene elementi spuri.
+\\
+Per assurdo, si ipotizza che $
+    \bar{S_n} \supset S'
+$ e quindi contenga anche $
+    x_i \notin S'
+$.
+% \\
+Si analizza la situazione all'iterazione $i$, in cui viene testato $x_i$: $
+    \bar{S_{i-1}} \subseteq
+    \bar{S_n}
+    \subseteq
+    S'
+$ e $
+    x_i \in \bar{S_{i-1}}
+$.
+Quando si testa
+$
+    A_{SS} \left( 
+    \langle \bar{S_{i-1}} - \left\{ s_i \right\}, t \rangle
+    \right)
+$ la risposta deve essere \texttt{Sì}, perché $
+    x_i \notin S'
+$, e quindi $x_i$ viene rimosso, e non può essere trovato in $ \bar{S_n} $.
+\\
+L'operazione di purificazione mantiene quindi la soluzione, ed elimina tutti gli elementi spuri.
+
+Per ESERCIZIO, si possono scrivere algoritmi simili per $CLIQUE$ e $3-CNF-SAT$.
 
 
 \subsection{Testing}
@@ -1906,13 +2008,17 @@ Per dimostrare che $KNAPSACK \in \bnph$, si riduce da \emph{Subset Sum}.
         f :
         &
         \langle
-        \vec{s}, t
+        S, t
         \rangle
         \to
         \langle
         \vec{s}, t,
         \vec{s}, t
         \rangle
+        \\
+        \text{dove: }
+        &
+        S = \left\{ s_1, \ldots, s_m \right\}
         \\
         \text{assegnando: }
         &
@@ -1921,7 +2027,7 @@ Per dimostrare che $KNAPSACK \in \bnph$, si riduce da \emph{Subset Sum}.
         &
         a_i = c_i = s_i, \forall i
         \intertext{in questo modo}
-        \exists S = \left\{ s_{i_1}, \ldots, s_{i_l} \right\} :
+        \exists S' = \left\{ s_{i_1}, \ldots, s_{i_l} \right\} :
         &
         \sum_{j=1}^{l} s_{i_j} = t
         \intertext{implica, nell'istanza trasformata}
