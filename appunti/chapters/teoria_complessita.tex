@@ -16,9 +16,9 @@ Si ricordano le definizioni di algoritmo e problema computazionale astratto:
 Note:
 % \begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
 \begin{itemize}[noitemsep,parsep=0pt,partopsep=0pt,topsep=0pt]
-    \item[--] le seguenti notazioni sono usate in maniera equivalente: $i_1 \bpi{} s_1 \iff (i_1 , s_1 ) \in \bpi{}$
-    \item[--] la relazione non è univoca, ad un'istanza possono essere associate più soluzioni
-    \item[--] nella specifica astratta si assume esistano le soluzioni per ogni istanza:\\
+    \item le seguenti notazioni sono usate in maniera equivalente: $i_1 \bpi{} s_1 \iff (i_1 , s_1 ) \in \bpi{}$
+    \item la relazione non è univoca, ad un'istanza possono essere associate più soluzioni
+    \item nella specifica astratta si assume esistano le soluzioni per ogni istanza:\\
         $\forall i \in \bi{},\exists s \in \bs{} | i \bpi{} s$
 \end{itemize}
 
@@ -305,8 +305,8 @@ ossia l'insieme di stringhe per cui la computazione ha esito positivo.
     % \begin{itemize}
     \begin{itemize}[itemsep=0pt]
     % \begin{itemize}[noitemsep,parsep=0pt,partopsep=0pt,topsep=0pt]
-        \item[--] $L_A = L$ (il linguaggio deciso da $A$ è $L$)
-        \item[--] $T_A(|x|) = O(|x|^k)$ per qualche costante $k \geq 0$
+        \item $L_A = L$ (il linguaggio deciso da $A$ è $L$)
+        \item $T_A(|x|) = O(|x|^k)$ per qualche costante $k \geq 0$
     \end{itemize}
 \end{definition}
 
@@ -537,14 +537,14 @@ $i_1 = \langle G=(V,E) \rangle$
 si ottiene con facilità l'istanza del \emph{Travelling Salesman Problem}
 $i_2 = \langle G_C=(V,E_C), w, k \rangle$
 \begin{itemize}[parsep=0pt,partopsep=0pt,topsep=2pt]
-    \item[--] si aggiungono archi come necessario per rendere completo il grafo
-    \item[--] $w(e) = 
+    \item si aggiungono archi come necessario per rendere completo il grafo
+    \item $w(e) = 
         \begin{cases}
             1 & e \in E \\
             2 & e \in E_C - E
         \end{cases}
         $
-    \item[--] $k = |V|$
+    \item $k = |V|$
 \end{itemize}
 In questo modo, se $G$ è \emph{Hamiltoniano}, esiste un ciclo di costo $|V|$ e TSP risponde \texttt{Sì}. Se invece serve un arco in $E_C - E$, il costo salirebbe, andando oltre $k$.
 
@@ -909,7 +909,7 @@ Si crea quindi una corrispondenza tra il generico linguaggio basato sul verifica
 \\
 Il circuito $C_{V_L,x}$ è costruito sul modello di calcolatore $C_{RAM}$ (\emph{random access machine}). Per implementare i registri di memoria e le istruzioni però, questo modello utilizza retroazioni (\emph{feedback}), che sono vietate in un circuito combinatorio. Questo problema viene risolto giustapponendo un numero di circuiti $C_{RAM}$ pari al numero di computazioni necessarie, dove una parte degli input rappresentano la memoria e lo stato dei registri ottenuti in output al passo precedente.
 \\
-La trasformazione avviene in tempo polinomiale: si deve copiare $C_{RAM}$ in maniera proporzionale alla lunghezza della computazione. Per quanto riguarda la grandezza del singolo circuito, questa dipende fondamentalemnte dal numero di input, che è lineare negli input $x,y$ del verificatore, e quindi è polinomiale nella lunghezza di $x$ ($y$ è gia limitato rispetto a $x$ in modo polinomiale).
+La trasformazione avviene in tempo polinomiale: si deve copiare $C_{RAM}$ in maniera proporzionale alla lunghezza della computazione. Per quanto riguarda la grandezza del singolo circuito, questa dipende fondamentalmente dal numero di input, che è lineare negli input $x,y$ del verificatore, e quindi è polinomiale nella lunghezza di $x$ ($y$ è gia limitato rispetto a $x$ in modo polinomiale).
 \\
 Ricapitolando, se $x$ è positiva allora esiste un input polinomiale che inserito nel circuito fa ritornare $1$; se $x$ è negativa, nessun input farà mai commutare il circuito a $1$, il che comporta la riduzione da $L$ a $BC\_SAT$.
 % TODO disegno cram affiancati pag 18.6
@@ -942,7 +942,7 @@ Il circuito che rappresenta un singolo passo elementare della computazione di un
 % all'inizio negli input del programma c'e' vl
 % --> memoria inizializzata in maniera coerente, e negli input la stringa y, che varia.
 % implementa la logica che serve per implementare i passi elementari del modello computazionale ram. ad esempio addizione/moltiplicazione, unita aritmetico logica, salti condizionati... logica combinatoria e stato dei valori memorizzati, ma ho solo la parte combinatoria. si mettono quindi in sequenza tanti circuiti uguali, la memoria viene propagata passando dagli input dello stato precedente l'output per lo stato successivo. il circuito finale è la giustapposizione di tanti circuiti cram.
-% la trasformazione è in tempo polinomiale: devo copiare cram in maniera proporzionale alla lunghezza della computazione. quanto è grande il singolo circuito? dipende fondamentalemnte dal numero di input, lineare negli input x y del verificatore. e quindi è polinomiale nella lunghezza di x (y è gia limitato a polinomio)
+% la trasformazione è in tempo polinomiale: devo copiare cram in maniera proporzionale alla lunghezza della computazione. quanto è grande il singolo circuito? dipende fondamentalmente dal numero di input, lineare negli input x y del verificatore. e quindi è polinomiale nella lunghezza di x (y è gia limitato a polinomio)
 % --------- transcript audio inizio lezione 4
 % il circuito è associato al sottocircuito, detto gadget, che simula il singolo passo di computazione.
 \\
@@ -1634,6 +1634,8 @@ Le riduzioni valgono in tutte le permutazioni, per ESERCIZIO si provi ad esempio
 \subsection{Subset Sum}
 \label{sss:subsetsum}
 % pag 26
+\subsubsection{Riduzione}
+
 Nell'ambito della \emph{integer arithmetic}, ci si chiede se, dato un insieme di naturali, esista un sottoinsieme che sommi ad un \emph{target}.
 \begin{align*}
     SS: & \\
@@ -1650,8 +1652,8 @@ Si prova che $SS \in \bnph$ riducendo da $3-CNF-SAT$.
 \end{equation*}
 Si aggiungono due ipotesi su $\Phi$ che non fanno perdere di generalità:
 \begin{itemize}[noitemsep,parsep=0pt,partopsep=0pt,topsep=0pt]
-    \item[--] $\Phi$ non contiene clausole in cui compaiono $x_h$ e $\bar{x_h}$ come letterali, è una clausola sempre vera che viene rimossa
-    \item[--] ogni variabile $x_i$ compare diretta o negata in una clausola, le variabili inutilizzate vengono rimosse dalla lista di variabili indipendenti, in modo da non generare numeri uguali
+    \item $\Phi$ non contiene clausole in cui compaiono $x_h$ e $\bar{x_h}$ come letterali, è una clausola sempre vera che viene rimossa
+    \item ogni variabile $x_i$ compare diretta o negata in una clausola, le variabili inutilizzate vengono rimosse dalla lista di variabili indipendenti, in modo da non generare numeri uguali
 \end{itemize}
 Dalla formula si generano numeri decimali (la codifica differisce solo per una costante dalla binaria), di lunghezza $n+m$ cifre, dove $n = | \vec{x} |$ e $m$ è pari al numero di clausole. Vengono prodotti $2n+2m$ numeri, per una taglia pari a $(2n+2m)(m+n)+(m+n)$, ottenendo un'istanza di taglia
 \begin{equation*}
@@ -1809,6 +1811,13 @@ Se la formula è soddisfacibile, il sottoinsieme esiste. Dall'assegnamento $\vec
     \end{tabular}
 \end{center}
 
+\subsubsection{Identificare l'insieme usando il decisore}
+
+Avendo a disposizione un algoritmo polinomiale (decisore) per SS, progettare un algoritmo FINDSS che ritorna l'insieme, pag 37.
+Lo metterei in fondo a \ref{sss:subsetsum}, dopo l'esemio.
+TODO
+
+
 \subsection{Testing}
 % pag 30
 % Riduzione da BCSAT a TESTING, pag 31.
@@ -1866,25 +1875,211 @@ TODO
 Riduzione da VC a DS, pag 40.
 TODO
 
-\section{Varie}
-Halting problem è NPH, pag 32.
-Lo metterei in fondo a \ref{sss:relazioneordinelp}
-TODO
-
-Avendo a disposizione un algoritmo polinomiale (decisore) per SS, progettare un algoritmo FINDSS che ritorna l'insieme, pag 37.
-Lo metterei in fondo a \ref{sss:subsetsum}, dopo l'esemio.
-TODO
-
 \section{Classe Co-NP}
 
 \subsection{Linguaggi complementari}
 % pag 34
-Definizione linguaggi complementari, pag 34.
+\begin{definition}[Linguaggio complementare]
+    \label{def:linguaggiocomplementare}
+    Dato un linguaggio $
+    L \subseteq \setzo{*}
+    $
+    il suo complementare è definito come
+    \begin{equation*}
+        L^C = \setzo{*} - L
+    \end{equation*}
+    ossia
+    % \begin{equation*}
+    $
+        x \in L^C \Leftrightarrow x \notin L
+    % \end{equation*}
+    $.
+    Al linguaggio complementare è sempre associato il problema complementare, fondamentalmente il problema decisionale che risponde in maniera opposta al problema originale. Le istanze positive diventano negative e viceversa.
+    \\
+    Data una funzione che trasformi un linguaggio nel suo complementare, questa equivale all'inversa
+    % TODO disegno mappa funzione e inversa, pag 34.4
+    % \begin{equation*}
+    $
+        f_{L^C \to L}
+        =
+        f_{L \to L^C}
+    % \end{equation*}
+    $
+\end{definition}
+
+\begin{theorem}
+    \label{teo:riduzionecomplementare}
+    Dato un linguaggio $
+    L \subseteq \setzo{*}
+    $,
+    vale
+    \begin{equation*}
+        \left( L \in \bnpc \right)
+        \wedge
+        \left( L^C \in \bnp \right)
+        \Rightarrow
+        \left( L^C \in \bnpc \right)
+    \end{equation*}
+    \begin{proof}
+        $L$ è NP-completo, per cui ogni linguaggio in NP si riduce ad esso. $L^C$ è NP, per cui vale $L^C \lp L$.
+        Esiste quindi una funzione di riduzione per cui
+        \begin{align*}
+            \exists \, f :
+            x \in L^C
+            & \Leftrightarrow
+            f(x) \in L
+            \\
+            x \notin L^C
+            & \Leftrightarrow
+            f(x) \notin L
+            \\
+            x \in L
+            & \Leftrightarrow
+            f(x) \in L^C
+        \end{align*}
+        Che corrisponde alla riduzione da $L$ (che è per ipotesi NP-completo) a $L^C$: $L \lp L^C$.
+        Avendo mostrato che un linguaggio NP-hard si riduce a $L^C$, anche $L^C$ è NP-hard.
+        Sempre per ipotesi, 
+        $L^C$ è NP, per cui $L^C$ è NP-completo.
+        % $
+        % \left( L^C \in \bnp \right)
+        % $
+        % per cui anche 
+        % $
+        % \left( L^C \in \bnpc \right)
+        % $
+    \end{proof}
+\end{theorem}
+
+\begin{lemma}
+    \label{lem:lplcp}
+    Vale
+    % $
+    \begin{equation*}
+        \left( L \in \bp \right)
+        \Leftrightarrow
+        \left( L^C \in \bp \right)
+    \end{equation*}
+    % $
+    \begin{proof}
+        È sufficiente invertire i valori nei return del decisore per $L$.
+    \end{proof}
+\end{lemma}
 
 \subsection{Classe Co-NP}
 % pag 35
-Definizione classe Co-NP, pag 35.
+\begin{definition}[Classe Co-NP]
+    \label{def:classeconp}
+    La classe Co-NP è formata dai linguaggi il cui complementare è NP.
+    \begin{equation*}
+        \bconp = \left\{ L^C : L \in \bnp \right\}
+    \end{equation*}
+\end{definition}
+C'è una forte asimmetria tra le classi NP e Co-NP.
+Si pensi al problema della soddisfacibilità di un circuito. Il certificato corrisponde in questo caso a un input per cui il circuito commuta a 1, e si verifica in tempo polinomiale.
+Per problema complemetare della \emph{non} soddisfacibilità, che forma deve avere un certificato per \emph{l'assenza} di un input che soddisfi il circuito?
+% Un'istanza positiva deve avere un elemento che è universalmente vero, che corrisponde a dire che tutti i certificati per quell'istanza erano certificati che non provavano l'appartenenza dell'istanza.
+Intuitivamente, la necessità di provare che \emph{tutti} gli input danno 0 in output, rende i problemi in Co-NP molto più difficili di quelli NP.
 
+La asimmetria tra la quantificazione esistenziale e quantificazione universale fa la differenza tra le due classi.
+% TODO schemino np p conp pag 35.2
+
+Non si conosce nessun problema NP-completo che sia anche in Co-NP.
+Ovvero non si conosce nessun problema NP-completo il cui complementare è in NP.
+
+\begin{theorem}
+    \label{teo:npvsconp}
+    Se si trovasse un problema NP-completo che è anche Co-NP, le due classi sarebbero equivalenti.
+    \begin{equation*}
+        \exists L \in \bnpc \cap \bconp
+        \Rightarrow
+        \bnp = \bconp
+    \end{equation*}
+    \begin{proof}
+    ``$\Rightarrow$''
+    $ \bnp \subseteq \bconp $:
+    Per ipotesi, 
+    $
+    L \in \bnpc \to \forall L' \in \bnp : L' \lp L
+    $.
+    Esiste quindi una funzione di riduzione per cui
+    \begin{align*}
+        \exists \, f :
+        x \in L'
+        & \Leftrightarrow
+        f(x) \in L
+        \\
+        x \notin L'
+        & \Leftrightarrow
+        f(x) \notin L
+        \\
+        x \in \left( L' \right)^C
+        & \Leftrightarrow
+        f(x) \in L^C
+    \end{align*}
+    Per cui $f$ riduce anche i complementari dei linguaggi
+    $ ( L' )^C \lp L^C $.
+    \\
+    Per l'ipotesi 
+    $L \in \bconp$
+    vale
+    $L^C \in \bnp$
+    \begin{align*}
+        \left( 
+        ( L' )^C \lp L^C
+        \right)
+        \wedge
+        \left( 
+        L^C \in \bnp
+        \right)
+        & \Rightarrow
+        \left( L' \right)^C \in \bnp
+        \\
+        & \Rightarrow
+        \left( \left( L' \right)^C \right)^C \in \bconp
+        \\
+        & \Rightarrow
+        L' \in \bconp
+    \end{align*}
+    Si era scelto $L'$ come generico linguaggio NP,
+    per cui le classi si equivalgono.
+    
+    ``$\Leftarrow$''
+    $ \bconp \subseteq \bnp $:
+    Per un generico linguaggio $ L' \in \bconp $ vale
+    \begin{align*}
+        L' \in \bconp
+        & \Rightarrow
+        \left( L' \right)^C \in \bnp
+        \\
+        & \Rightarrow
+        \left( L' \right)^C \lp L
+        \\
+        & \Rightarrow
+        \left( \left( L' \right)^C \right)^C \lp L^C
+        \\
+        & \Rightarrow
+        L' \lp L^C
+    \end{align*}
+    Per l'ipotesi 
+    $L \in \bconp$
+    vale
+    $L^C \in \bnp$,
+    per cui
+    \begin{equation*}
+        \left( 
+            L' \lp L^C
+        \right)
+        \wedge
+        \left( 
+            L^C \in \bnp
+        \right)
+        \Rightarrow
+        L' \in \bnp
+    \end{equation*}
+    E le classi si equivalgono.
+    \end{proof}
+\end{theorem}
 
 \section{Pezzi utili di \LaTeX{}}
 \begin{algorithm}[H]
