@@ -29,7 +29,9 @@ $$ A: \bi{} \to \bs{} \quad \textrm{e} \quad A(i)=s \iff i \, \bpi{} \, s $$
 I problemi computazionali si possono dividere in quattro categorie:
 
 \subsubsection{Polinomiali}
-Problemi $\bpi{}$ che ammettono algoritmi di risoluzione polinomiale, che si possono considerare ``facili''. Si trova una certa evidenza epistemologica che i gradi in generale sono bassi, e si può considerare un problema polinomiale come trattabile.
+Problemi $\bpi{}$ che ammettono algoritmi di risoluzione polinomiale, che si possono considerare ``facili''. Si trova una certa evidenza
+% epistemologica
+che i gradi in generale sono bassi, e si può considerare un problema polinomiale come trattabile.
 
 \subsubsection{Con limite inferiore esponenziale}
 Problemi $\bpi{}$ per cui si può provare che la complessità di ogni algoritmo che li risolve è esponenziale.
@@ -2121,9 +2123,123 @@ Per provare che $LONG-PATH$ è NP-hard, si riduce da $HAMILTON$.
 \end{proof}
 
 \subsection{Dominating Set}
-% pag 36
-Riduzione da VC a DS, pag 40.
-TODO
+% pag 40
+\begin{definition}[Dominating Set]
+    \label{def:dominatingset}
+    Sia $G=(V,E)$ un grafo non orientato.
+    Un \emph{Dominating Set} di taglia $k$ è un sottoinsieme di vertici $V'$, con $V' \subseteq V$ e $|V'| = k$ dove o un nodo è nel \emph{Dominating Set}, oppure lo è almeno un suo vicino.
+    \begin{equation*}
+        V' \subseteq V : 
+        \left( |V'| = k \right)
+        \wedge
+        \left( 
+            \forall u \in V :
+            \left( u \in V' \right)
+            \vee
+            \left(
+                \exists v \in V' :
+                \left\{ u,v \right\} \in E
+            \right)
+        \right)
+    \end{equation*}
+\end{definition}
+Mentre il \emph{Vertex Cover} richiede il controllo (copertura) di tutti gli archi, il \emph{Dominating Set} ha una richiesta più lasca, che si limita al controllo (dominio) dei nodi.
+\\
+Chiaramente non sono equivalenti, immaginando tre nodi connessi da tre archi, il $VC$ deve avere almeno due elementi, mentre il $DS$ può essere composto da un singolo nodo.
+% TODO disegno 40.8
+
+Se un nodo è isolato (senza archi incidenti), deve essere nel $DS$.
+Se non ci sono nodi isolati, un \emph{Vertex Cover} è anche un \emph{Dominating Set}:
+\begin{equation*}
+    \forall u \in V
+    \begin{cases}
+        u \in VC \quad & \text{Ok}
+        \\
+        u \notin VC \quad &
+        \exists \left\{ v,u \right\} \in E
+        \Rightarrow v \in VC
+    \end{cases}
+\end{equation*}
+Nel secondo caso è $v$ a controllare l'arco.
+
+La riduzione si deve occupare del caso opposto, che non è sempre vero (non è detto che un $DS$ sia un $VC$). Occorre quindi modificare il grafo in modo che da un $DS$ trovato sull'istanza trasformata, si riesca sempre a trovare un $VC$ sul grafo originale.
+Per ogni arco $
+    e = \left\{ u_1, u_2 \right\}
+$
+si aggiunge un nodo $u_e$ e una coppia di archi $
+\left\{ u_1, u_e \right\}, 
+\left\{ u_2, u_e \right\}
+$.
+In questo modo gli archi sono triplicati, e i nodi sono $|V|+|E|$.
+Formalmente:
+\begin{align*}
+    f
+    :
+    &
+    \;
+    \langle
+    G = \left( V,E \right), k
+    \rangle
+    \to
+    \langle
+    G' = \left( V',E' \right), k
+    \rangle
+    \\
+    \text{dove}
+    &
+    \;
+    V' = V \cup \left\{ u_e, e \in E \right\}
+    \\
+    &
+    \;
+    E' = E \cup
+    \left\{ 
+        \left\{ u_e, u_1 \right\}, \left\{ u_e, u_2 \right\},
+        \forall e = \left\{ u_1, u_2 \right\} \in E
+    \right\}
+\end{align*}
+Nota: sono stati eliminati i nodi isolati
+(i nodi isolati non servono per VC).
+\\
+Si vuole mostrare che
+\begin{equation*}
+    x =
+    \langle
+    G = \left( V,E \right), k
+    \rangle
+    \in VC
+    \Leftrightarrow
+    f(x) = 
+    \langle
+    G' = \left( V',E' \right), k
+    \rangle
+    \in DS
+\end{equation*}
+Si indica un triangolo generico riferendosi all'arco di base $e = \left\{ u,v \right\}$ con apice $u_e$.
+% TODO disegnino esplicativo
+\begin{proof}[Dimostrazione $VC \lp DS$]
+    ``$\Rightarrow$'':
+    Dato un $VC$ di $G$ di taglia $k$, considerando lo stesso insieme di vertici in $G'$, forma un $DS$, ovvero domina tutti i nodi in $V$ (il grafo originale compare come sottografo), e ogni nuovo nodo $u_e$ è sempre legato a uno dei nodi nel $VC$.
+    Ogni vertice $u_e$ è infatti associato a un triangolo in cui uno dei due vertici della base sta nel $VC$, perché ogni arco della base del triangolo sta nel grafo originale, che era controllato da un nodo del $VC$. Di conseguenza, ogni nodo $u_e$ è adiacente ad almeno un nodo nel $VC$.
+
+    ``$\Leftarrow$'':
+    L'idea è che se si conosce un $DS$ in $G'$, lo si può modificare in modo che contenga solo nodi originali, e diventi un $VC$ per $G$.
+    \\
+    Sia $
+        f(
+        \langle
+        G', k
+        \rangle
+        ) 
+        \in DS
+    $, allora $G'$ ha un \emph{Dominating Set} $V'$ con $|V'|=k$.
+    Possono capitare due situazioni:
+    \begin{enumerate}
+        \item $V' \subseteq V$, il $DS$ contiene solo nodi originali: quell'insieme è un $VC$, infatti ogni triangolo in qualche modo va dominato selezionando in $DS$ uno dei tre nodi, ma l'apice $u_e$ non è stato mai selezionato in $DS$, quindi per il corrispettivo arco $e$, uno dei due nodi di base deve essere selezionato, per cui ogni arco originale viene coperto, perché le basi dei triangoli sono tutti i possibili archi.
+        \item $\exists u_e \in V'$, il $DS$ contiene un nodo nuovo: questo nodo può solo dominare sé stesso e i due nodi della base del triangolo di cui è apice. Si può quindi eliminare $u_e$ dal $DS$ e selezionare uno tra $u$ e $v$, mantenendo lo stesso effetto di dominazione del triangolo. Si possono eliminare quindi tutti i nodi $u_{e_i}$, creando un $DS$ che è nella situazione 1.
+            Nota: la taglia del $DS$ potrebbe diminuire, se $u_e$ era ridondante, ma questo va bene.
+    \end{enumerate}
+\end{proof}
 
 \section{Classe Co-NP}
 
@@ -2331,51 +2447,3 @@ Ovvero non si conosce nessun problema NP-completo il cui complementare è in NP.
     \end{proof}
 \end{theorem}
 
-\section{Pezzi utili di \LaTeX{}}
-\begin{algorithm}[H]
-\caption{Divide and Conquer}\label{alg:dnc}
-\begin{algorithmic}[1]
-    \Procedure{D\&C}{$i$}
-        \If{$|i| \leq n_0$}
-        \Comment{BASE}
-            \State *risolvo direttamente*
-        \EndIf
-        \State $\langle i_1, i_2, \dots, i_k \rangle \gets A_D(i)$ 
-        \Comment{DIVIDE}
-        \For{$j \gets 1 $ to $ k $ }
-        \Comment{RECURSE}
-            \State $s_j \gets $ \Call{D\&C}{$i_j$}
-        \EndFor
-        \State $s \gets A_C(\langle s_1, s_2, \dots, s_k \rangle)$
-        \Comment{CONQUER}
-        \State return $s$
-    \EndProcedure
-\end{algorithmic}
-\end{algorithm}
-\noindent
-Testo non identato!
-
-
-\begin{definition}[Algoritmo]\label{def:algex}
-    Un algoritmo è una procedura computazionale finita (terminante) e deterministica, specificata come una sequenza di passi elementari (istruzioni) estratte da un insieme standard associato a un modello computazionale (astrazione di un computer) che trasforma in maniera univoca un ingresso in un uscita.
-\end{definition}
-
-Guarda che so fare
-\begin{equation*}
-    \setzo{m}
-    \quad
-    \setzo{}
-\end{equation*}
-
-\begin{align*}
-    SS: & \\
-    \texttt{istanza:} \quad & \langle S,t \rangle \\
-    \text{dove} \quad & S \subseteq \mathbb{N} - \left\{ 0 \right\} \text{ finito} \\
-    & t \subseteq \mathbb{N} - \left\{ 0 \right\} \\
-    \texttt{domanda:} \quad & \exists \, S' \subseteq S : \sum_{s \in S'}^{} s = t \, ?
-\end{align*}
-
-\begin{itemize}[noitemsep,parsep=0pt,partopsep=0pt,topsep=0pt]
-    \item[--] $L_A = L$ (il linguaggio deciso da $A$ è $L$)
-    \item[--] $T_A(|x|) = O(|x|^k)$ per qualche costante $k \geq 0$
-\end{itemize}

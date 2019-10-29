@@ -17,3 +17,55 @@ TODO
 
 \section{Vertex cover}
 % pag 45
+Approssimazione del VC, pagg 45-48.
+TODO
+
+\section{Pezzi utili di \LaTeX{}}
+\begin{algorithm}[H]
+\caption{Divide and Conquer}\label{alg:dnc}
+\begin{algorithmic}[1]
+    \Procedure{D\&C}{$i$}
+        \If{$|i| \leq n_0$}
+        \Comment{BASE}
+            \State *risolvo direttamente*
+        \EndIf
+        \State $\langle i_1, i_2, \dots, i_k \rangle \gets A_D(i)$ 
+        \Comment{DIVIDE}
+        \For{$j \gets 1 $ to $ k $ }
+        \Comment{RECURSE}
+            \State $s_j \gets $ \Call{D\&C}{$i_j$}
+        \EndFor
+        \State $s \gets A_C(\langle s_1, s_2, \dots, s_k \rangle)$
+        \Comment{CONQUER}
+        \State return $s$
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+\noindent
+Testo non identato!
+
+\begin{definition}[Algoritmo]\label{def:algex}
+    Un algoritmo è una procedura computazionale finita (terminante) e deterministica, specificata come una sequenza di passi elementari (istruzioni) estratte da un insieme standard associato a un modello computazionale (astrazione di un computer) che trasforma in maniera univoca un ingresso in un uscita.
+\end{definition}
+
+Guarda che so fare
+\begin{equation*}
+    \setzo{m}
+    \quad
+    \setzo{}
+\end{equation*}
+
+Un problema
+\begin{align*}
+    SS: & \\
+    \texttt{istanza:} \quad & \langle S,t \rangle \\
+    \text{dove} \quad & S \subseteq \mathbb{N} - \left\{ 0 \right\} \text{ finito} \\
+    & t \subseteq \mathbb{N} - \left\{ 0 \right\} \\
+    \texttt{domanda:} \quad & \exists \, S' \subseteq S : \sum_{s \in S'}^{} s = t \, ?
+\end{align*}
+
+Una lista
+\begin{itemize}[noitemsep,parsep=0pt,partopsep=0pt,topsep=0pt]
+    \item[--] $L_A = L$ (il linguaggio deciso da $A$ è $L$)
+    \item[--] $T_A(|x|) = O(|x|^k)$ per qualche costante $k \geq 0$
+\end{itemize}
