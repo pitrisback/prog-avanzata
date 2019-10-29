@@ -1,19 +1,207 @@
+% \section{Algoritmi di approssimazione}
+
+\section{Introduzione}
+% Recap problemi di ottimizzazione, pag 42.
+
+\subsection{Problemi di ottimizzazione}
+% pag 5
+
+I problemi di ottimizzazione sono definiti su insiemi di istanze e soluzioni $
+\bi, \bs
+$ per cui esiste una funzione di costo
+% In un problema di ottimizzazione, si definisce una funzione di costo associato ad una soluzione:
+\begin{equation*}
+    c : \bs{} \to \mathbb{R}
+\end{equation*}
+e, dato l'insieme di soluzioni ammissibili associate ad un'istanza
+\begin{equation*}
+    \bs{} (i) = \left\{ s \in \bs{} : i \, \bpi{} \, s \right\}
+\end{equation*}
+si vuole individuare la soluzione di costo massimo (o minimo)
+\begin{equation*}
+    s_{i}^{*} = \argmax \left\{ c(s) : s \in \bs{} (i) \right\}
+\end{equation*}
+
+\subsection{Approcci risolutivi}
+
+\subsubsection{Risoluzioni esaustive}
+
+Si cerca la soluzione esatta, con una ricerca esaustiva efficiente, per esempio con le tecniche \emph{Branch and Bound} o \emph{Branch and Cut}.
+
+\subsubsection{Algoritmi pseudo polinomiali}
+
+Per alcuni problemi, se i dati fossero rappresentati con codifica unaria, l'algoritmo risolutivo sarebbe di complessità polinomiale.
+
+I problemi Strong-NP-Hard restano NP-hard anche sotto encoding unario.
+
+\emph{Subset Sum}, per esempio, si può approcciare come problema di programmazione dinamica (ESERCIZIO).
+Si
+% definiscono
+possono infatti definire 
+i sottoproblemi $S_{i, j}$ dove $S_i$ è un prefisso di $S$: $ S_i = \{ s_1, \dots, s_i \} $
+e dove $1 \leq j \leq t$.
+Questi sottoproblemi sono
+% Quanti sono questi sottoproblemi? Ce ne sono
+$n \cdot t$, ma $t$ è il numero nell'istanza,
+% quanti bit ci sono per rappresentarlo?
+che si rappresenta con solamente $\log t$ bit.
+Il numero di problemi è quindi esponenziale nella taglia dell'istanza, se $t = 2^{50}$, si genererebbe un numero enorme di problemi, ma il numero viene rappresento con $50$ bit.
+La taglia è quindi logaritmica in $t$ ma il numero di problemi è lineare in $t$.
+Il numero di problemi sarebbe polinomiale sotto la codifica unaria.
+In istanze ragionevoli dove $t$ è piccolo (sul miliardo) si possono risolvere.
+\\
+L'algoritmo di programmazione dinamica usa una proprietà di sottostruttura che permette di trovare la soluzione $S_{i,j}$ a partire da istanze precedenti $S_{i-1,j}$ con valori di $j$ più piccoli.
+
+Molte istanze piccole di problemi pseudo polinomiali vengono risolte usando la programmazione dinamica.
+
+\subsubsection{Rinunciare all'ottimalità}
+
+Si rinuncia all'ottimalità e si ottiene una soluzione che ha una relazione garantita con la soluzione ottima. Si può \emph{quantificare} di quanto sia peggiore dell'ottimo.
+
 \section{Algoritmi di approssimazione}
 
-Recap problemi di ottimizzazione, pag 42.
-TODO
+\subsection{Definizione}
 
-Definizione algoritmo di rho-approssimazione, pag 43.
-TODO
+% Definizione algoritmo di rho-approssimazione, pag 43.
+% TODO
+\begin{definition}[Algoritmo di approssimazione]
+    \label{def:algoapprossimazione}
+    Dato $\bpi$ di ottimizzazione,
+    $A_{\bpi}$
+    è un algoritmo per
+    $\bpi$
+    che ritorna $
+    A_{\bpi} (i) \in \bs (i)
+    $
+    Si dice che $A_{\bpi}$ è di
+    $\rho (n)$-approssimazione
+    per $\bpi$ se $\forall i \in \bi, |i|=n$, vale, per $\rho(n) \geq 1$
+    \begin{itemize}
+        \item problema di \texttt{minimo:} $
+            \displaystyle
+            \frac{
+                c \left( 
+                    A_{\bpi} \left( i \right)
+                \right)
+            }{
+                c \left( 
+                    s^* \left( i \right)
+                \right)
+            } \leq \rho \left( n \right)
+            $
+        \item problema di \texttt{massimo:} $
+            \displaystyle
+            \frac{
+                c \left( 
+                    s^* \left( i \right)
+                \right)
+            }{
+                c \left( 
+                    A_{\bpi} \left( i \right)
+                \right)
+            } \leq \rho \left( n \right)
+            $
+    \end{itemize}
+    Dove $
+        c \left( 
+            s^* \left( i \right)
+        \right)
+    $ è il costo della soluzione ottima.
+    Nota: se $A_{\bpi}$ risolve il problema, $\rho(n)=1$.
+    Si può riscrivere la maggiorazione in una singola espressione:
+    \begin{equation*}
+        \max 
+        \left\{ 
+            \frac{
+                c \left( 
+                    A_{\bpi} \left( i \right)
+                \right)
+            }{
+                c \left( 
+                    s^* \left( i \right)
+                \right)
+            }
+            ,
+            \frac{
+                c \left( 
+                    s^* \left( i \right)
+                \right)
+            }{
+                c \left( 
+                    A_{\bpi} \left( i \right)
+                \right)
+            }
+        \right\}
+        \leq \rho \left( n \right)
+    \end{equation*}
+\end{definition}
 
-Definizione schema di approssimazione, pag 44.
-TODO
+\subsubsection{Lower/Upper bound sul costo ottimo}
 
-Definizione schema di approssimazione polinomiale, pag 44.
-TODO
+È interessante notare che un algoritmo di approssimazione fornisca in tempo polinomiale un lower (upper) bound al costo della soluzione ottima, che non è conoscibile in tempo ragionevole.
+\begin{itemize}
+    \item problema di \texttt{minimo:} $
+        \displaystyle
+            c \left( 
+                s^* \left( i \right)
+            \right)
+            \geq
+            \frac{
+                c \left( 
+                    A_{\bpi} \left( i \right)
+                \right)
+            }{
+                \rho \left( n \right)
+            }
+        $
+    \item problema di \texttt{massimo:} $
+        \displaystyle
+            c \left( 
+                s^* \left( i \right)
+            \right)
+        \leq
+        \rho \left( n \right)
+        \cdot
+            c \left( 
+                A_{\bpi} \left( i \right)
+            \right)
+        $
+\end{itemize}
+% TODO commento pag 44.2 su relazione s* s'
 
-Definizione schema di approssimazione pienamente polinomiale, pag 44.
-TODO
+\subsubsection{Tipologie di algoritmi}
+
+La 
+$\rho (n)$-approssimazione
+è un concetto generale, legato alla taglia dell'istanza.
+
+I problemi possono essere approssimati con qualità molto variabile.
+
+Per esempio,
+per \emph{Vertex Cover}, si trova un'approssimazione $\rho(n) = 2$ costante.
+Per \emph{Set Cover}, la qualità dell'approssimazione è legata alla taglia $\rho(n) = \Theta ( \log n )$.
+Per il \emph{Travelling Salesman Problem} in versione generale, e per \emph{Clique}, sotto l'ipotesi $\bp \ne \bnp$, si trova un limite inferiore all'approssimazione $\rho(n) = \Omega ( n^{1-\varepsilon} )$.
+
+\subsection{Schemi di approssimazione}
+
+\begin{definition}[Schema di approssimazione]
+    \label{def:schemaapprox}
+    L'algoritmo
+    $A_{\bpi} (i,\varepsilon)$
+    è uno schema di approssimazione per $\bpi$ se
+    $A_{\bpi} (i,\varepsilon)$
+    è di $(1+\varepsilon)$-approssimazione per $\bpi$
+\end{definition}
+
+\begin{definition}[Schema di approssimazione polinomiale]
+    \label{def:schemaapproxpoly}
+    L'algoritmo
+    $A_{\bpi} (i,\varepsilon)$
+    è uno schema di approssimazione per $\bpi$ se
+    $A_{\bpi} (i,\varepsilon)$
+    è di $(1+\varepsilon)$-approssimazione per $\bpi$
+    e, fissato $\varepsilon$, ha complessità polinomiale.
+\end{definition}
 
 \section{Vertex cover}
 % pag 45
