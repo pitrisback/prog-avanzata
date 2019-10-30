@@ -188,25 +188,226 @@ Per il \emph{Travelling Salesman Problem} in versione generale, e per \emph{Cliq
     \label{def:schemaapprox}
     L'algoritmo
     $A_{\bpi} (i,\varepsilon)$
-    è uno schema di approssimazione per $\bpi$ se
+    è uno schema di approssimazione
+    per $\bpi$ se
     $A_{\bpi} (i,\varepsilon)$
     è di $(1+\varepsilon)$-approssimazione per $\bpi$
 \end{definition}
 
-\begin{definition}[Schema di approssimazione polinomiale]
-    \label{def:schemaapproxpoly}
+\begin{definition}[PTAS]
+    \label{def:ptas}
     L'algoritmo
     $A_{\bpi} (i,\varepsilon)$
-    è uno schema di approssimazione per $\bpi$ se
+    è uno schema di approssimazione polinomiale
+    (\emph{polinomial time approximation scheme})
+    per $\bpi$ se
     $A_{\bpi} (i,\varepsilon)$
     è di $(1+\varepsilon)$-approssimazione per $\bpi$
     e, fissato $\varepsilon$, ha complessità polinomiale.
 \end{definition}
 
+\begin{definition}[FPTAS]
+    \label{def:fptas}
+    L'algoritmo
+    $A_{\bpi} (i,\varepsilon)$
+    è uno schema di approssimazione pienamente polinomiale
+    (\emph{fully polinomial time approximation scheme})
+    per $\bpi$ se
+    $A_{\bpi} (i,\varepsilon)$
+    è di $(1+\varepsilon)$-approssimazione per $\bpi$
+    e, fissato $\varepsilon$, è polinomiale sia in $n$ sia in $1/\varepsilon$.
+\end{definition}
+
+La complessità è quindi legata alla taglia e al fattore di approssimazione scelto, e può essere di varie forme, per esempio:
+\\
+Algoritmi con complessità legata in maniera polinomiale ad $\varepsilon$ e alla taglia $n$ (FPTAS):
+% \begin{equation*}
+    % T_{A_{\bpi}} \left( n, \varepsilon \right) = 
+    % O \left( 
+        % \frac{1}{\varepsilon^2} \, n^3
+    % \right)
+% \end{equation*}
+% In questo caso, se si vuole ridurre l'errore relativo di un fattore costante, la complessità cresce di un fattore costante
+% \begin{equation*}
+    % \frac{1}{\varepsilon^2}
+    % \leadsto
+    % \frac{1}{\varepsilon^2} \, k^2
+% \end{equation*}
+% ooooooooooooooooooooooo
+\begin{align*}
+    T_{A_{\bpi}} \left( n, \varepsilon \right) &= 
+    O \left( 
+        \frac{1}{\varepsilon^2} \, n^3
+    \right)
+    \intertext{se si varia l'errore relativo di un fattore $k$ costante, la complessità cresce di un fattore costante}
+    \rho = (1+\varepsilon)
+    &
+    \leadsto
+    \rho = \left( 
+        1+\frac{\varepsilon}{k}
+    \right)
+    \\
+    T_{A_{\bpi}} \left( n, \varepsilon \right) = 
+    O \left( 
+        \frac{1}{\varepsilon^2} \, n^3
+    \right)
+    &
+    \leadsto
+    O \left( 
+        \frac{1}{\varepsilon^2} \, k^2 \, n^3
+    \right)
+\end{align*}
+Altri algoritmi vedono comparire $\varepsilon$ come esponente, in questo caso la complessità \emph{è} polinomiale per $\varepsilon$ fissato, ma cresce rapidamente variando $\varepsilon$ (PTAS):
+\begin{align*}
+    T_{A_{\bpi}} \left( n, \varepsilon \right) &= 
+    O \left( 
+        % n^{\frac{1}{\varepsilon}}
+        n^{1 / \varepsilon}
+    \right)
+    \intertext{se si varia l'errore relativo di un fattore $k$}
+    \rho = (1+\varepsilon)
+    &
+    \leadsto
+    \rho = \left( 
+        1+\frac{\varepsilon}{k}
+    \right)
+    \\
+    T_{A_{\bpi}} \left( n, \varepsilon \right) = 
+    O \left( 
+        n^{1 / \varepsilon}
+    \right)
+    &
+    \leadsto
+    O \left( 
+        n^{1 / (\varepsilon/k)}
+    \right)
+    =
+    O \left( 
+        \left( n^{1/\varepsilon} \right)^k
+    \right)
+\end{align*}
+Spesso si ottiene una complessità della forma
+\begin{equation*}
+    T_{A_{\bpi}} \left( n, \varepsilon \right) = 
+    O \left( 
+        n^h \, 2^{(1/\varepsilon)^k}
+    \right)
+\end{equation*}
+quando si generano in tempo polinomiale delle sottoistanze piccole (di dimensione legata a $\varepsilon$), che poi si risolvono esaustivamente.
+
 \section{Vertex cover}
-% pag 45
-Approssimazione del VC, pagg 45-48.
-TODO
+% pag 45-48
+
+\subsection{Introduzione}
+
+Dato un grafo non orientato, si vuole identificare il \emph{Vertex Cover} di taglia minima.
+
+\subsubsection{Approccio Greedy}
+
+Un primo approccio greedy potrebbe essere quello di scegliere un nodo arbitrario, eliminare gli archi coperti e iterare fino a coprire tutti gli archi.
+Per provare che un algoritmo approssima male il problema, è sufficiente esibire un singolo controesempio.
+In questo caso se si considera una stella, l'algoritmo potrebbe selezionare tutti gli estremi e non in centro, generando un $VC$ di taglia $n-1$, rispetto alla scelta ottima del singolo nodo centrale.
+Il fattore di approssimazione risulta $
+\rho (n) = 
+(n-1)/1 = n-1
+$ che è quasi il peggiore possibile.
+Si può pensare di seguire una scelta greedy più astuta, per esempio scegliendo il nodo di grado massimo, ma in questo caso si può provare che risulta un algoritmo con fattore di approssimazione $
+\rho (n) = \log n
+$.
+
+\subsubsection{Approccio tramite costrutto polinomiale}
+
+Si segue quindi una strada differente: basandosi su qualche costrutto che si riesce a costruire in tempo polinomiale, si ottiene un \emph{Vertex Cover}, e ne si studia la dimensione relativa all'ottimo.
+
+Per un algoritmo di approssimazione vanno studiati
+% \begin{itemize}
+\begin{itemize}[noitemsep,parsep=0pt,partopsep=0pt,topsep=0pt]
+    \item correttezza
+    \item complessità
+    \item fattore di approssimazione
+\end{itemize}
+
+\subsection{Approssimazione tramite \emph{matching} massimale}
+
+Il \emph{matching}, o \emph{independent edge set}, è un insieme di archi senza vertici in comune.
+A partire da un \emph{matching} massimale $M$ (ovvero per cui se viene aggiungo un arco, non è più un \emph{matching} valido), si costruisce un \emph{Vertex Cover} che consiste in tutti gli estremi degli archi in $M$.
+\begin{algorithm}[H]
+\caption{Aprossimatore per Vertex Cover}\label{alg:approxvc}
+\begin{algorithmic}[1]
+    \Procedure{APPROX\_VC}{$G=(V,E)$}
+        \State $V' \gets \emptyset$
+        \State $E' \gets E$
+        \While{$E' \ne \emptyset$}
+            \State * sceglie arco arbitrario $\{ u,v \} \in E$ *
+            \State $V' \gets V' \cup \{ u,v \}$
+            \label{alg:approxvc:vvuv}
+            \State $E' \gets E' - \{ 
+                e \in E' : \exists z \in V :
+                ( e = \{ u,z \} )
+                \vee
+                ( e = \{ v,z \} )
+            \}
+            \label{alg:approxvc:cleanup}
+            $
+        \EndWhile
+        \State return $V'$
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+\noindent
+Nota: alla riga \ref{alg:approxvc:vvuv}, $V'$ è un insieme di nodi a cui vengono aggiungi i due nodi nell'arco, che è visto come insieme di due nodi.
+
+\subsubsection{Complessità}
+
+La complessità di questo algoritmo è lineare, $O ( |V| + |E| )$.
+
+\subsubsection{Correttezza}
+
+Per la correttezza, va argomentato che $V' = VC$. Questo è vero, infatti si esce dal ciclo solo quando $E'$ è vuoto, quindi ogni arco $e=\{u,v\}$ viene eliminato, per uno di due motivi:
+\begin{itemize}[noitemsep,parsep=0pt,partopsep=0pt,topsep=0pt]
+    \item è l'arco scelto arbitrariamente, quindi i suoi nodi sono inseriti in $V'$ (riga  \ref{alg:approxvc:vvuv})
+    \item uno dei suoi estremi è parte dell'arco preso in considerazione, ed $e$ viene rimosso nel clean up (riga \ref{alg:approxvc:cleanup})
+\end{itemize}
+In entrambi i casi, almeno uno degli estremi di ogni arco è in $V'$, che è quindi un \emph{Vertex Cover}.
+
+\subsubsection{Fattore di approssimazione}
+% pag 46
+Il fattore di approssimazione è dato da
+\begin{equation*}
+    \rho = \frac{
+    |V'|
+    }{
+    |V^*|
+    }
+\end{equation*}
+di cui si vuole trovare un limite superiore.
+
+Per quanto riguarda $|V'|$:
+sia $M \subseteq E$ l'insieme degli archi selezionati da $APPROX\_VC$.
+$M$ è un \emph{matching}, per cui nessuna coppia di archi selezionati condivide estremi:
+\begin{equation*}
+    \forall e_1, e_2 \in M
+    \to
+    e_1 \cap e_2 = \emptyset
+\end{equation*}
+La taglia del $VC$ selezionato $V'$ è quindi esattamente il doppio della taglia del \emph{matching}
+\begin{equation*}
+    |V'| = 2 |M|
+\end{equation*}
+
+Per quanto riguarda $|V^*|$:
+va trovato un \emph{lower bound} alla taglia del $VC$ ottimo $
+|V^*|
+$ rispetto a $|M|$.
+Gli archi di $M$ sono disgiunti, per cui in ogni $VC$ deve selezionare almeno un nodo per arco:
+\begin{equation*}
+    |V^*| \geq |A|
+\end{equation*}
+
+\subsubsection{Analisi \emph{slack} o \emph{tight}}
+%pag 47
+
+\section{Travelling Salesman Problem}
 
 \section{Pezzi utili di \LaTeX{}}
 \begin{algorithm}[H]
