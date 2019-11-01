@@ -451,6 +451,270 @@ Ovvero, \emph{l'analisi} dell'algoritmo può essere migliorata, rendendo per ese
 
 Si determina un grafo sotto cui l'algoritmo di approssimazione performa il peggio possibile e ottiene proprio il fattore di approssimazione.
 
+Per esempio il grafo in figura \ref{fig:vcapprox} ha un \emph{Vertex Cover} di taglia minima $3$, che si può verificare con una ricerca esaustiva data la piccola taglia.
+\begin{figure}[h]
+    \centering
+    \caption{Grafo con $VC$ di taglia minima 3 (nodi rossi)}
+    \label{fig:vcapprox}
+    \begin{tikzpicture} [
+            auto,
+            swap,
+            scale=1.4,
+            vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+            selected vertex/.style = {vertex, fill=red!24},
+            edge/.style = {draw,thick,-},
+            weight/.style = {font=\small},
+            selected edge/.style = {draw,line width=5pt,-,red!50},
+            outbound edge/.style = {draw,line width=5pt,-,blue!50},
+            ignored edge/.style = {draw,line width=5pt,-,black!20}
+        ]
+        % First we draw the vertices
+        \foreach \pos/\name in {
+                {(0,0)/A}, {(0,2)/B}, {(2,2)/C}, {(4,2)/D},
+                {(2,0)/E}, {(4,0)/F}, {(6,2)/G}}
+            \node[vertex] (\name) at \pos {$\name$};
+        % Connect vertices with edges and draw weights
+        \foreach \source/ \dest in {
+                A/B, B/C, C/E, C/D, E/F, D/E, D/G, F/D}
+            \path[edge] (\source) -- (\dest);
+        % color a node
+        \foreach \vertex in {B, D, E}
+            \path node[selected vertex] at (\vertex) {$\vertex$};
+    \end{tikzpicture}
+\end{figure}
+Applicando l'algoritmo di approssimazione, e scegliendo volontariamente gli archi in un ordine sfortunato, però, risulta un \emph{Vertex Cover} da $6=2 \cdot 3$ elementi, per cui l'approssimazione non è migliorabile (figura \ref{fig:vcapproxbad}).
+\begin{figure}[h]
+    \centering
+    \caption{Esempio di esecuzione pessima dell'algoritmo di approssimazione}
+    \label{fig:vcapproxbad}
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \caption{Primo arco scelto $\left\{ B,C \right\}$}
+        \label{fig:vcapproxbad1}
+        \begin{tikzpicture} [
+                auto,
+                swap,
+                scale=1,
+                vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+                selected vertex/.style = {vertex, fill=red!24},
+                edge/.style = {draw,thick,-},
+                weight/.style = {font=\small},
+                selected edge/.style = {draw,line width=5pt,-,red!50},
+                outbound edge/.style = {draw,line width=5pt,-,blue!50},
+                ignored edge/.style = {draw,line width=5pt,-,black!20}
+            ]
+            % First we draw the vertices
+            \foreach \pos/\name in {
+                    {(0,0)/A}, {(0,2)/B}, {(2,2)/C}, {(4,2)/D},
+                    {(2,0)/E}, {(4,0)/F}, {(6,2)/G}}
+                \node[vertex] (\name) at \pos {$\name$};
+            % Connect vertices with edges and draw weights
+            \foreach \source/ \dest in {
+                    A/B, B/C, C/E, C/D, E/F, D/E, D/G, F/D}
+                \path[edge] (\source) -- (\dest);
+            % color a node
+            \foreach \vertex in {B, C}
+                \path node[selected vertex] at (\vertex) {$\vertex$};
+            \begin{pgfonlayer}{background}
+                \foreach \source / \dest in {B/C}
+                    \path[selected edge] (\source.center) -- (\dest.center);
+                \foreach \source / \dest in {A/B,C/E,C/D}
+                    \path[outbound edge] (\source.center) -- (\dest.center);
+            \end{pgfonlayer}
+        \end{tikzpicture}
+    \end{subfigure}
+    \quad
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \caption{Secondo arco scelto $\left\{ E,F \right\}$}
+        \label{fig:vcapproxbad2}
+        \begin{tikzpicture} [
+                auto,
+                swap,
+                scale=1,
+                vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+                selected vertex/.style = {vertex, fill=red!24},
+                edge/.style = {draw,thick,-},
+                weight/.style = {font=\small},
+                selected edge/.style = {draw,line width=5pt,-,red!50},
+                outbound edge/.style = {draw,line width=5pt,-,blue!50},
+                ignored edge/.style = {draw,line width=5pt,-,black!20}
+            ]
+            % First we draw the vertices
+            \foreach \pos/\name in {
+                    {(0,0)/A}, {(0,2)/B}, {(2,2)/C}, {(4,2)/D},
+                    {(2,0)/E}, {(4,0)/F}, {(6,2)/G}}
+                \node[vertex] (\name) at \pos {$\name$};
+            % Connect vertices with edges and draw weights
+            \foreach \source/ \dest in {
+                    A/B, B/C, C/E, C/D, E/F, D/E, D/G, F/D}
+                \path[edge] (\source) -- (\dest);
+            % color a node
+                \foreach \vertex in {B, C, E, F}
+                \path node[selected vertex] at (\vertex) {$\vertex$};
+            \begin{pgfonlayer}{background}
+                \foreach \source / \dest in {B/C, E/F}
+                    \path[selected edge] (\source.center) -- (\dest.center);
+                \foreach \source / \dest in {A/B,C/E,C/D,D/E,D/F}
+                    \path[outbound edge] (\source.center) -- (\dest.center);
+            \end{pgfonlayer}
+        \end{tikzpicture}
+    \end{subfigure}
+    \\
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \caption{Terzo arco scelto $\left\{ D,G \right\}$}
+        \label{fig:vcapproxbad3}
+        \begin{tikzpicture} [
+                scale=1,
+                vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+                selected vertex/.style = {vertex, fill=red!24},
+                edge/.style = {draw,thick,-},
+                weight/.style = {font=\small},
+                selected edge/.style = {draw,line width=5pt,-,red!50},
+                outbound edge/.style = {draw,line width=5pt,-,blue!50},
+                ignored edge/.style = {draw,line width=5pt,-,black!20}
+            ]
+            % First we draw the vertices
+            \foreach \pos/\name in {
+                    {(0,0)/A}, {(0,2)/B}, {(2,2)/C}, {(4,2)/D},
+                    {(2,0)/E}, {(4,0)/F}, {(6,2)/G}}
+                \node[vertex] (\name) at \pos {$\name$};
+            % Connect vertices with edges and draw weights
+            \foreach \source/ \dest in {
+                    A/B, B/C, C/E, C/D, E/F, D/E, D/G, F/D}
+                \path[edge] (\source) -- (\dest);
+            % color a node
+            \foreach \vertex in {B, C, E, F, D, G}
+                \path node[selected vertex] at (\vertex) {$\vertex$};
+            \begin{pgfonlayer}{background}
+                \foreach \source / \dest in {B/C, E/F, D/G}
+                    \path[selected edge] (\source.center) -- (\dest.center);
+                \foreach \source / \dest in {A/B,C/E,C/D,D/E,D/F}
+                    \path[outbound edge] (\source.center) -- (\dest.center);
+            \end{pgfonlayer}
+        \end{tikzpicture}
+    \end{subfigure}
+\end{figure}
+
+\subsubsection{Approssimazione di $CLIQUE$}
+
+Seguendo la funzione trovata nella riduzione da $CLIQUE$ a $VC$, si potrebbe pensare di utilizzare il risultato ottenuto per identificare una Clique nel grafo.
+
+\begin{algorithm}[H]
+\caption{Approssimatore per Clique}\label{alg:approxclique}
+\begin{algorithmic}[1]
+    \Procedure{APPROX\_C}{$G=(V,E)$}
+        \State $G^C = (V,E^C)$
+        \State $V' \gets $ \Call{APPROX\_VC}{$G^C$}
+        \State return $V - V'$
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+
+\begin{figure}[h]
+    \centering
+    \caption{Trasformazione da \emph{Vertex Cover} a Clique}
+    \label{fig:approxclique}
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \caption{Grafo originale}
+        \label{fig:approxclique1}
+        \begin{tikzpicture} [
+                scale=1,
+                vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+                selected vertex/.style = {vertex, fill=red!24},
+                edge/.style = {draw,thick,-},
+                weight/.style = {font=\small},
+                selected edge/.style = {draw,line width=5pt,-,red!50},
+                outbound edge/.style = {draw,line width=5pt,-,blue!50},
+                ignored edge/.style = {draw,line width=5pt,-,black!20}
+            ]
+            % First we draw the vertices
+            \foreach \pos/\name in {
+                    {(0,0)/A}, {(0,2)/B}, {(2,2)/C}, {(2,0)/D}}
+                \node[vertex] (\name) at \pos {$\name$};
+            % Connect vertices with edges and draw weights
+            \foreach \source/ \dest in {
+                    A/B, B/C, C/D, B/D}
+                \path[edge] (\source) -- (\dest);
+        \end{tikzpicture}
+    \end{subfigure}
+    \quad
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \caption{$VC$ in $G^C$}
+        \label{fig:approxclique2}
+        \begin{tikzpicture} [
+                scale=1,
+                vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+                selected vertex/.style = {vertex, fill=red!24},
+                edge/.style = {draw,thick,-},
+                weight/.style = {font=\small},
+                selected edge/.style = {draw,line width=5pt,-,red!50},
+                outbound edge/.style = {draw,line width=5pt,-,blue!50},
+                ignored edge/.style = {draw,line width=5pt,-,black!20}
+            ]
+            % First we draw the vertices
+            \foreach \pos/\name in {
+                    {(0,0)/A}, {(0,2)/B}, {(2,2)/C}, {(2,0)/D}}
+                \node[vertex] (\name) at \pos {$\name$};
+            % Connect vertices with edges and draw weights
+            \foreach \source/ \dest in {
+                    A/C, A/D}
+                \path[edge] (\source) -- (\dest);
+            % color a node
+            \foreach \vertex in {A}
+                \path node[selected vertex] at (\vertex) {$\vertex$};
+        \end{tikzpicture}
+    \end{subfigure}
+    \quad
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \caption{Clique in $G$}
+        \label{fig:approxclique3}
+        \begin{tikzpicture} [
+                auto,
+                swap,
+                scale=1,
+                vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+                selected vertex/.style = {vertex, fill=red!24},
+                edge/.style = {draw,thick,-},
+                weight/.style = {font=\small},
+                selected edge/.style = {draw,line width=5pt,-,red!50},
+                outbound edge/.style = {draw,line width=5pt,-,blue!50},
+                ignored edge/.style = {draw,line width=5pt,-,black!20}
+            ]
+            % First we draw the vertices
+            \foreach \pos/\name in {
+                    {(0,0)/A}, {(0,2)/B}, {(2,2)/C}, {(2,0)/D}}
+                \node[vertex] (\name) at \pos {$\name$};
+            % Connect vertices with edges and draw weights
+            \foreach \source/ \dest in {
+                    A/B, B/C, C/D, B/D}
+                \path[edge] (\source) -- (\dest);
+            % color a node
+            \foreach \vertex in {B, C, D}
+                \path node[selected vertex] at (\vertex) {$\vertex$};
+        \end{tikzpicture}
+    \end{subfigure}
+\end{figure}
+Questo vale se il \emph{Vertex Cover} trovato è di dimesione massima. Se però si considera un'istanza di $CLIQUE$ $G=(V,E)$,
+per cui la clique massima ha dimensione $|V^*|=n/2+1$, il $VC$ nel complementato avrà taglia $n-\left( n/2 +1 \right) = n/2 -1$. L'algoritmo di approssimazione sbaglia al massimo di un fattore 2, per cui $|V'|=2 \cdot \left( n/2 -1 \right) = n-2$. La clique trovata ha taglia $|V-V'|=n-\left( n-2 \right) = 2$. Il fattore di approssimazione risulta allora
+\begin{equation*}
+    \rho_{AC} \geq \frac{n/2+1}{2} \approx \frac{n}{4}
+\end{equation*}
+Questa cattiva prestazione dell'algoritmo deriva dal fatto che la trasformazione non preserva l'approssimazione.
+
+% TODO pag 48 disegni strani delle riduzioni
+
 \section{Travelling Salesman Problem}
 
 \section{Pezzi utili di \LaTeX{}}
@@ -503,9 +767,11 @@ Una lista
     \item[--] $T_A(|x|) = O(|x|^k)$ per qualche costante $k \geq 0$
 \end{itemize}
 
+\subsection{Grafi}
+
 Grafi facili da mantenere
 
-% Declare layers
+% Declare layers (done in main)
 \pgfdeclarelayer{background}
 \pgfsetlayers{background,main}
 
@@ -515,6 +781,7 @@ Grafi facili da mantenere
     \label{fig:prim1}
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{subfigure}[b]{0.45\textwidth}
+        \centering
         \caption{Archi uscenti dal primo nodo}
         \label{fig:au1}
         \begin{tikzpicture} [
@@ -534,7 +801,7 @@ Grafi facili da mantenere
             ]
             % First we draw the vertices
             \foreach \pos/\name in {
-            {(0,1)/a}, {(1.5,1)/b}, {(4,1)/c}, {(0,-1)/d}, {(3,0.2)/e}, {(2,-1)/f}, {(4,-1)/g}}
+                {(0,0)/d}, {(0,2)/a}, {(1.5,2)/b}, {(4,2)/c}, {(3,1.2)/e}, {(2,0)/f}, {(4,0)/g}}
                 \node[vertex] (\name) at \pos {$\name$};
             % Connect vertices with edges and draw weights
             \foreach \source/ \dest /\weight in {b/a/7, c/b/8, d/a/5, d/b/9,
@@ -558,6 +825,7 @@ Grafi facili da mantenere
     \quad
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{subfigure}[b]{0.45\textwidth}
+        \centering
         \caption{Arco selezionato}
         \label{fig:au2}
         \begin{tikzpicture} [
@@ -574,7 +842,7 @@ Grafi facili da mantenere
             ]
             % First we draw the vertices
             \foreach \pos/\name in {
-                {(0,1)/a}, {(1.5,1)/b}, {(4,1)/c}, {(0,-1)/d}, {(3,0.2)/e}, {(2,-1)/f}, {(4,-1)/g}}
+                {(0,0)/d}, {(0,2)/a}, {(1.5,2)/b}, {(4,2)/c}, {(3,1.2)/e}, {(2,0)/f}, {(4,0)/g}}
                 \node[vertex] (\name) at \pos {$\name$};
             % Connect vertices with edges and draw weights
             \foreach \source/ \dest /\weight in {b/a/7, c/b/8, d/a/5, d/b/9,
@@ -595,6 +863,7 @@ Grafi facili da mantenere
     \\
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{subfigure}[b]{0.45\textwidth}
+        \centering
         \caption{Secondo arco selezionato}
         \label{fig:au3}
         \begin{tikzpicture} [
@@ -611,7 +880,7 @@ Grafi facili da mantenere
             ]
             % First we draw the vertices
             \foreach \pos/\name in {
-                {(0,1)/a}, {(1.5,1)/b}, {(4,1)/c}, {(0,-1)/d}, {(3,0.2)/e}, {(2,-1)/f}, {(4,-1)/g}}
+                {(0,0)/d}, {(0,2)/a}, {(1.5,2)/b}, {(4,2)/c}, {(3,1.2)/e}, {(2,0)/f}, {(4,0)/g}}
                 \node[vertex] (\name) at \pos {$\name$};
             % Connect vertices with edges and draw weights
             \foreach \source/ \dest /\weight in {b/a/7, c/b/8, d/a/5, d/b/9,
@@ -632,6 +901,7 @@ Grafi facili da mantenere
     \quad
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{subfigure}[b]{0.45\textwidth}
+        \centering
         \caption{Terzo arco selezionato, notare il primo arco ignorato, interno al $MST$.
             La subcaption può essere lunga assai, e brutte cose non succedono
         }
@@ -650,7 +920,7 @@ Grafi facili da mantenere
             ]
             % First we draw the vertices
             \foreach \pos/\name in {
-                {(0,1)/a}, {(1.5,1)/b}, {(4,1)/c}, {(0,-1)/d}, {(3,0.2)/e}, {(2,-1)/f}, {(4,-1)/g}}
+                {(0,0)/d}, {(0,2)/a}, {(1.5,2)/b}, {(4,2)/c}, {(3,1.2)/e}, {(2,0)/f}, {(4,0)/g}}
                 \node[vertex] (\name) at \pos {$\name$};
             % Connect vertices with edges and draw weights
             \foreach \source/ \dest /\weight in {b/a/7, c/b/8, d/a/5, d/b/9,
@@ -670,4 +940,48 @@ Grafi facili da mantenere
             \end{pgfonlayer}
         \end{tikzpicture}
     \end{subfigure}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \caption{Unweighted graph}
+    \label{fig:ug}
+    \begin{tikzpicture} [
+            auto,
+            swap,
+            scale=1.4,
+            vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+            selected vertex/.style = {vertex, fill=red!24},
+            edge/.style = {draw,thick,-},
+            weight/.style = {font=\small},
+            selected edge/.style = {draw,line width=5pt,-,red!50},
+            outbound edge/.style = {draw,line width=5pt,-,blue!50},
+            ignored edge/.style = {draw,line width=5pt,-,black!20}
+        ]
+        % First we draw the vertices
+        \foreach \pos/\name in {
+                {(0,0)/A},
+                {(0,2)/B},
+                {(2,2)/C},
+                {(4,2)/D},
+                {(2,0)/E},
+                {(4,0)/F},
+                {(6,2)/G}}
+            \node[vertex] (\name) at \pos {$\name$};
+        % Connect vertices with edges and draw weights
+        \foreach \source/ \dest in {
+                A/B, B/C, C/E, C/D, E/F, D/E, D/G, F/D}
+            \path[edge] (\source) -- (\dest);
+        % color a node
+        \foreach \vertex in {B, D, E}
+            \path node[selected vertex] at (\vertex) {$\vertex$};
+        \begin{pgfonlayer}{background}
+            \foreach \source / \dest in {B/C}
+                \path[outbound edge] (\source.center) -- (\dest.center);
+            \foreach \source / \dest in {D/G}
+                \path[selected edge] (\source.center) -- (\dest.center);
+            \foreach \source / \dest in {F/D}
+                \path[ignored edge] (\source.center) -- (\dest.center);
+        \end{pgfonlayer}
+    \end{tikzpicture}
 \end{figure}
