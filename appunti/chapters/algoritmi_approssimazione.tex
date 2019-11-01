@@ -374,38 +374,82 @@ In entrambi i casi, almeno uno degli estremi di ogni arco è in $V'$, che è qui
 % pag 46
 Il fattore di approssimazione è dato da
 \begin{equation*}
-    \rho = \frac{
+    \rho =
+    \frac{
     |V'|
     }{
     |V^*|
+    }
+    =
+    \frac{
+        \text{costo soluzione ammissibile ritornata}
+    }{
+        \text{costo soluzione ottima}
     }
 \end{equation*}
 di cui si vuole trovare un limite superiore.
 
 Per quanto riguarda $|V'|$:
 sia $M \subseteq E$ l'insieme degli archi selezionati da $APPROX\_VC$.
-$M$ è un \emph{matching}, per cui nessuna coppia di archi selezionati condivide estremi:
+$M$ è un \emph{matching}, per cui nessuna coppia di archi selezionati condivide estremi (gli archi sono insiemi di nodi):
 \begin{equation*}
     \forall e_1, e_2 \in M
     \to
     e_1 \cap e_2 = \emptyset
 \end{equation*}
-La taglia del $VC$ selezionato $V'$ è quindi esattamente il doppio della taglia del \emph{matching}
+Gli archi selezionati sono quindi tutti indipendenti, e la taglia del $VC$ selezionato $V'$ è esattamente il doppio della taglia del \emph{matching}
+(vengono scelti entrambi gli estremi di ogni arco in $M$)
 \begin{equation*}
     |V'| = 2 |M|
 \end{equation*}
+Nota: questo è un valore molto preciso del valore della funzione obiettivo che l'algoritmo ritorna, è il costo della soluzione ammissibile ritornata.
 
 Per quanto riguarda $|V^*|$:
 va trovato un \emph{lower bound} alla taglia del $VC$ ottimo $
 |V^*|
-$ rispetto a $|M|$.
-Gli archi di $M$ sono disgiunti, per cui in ogni $VC$ deve selezionare almeno un nodo per arco:
+$ rispetto a $|M|$ (si cerca un \emph{upper bound} di $\rho$).
+Un \emph{matching} qualsiasi è un insieme di archi che non ha estremi in comune.
+Un qualsiasi \emph{Vertex Cover} per un grafo con questo \emph{matching}, tutti gli archi devono essere controllati.
+Per controllare $|M|$ archi disgiunti, serve almeno un nodo per arco.
+Questo vale per ogni $VC$ costruito su un qualsiasi \emph{matching}, e in particolare vale per il $VC$ ottimo.
+% Gli archi di $M$ sono disgiunti, per cui in ogni $VC$ deve selezionare almeno un nodo per arco:
 \begin{equation*}
-    |V^*| \geq |A|
+    |V^*| \geq |M|
 \end{equation*}
+Combinando i due risultati
+\begin{equation*}
+    \rho =
+    \frac{
+    |V'|
+    }{
+    |V^*|
+    }
+    \leq
+    \frac{
+    2|M|
+    }{
+    |M|
+    }
+    = 2
+\end{equation*}
+% C'è una relazione molto forte tra la taglia di un \emph{matching} e il VC.
+
+In più, il \emph{matching} trovato è massimale, per cui se gli venisse aggiunto un arco, non sarebbe un \emph{matching} valido: 
+\begin{equation*}
+    \nexists e \in E - M : M \cup \left\{ e \right\} \text{ è un \emph{matching}}
+\end{equation*}
+ossia è uno dei più grandi \emph{matching} possibili.
+Se l'arco $e$ esistesse, l'algoritmo non sarebbe terminato, perché  per eliminare tutti gli archi, devono avere almeno un estremo che appartiene al \emph{matching}.
+
+Qualsiasi \emph{matching} avrebbe dato un \emph{lower bound}, il \emph{matching} massimale serve per provare l'upper bound. Se non fosse massimale, l'unione dei nodi degli archi che compongono il \emph{matching} non sarebbe un \emph{Vertex Cover}.
 
 \subsubsection{Analisi \emph{slack} o \emph{tight}}
 %pag 47
+
+Questa analisi è \emph{slack} o \emph{tight}? È un'analisi che non è la migliore possibile, o meglio di così questo algoritmo non può fare?
+Ovvero, \emph{l'analisi} dell'algoritmo può essere migliorata, rendendo per esempio più stretti i \emph{bound} trovati?
+
+Si determina un grafo sotto cui l'algoritmo di approssimazione performa il peggio possibile e ottiene proprio il fattore di approssimazione.
 
 \section{Travelling Salesman Problem}
 
@@ -458,3 +502,172 @@ Una lista
     \item[--] $L_A = L$ (il linguaggio deciso da $A$ è $L$)
     \item[--] $T_A(|x|) = O(|x|^k)$ per qualche costante $k \geq 0$
 \end{itemize}
+
+Grafi facili da mantenere
+
+% Declare layers
+\pgfdeclarelayer{background}
+\pgfsetlayers{background,main}
+
+\begin{figure}[h]
+    \centering
+    \caption{Algoritmo di Prim}
+    \label{fig:prim1}
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{subfigure}[b]{0.45\textwidth}
+        \caption{Archi uscenti dal primo nodo}
+        \label{fig:au1}
+        \begin{tikzpicture} [
+                % automagically put labels not on edges
+                auto,
+                % exchanges the roles of left and right in automatic placement
+                % the side the label is put on depends on the order of the nodes in the edge
+                swap,
+                scale=1.4,
+                vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+                selected vertex/.style = {vertex, fill=red!24},
+                edge/.style = {draw,thick,-},
+                weight/.style = {font=\small},
+                selected edge/.style = {draw,line width=5pt,-,red!50},
+                outbound edge/.style = {draw,line width=5pt,-,blue!50},
+                ignored edge/.style = {draw,line width=5pt,-,black!20}
+            ]
+            % First we draw the vertices
+            \foreach \pos/\name in {
+            {(0,1)/a}, {(1.5,1)/b}, {(4,1)/c}, {(0,-1)/d}, {(3,0.2)/e}, {(2,-1)/f}, {(4,-1)/g}}
+                \node[vertex] (\name) at \pos {$\name$};
+            % Connect vertices with edges and draw weights
+            \foreach \source/ \dest /\weight in {b/a/7, c/b/8, d/a/5, d/b/9,
+                                                 e/b/7, e/c/5, e/d/15,
+                                                 f/d/6, f/e/8, g/e/9, g/f/11}
+                \path[edge] (\source) -- node[weight] {$\weight$} (\dest);
+            % color a node
+            % \path node[selected vertex] at (d) {$d$};
+            % prepare it in loop version anyway
+            \foreach \vertex in {d}
+                \path node[selected vertex] at (\vertex) {$\vertex$};
+            % For convenience we use a background layer to highlight edges
+            % This way we don't have to worry about the highlighting covering
+            % weight labels. 
+            \begin{pgfonlayer}{background}
+                \foreach \source / \dest in {d/a,d/b,d/e,d/f}
+                    \path[outbound edge] (\source.center) -- (\dest.center);
+            \end{pgfonlayer}
+        \end{tikzpicture}
+    \end{subfigure}
+    \quad
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{subfigure}[b]{0.45\textwidth}
+        \caption{Arco selezionato}
+        \label{fig:au2}
+        \begin{tikzpicture} [
+                auto,
+                swap,
+                scale=1.4,
+                vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+                selected vertex/.style = {vertex, fill=red!24},
+                edge/.style = {draw,thick,-},
+                weight/.style = {font=\small},
+                selected edge/.style = {draw,line width=5pt,-,red!50},
+                outbound edge/.style = {draw,line width=5pt,-,blue!50},
+                ignored edge/.style = {draw,line width=5pt,-,black!20}
+            ]
+            % First we draw the vertices
+            \foreach \pos/\name in {
+                {(0,1)/a}, {(1.5,1)/b}, {(4,1)/c}, {(0,-1)/d}, {(3,0.2)/e}, {(2,-1)/f}, {(4,-1)/g}}
+                \node[vertex] (\name) at \pos {$\name$};
+            % Connect vertices with edges and draw weights
+            \foreach \source/ \dest /\weight in {b/a/7, c/b/8, d/a/5, d/b/9,
+                                                 e/b/7, e/c/5, e/d/15,
+                                                 f/d/6, f/e/8, g/e/9, g/f/11}
+                \path[edge] (\source) -- node[weight] {$\weight$} (\dest);
+            % color a node
+            \foreach \vertex in {d,a}
+                \path node[selected vertex] at (\vertex) {$\vertex$};
+            \begin{pgfonlayer}{background}
+                \foreach \source / \dest in {b/a,d/b,d/e,d/f}
+                    \path[outbound edge] (\source.center) -- (\dest.center);
+                \foreach \source / \dest in {d/a}
+                    \path[selected edge] (\source.center) -- (\dest.center);
+            \end{pgfonlayer}
+        \end{tikzpicture}
+    \end{subfigure}
+    \\
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{subfigure}[b]{0.45\textwidth}
+        \caption{Secondo arco selezionato}
+        \label{fig:au3}
+        \begin{tikzpicture} [
+                auto,
+                swap,
+                scale=1.4,
+                vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+                selected vertex/.style = {vertex, fill=red!24},
+                edge/.style = {draw,thick,-},
+                weight/.style = {font=\small},
+                selected edge/.style = {draw,line width=5pt,-,red!50},
+                outbound edge/.style = {draw,line width=5pt,-,blue!50},
+                ignored edge/.style = {draw,line width=5pt,-,black!20}
+            ]
+            % First we draw the vertices
+            \foreach \pos/\name in {
+                {(0,1)/a}, {(1.5,1)/b}, {(4,1)/c}, {(0,-1)/d}, {(3,0.2)/e}, {(2,-1)/f}, {(4,-1)/g}}
+                \node[vertex] (\name) at \pos {$\name$};
+            % Connect vertices with edges and draw weights
+            \foreach \source/ \dest /\weight in {b/a/7, c/b/8, d/a/5, d/b/9,
+                                                 e/b/7, e/c/5, e/d/15,
+                                                 f/d/6, f/e/8, g/e/9, g/f/11}
+                \path[edge] (\source) -- node[weight] {$\weight$} (\dest);
+            % color a node
+            \foreach \vertex in {d,a}
+                \path node[selected vertex] at (\vertex) {$\vertex$};
+            \begin{pgfonlayer}{background}
+                \foreach \source / \dest in {b/a,d/b,d/e,e/f,f/g}
+                    \path[outbound edge] (\source.center) -- (\dest.center);
+                \foreach \source / \dest in {d/a, d/f}
+                    \path[selected edge] (\source.center) -- (\dest.center);
+            \end{pgfonlayer}
+        \end{tikzpicture}
+    \end{subfigure}
+    \quad
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{subfigure}[b]{0.45\textwidth}
+        \caption{Terzo arco selezionato, notare il primo arco ignorato, interno al $MST$.
+            La subcaption può essere lunga assai, e brutte cose non succedono
+        }
+        \label{fig:au4}
+        \begin{tikzpicture} [
+                auto,
+                swap,
+                scale=1.4,
+                vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+                selected vertex/.style = {vertex, fill=red!24},
+                edge/.style = {draw,thick,-},
+                weight/.style = {font=\small},
+                selected edge/.style = {draw,line width=5pt,-,red!50},
+                outbound edge/.style = {draw,line width=5pt,-,blue!50},
+                ignored edge/.style = {draw,line width=5pt,-,black!20}
+            ]
+            % First we draw the vertices
+            \foreach \pos/\name in {
+                {(0,1)/a}, {(1.5,1)/b}, {(4,1)/c}, {(0,-1)/d}, {(3,0.2)/e}, {(2,-1)/f}, {(4,-1)/g}}
+                \node[vertex] (\name) at \pos {$\name$};
+            % Connect vertices with edges and draw weights
+            \foreach \source/ \dest /\weight in {b/a/7, c/b/8, d/a/5, d/b/9,
+                                                 e/b/7, e/c/5, e/d/15,
+                                                 f/d/6, f/e/8, g/e/9, g/f/11}
+                \path[edge] (\source) -- node[weight] {$\weight$} (\dest);
+            % color a node
+            \foreach \vertex in {d,a}
+                \path node[selected vertex] at (\vertex) {$\vertex$};
+            \begin{pgfonlayer}{background}
+                \foreach \source / \dest in {d/b,d/e,e/f,f/g,b/e,b/c}
+                    \path[outbound edge] (\source.center) -- (\dest.center);
+                \foreach \source / \dest in {d/a, d/f, a/b}
+                    \path[selected edge] (\source.center) -- (\dest.center);
+                \foreach \source / \dest in {d/b}
+                    \path[ignored edge] (\source.center) -- (\dest.center);
+            \end{pgfonlayer}
+        \end{tikzpicture}
+    \end{subfigure}
+\end{figure}
