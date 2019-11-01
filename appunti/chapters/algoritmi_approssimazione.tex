@@ -615,7 +615,6 @@ Seguendo la funzione trovata nella riduzione da $CLIQUE$ a $VC$, si potrebbe pen
 \end{algorithmic}
 \end{algorithm}
 
-
 \begin{figure}[h]
     \centering
     \caption{Trasformazione da \emph{Vertex Cover} a Clique}
@@ -716,6 +715,180 @@ Questa cattiva prestazione dell'algoritmo deriva dal fatto che la trasformazione
 % TODO pag 48 disegni strani delle riduzioni
 
 \section{Travelling Salesman Problem}
+% pag 48
+Si ricordano le definizioni dei problemi di $HAMILTON$ e $TSP$:
+\begin{align*}
+    \text{Hamilton:} & \quad \\
+    \texttt{istanza:} \quad & \langle G=(V,E) \rangle \\
+    \texttt{domanda:} \quad & G \text{ contiene un ciclo semplice che tocca tutti i nodi (\emph{tour})?} \\
+    \text{TSP:} & \quad \\
+    \texttt{istanza:} \quad & \langle G_C=(V,E_C), w, k \rangle \\
+    \text{dove} \quad & G_C \text{ grafo completo non orientato} \\
+    & w : V \times V = E \to \mathbb{N} \\
+    & k \in \mathbb{N} \\
+    \texttt{domanda:} \quad & G \text{ contiene un ciclo \emph{Hamiltoniano} di costo $\leq k$?} \\
+    \text{dove} \quad &  c(\langle v_1, \cdots, v_{|V|+1} \rangle) = \sum_{i=1}^{|V|} w(v_i, v_{i+1} )  \\
+\end{align*}
+
+\subsection{Inapprossimabilità del $TSP$ generale}
+% pag 49
+Se $\bp = \bnp$ sarebbe disponibile la soluzione esatta.
+
+Sotto l'ipotesi $\bp \ne \bnp$, si mostra che se $TSP$ fosse $\rho(n)$-approssimabile in tempo polinomiale, si potrebbe risolvere un problema $\bnpc$ in tempo polinomiale, che è assurdo.
+
+\begin{theorem}[Inapprossimabilità del $TSP$]
+    \label{teo:inapprossimabilitatsp}
+    Sotto l'ipotesi $\bp \ne \bnp$,
+    data un'istanza di $TSP$
+    $
+        \langle
+            G = (V,E), c
+        \rangle
+    $, per qualsiasi
+    $
+        \rho (|V|)
+    $ calcolabile in tempo polinomiale,
+    allora il $TSP$ non è $
+        \rho (|V|)
+    $-approssimabile in tempo polinomiale.
+\end{theorem}
+Nota: per alleggerire la notazione, $\rho \equiv \rho(|V|)$
+\begin{proof}
+    Per assurdo, esista un algoritmo $
+    A_{TSP} ( \langle G = c \rangle)
+    $ di
+    $\rho$-approssimazione, poliomiale.
+    Si può usare questo algoritmo per risolvere $HAMILTON$.
+    Si trasforma un'istanza di $HAMILTON$ in una di $TSP$, che può essere mandata in input ad $A_{TSP}$, in maniera simile alla riduzione già vista.
+    \begin{equation*}
+        f :
+        \langle
+            G = (V,E)
+        \rangle
+        \to
+        \langle
+            G^K = (V,E^K), c
+        \rangle
+    \end{equation*}
+    dove il grafo $G^K$ è il grafo completato, e i costi sono associati agli archi nella maniera seguente:
+    \begin{equation*}
+         c(e) = 
+        \begin{cases}
+            1 & e \in E \\
+            \rho \cdot |V| & e \notin E
+        \end{cases}
+    \end{equation*}
+    Questa funzione è calcolabile in tempo polinomiale, infatti
+    \begin{itemize}[parsep=0pt,partopsep=0pt,topsep=2pt]
+        \item la taglia della nuova istanza è polinomiale, il grafo completo ha numero di archi quadratico
+        \item i costi sono legati a $\rho$, che è polinomiale per ipotesi, $|\rho| = poly (|V|)$
+    \end{itemize}
+
+    ``$\Rightarrow$''
+    Se $ \langle G = (V,E) \rangle \in HAMILTON$, esiste in $G$ un cammino Hamiltoniano, che esiste anche in $G^K$ e ha costo $|V|$, perché tutti gli archi utilizzati sono originali.
+    \\
+    $A_{\rho} ( \langle G^K ,  c \rangle)$ deve ritornare un tour che non costi più di $\rho \cdot |V|$, perché è di $\rho $-approssimazione.
+    Questo costo è inferiore al costo di ogni arco spurio, quindi l'algoritmo non può selezionarne nessuno.
+    \\
+    $A_{\rho} ( \langle G^K ,  c \rangle)$ ritorna quindi un circuito Hamiltoniano di $G$, di costo $ \leq \rho \cdot |V| + 1 $.
+
+    ``$\Leftarrow$''
+    L'algoritmo deve anche riconoscere quando un'istanza è negativa.
+    \\
+    $ \langle G = (V,E) \rangle \notin HAMILTON$ implica che ogni tour in $G^K$ deve usare almeno un arco in $E^K-E$.
+    Allora, per ogni tour $\pi$, $c(\pi) \geq 
+    \rho \cdot |V|
+    + 1
+    $.
+    Ossia 
+    $A_{\rho} ( \langle G^K ,  c \rangle)$ ritorna un tour di costo $ \geq \rho \cdot |V| + 1 $, e quindi, combinando i due risultati:
+    \begin{equation*}
+        \langle G \rangle \in HAMILTON
+        \Leftrightarrow
+        A_{\rho} ( f ( \langle G \rangle) ) \text{ ritorna un tour di costo } \leq \rho \cdot |V| + 1 
+    \end{equation*}
+    Sia $A_{\rho}$ sia $f$ sono polinomiali, quindi la loro composizione è polinomiale, e si è esibito un decisore per $HAMILTON$ polinomiale, che è in contrasto con l'ipotesi $\bp \ne \bnp$.
+\end{proof}
+
+\subsection{Risultati di inapprossimabilità}
+% pag 50
+L'idea del procedimento da seguire per provare l'inapprossimabilità di un problema è quella di creare un \emph{gap} tra il costo ottimo di istanze \emph{associate} a istanze positive e negative di un problema $\bnpc$.
+
+Sia $\bpi_{m} \subseteq \bi \times \bs$ un problema di minimo di cui si vuole provare l'inapprossimabilità e $\bpi_{d} \in \bnpc$ un problema decisionale.
+\\
+Si deve trovare una funzione calcolabile in tempo polinomiale $f(x)$ che trasforma istanze di 
+$\bpi_{d}$
+in istanze di
+$\bpi_{m}$,
+tale che esiste una funzione $k(n)$ per cui
+\begin{itemize}
+    \item se $x \in L_{\bpi_{d}} \Rightarrow 
+        c \left( 
+        s^* \left( 
+        f (x) \right)\right)
+        \leq k \left( 
+        | f(x) |
+        \right)
+        $
+    \item se $x \notin L_{\bpi_{d}} \Rightarrow 
+        c \left( 
+        s^* \left( 
+        f (x) \right)\right)
+        > k \left( 
+        | f(x) |
+        \right)
+        $
+\end{itemize}
+Studiando il costo associato alla soluzione ottima dell'istanza di 
+$\bpi_{m}$,
+$f(x) \in L_{ \bpi_{m} }$
+si riuscirebbe a decidere un problema $\bnpc$ in tempo polinomiale.
+
+\section{Triangle TSP}
+pag 52
+
+\subsection{Disuguaglianza triangolare}
+pag 51
+
+\subsection{Riduzione da TSP a TTSP}
+pag 52
+
+\subsection{Approx TTSP}
+pag 53-59
+
+MST, pag 53
+Prim, pag 53
+Preorder, pag 54
+Full Preorder, pag 54
+Approx TTSP, pag 53.8
+Fattore approssimazione approx TTSP, pag 55
+
+\subsection{Chrisotfides}
+pag 56
+
+multigrafo, pag 56.2
+circuito euleriano, pag 56.5
+teorema di eulero, pag 56.7
+prop nodi dispari in numero pari, pag 57.5
+
+\subsubsection{Chrisotfides}
+pag 56.9, 57.1
+
+Fattore approssimazione, pag 58-59.5
+
+\section{Set Cover}
+
+\section{FPTAS Subset Sum}
+
+
+
+
+
+
+
+
+
+
 
 \section{Pezzi utili di \LaTeX{}}
 \begin{algorithm}[H]
