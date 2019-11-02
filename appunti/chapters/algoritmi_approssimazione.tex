@@ -334,7 +334,7 @@ A partire da un \emph{matching} massimale $M$ (ovvero per cui se viene aggiungo 
 \begin{algorithm}[H]
 \caption{Aprossimatore per Vertex Cover}\label{alg:approxvc}
 \begin{algorithmic}[1]
-    \Procedure{APPROX\_VC}{$G=(V,E)$}
+    \Procedure{Approx\_VC}{$G=(V,E)$}
         \State $V' \gets \emptyset$
         \State $E' \gets E$
         \While{$E' \ne \emptyset$}
@@ -607,9 +607,9 @@ Seguendo la funzione trovata nella riduzione da $CLIQUE$ a $VC$, si potrebbe pen
 \begin{algorithm}[H]
 \caption{Approssimatore per Clique}\label{alg:approxclique}
 \begin{algorithmic}[1]
-    \Procedure{APPROX\_C}{$G=(V,E)$}
+    \Procedure{Approx\_C}{$G=(V,E)$}
         \State $G^C = (V,E^C)$
-        \State $V' \gets $ \Call{APPROX\_VC}{$G^C$}
+        \State $V' \gets $ \Call{Approx\_VC}{$G^C$}
         \State return $V - V'$
     \EndProcedure
 \end{algorithmic}
@@ -980,27 +980,344 @@ Questa è una restrizione di un problema $\bnpc$, è stato ristretto così tanto
 \end{proof}
 
 \subsection{Algoritmo di 2-approssimazione per  TRIANGLE\_TSP}
-pag 53-59
+% pag 53-59
 
-MST, pag 53
-Prim, pag 53
-Preorder, pag 54
-Full Preorder, pag 54
-Approx TTSP, pag 53.8
-Fattore approssimazione approx TTSP, pag 55
+\subsubsection{Albero di copertura minimo}
+% MST, pag 53
+\begin{definition}[Albero di copertura]
+    \label{def:alberocopertura}
+    Dato un grafo
+    $G=(V,E)$
+    non orientato, connesso, un albero di copertura è un suo sottografo 
+    $T_G=(V,E_G)$
+    con $|E_G|=|V|-1$ e $T_G$ connesso.
+\end{definition}
+
+\begin{definition}[Albero di copertura minimo]
+    \label{def:alberocoperturaminimo}
+    Sotto la funzione di costo
+    \begin{equation*}
+        c\left( T_G \right) = 
+        \sum_{e \in E_T}^{} c(e)
+    \end{equation*}
+    L'albero di copertura minimo (\emph{Minimum Spanning Tree}) è l'albero di copertura di $G$ di costo minimo.
+\end{definition}
+
+% Prim, pag 53
+L'albero di copertura minimo si trova in tempo polinomiale, per esempio usando l'algoritmo di $Prim$ \cite{Prim57}, con complessità $O \left( |E| \log |V| \right)$, quasi lineare nel numero di archi.
+\begin{enumerate}[noitemsep,parsep=0pt,partopsep=0pt,topsep=0pt]
+    \item si seleziona un nodo a caso
+    \item si trovano gli archi uscenti
+    \item si seleziona l'arco di peso minore
+    \item si itera dal punto 2 fino a toccare tutti i nodi
+\end{enumerate}
+
+\subsubsection{(Full) Preorder Walk}
+% Preorder, pag 54
+La visita in preordine dell'albero è chiaramente lineare nel numero di nodi
+\begin{algorithm}[H]
+\caption{Preorder Walk}\label{alg:preorderwalk}
+\begin{algorithmic}[1]
+    \Procedure{Preorder\_Visit}{$T,r$}
+        \State \Call{Print}{$r$}
+        \If{not (leaf (r))}
+        \Comment{il nodo corrente ha figli}
+        \ForAll{$v \in r.children$}
+        % \Comment{RECURSE}
+            \State \Call{Preorder\_Visit}{$T,v$}
+        \EndFor
+        \EndIf
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+% Full Preorder, pag 54
+La visita in preordine completa (\emph{Full Preorder Visit}) si effettua stampando di nuovo il nodo quando si è conclusa l'esplorazione del sottoalbero corrispondente.
+\begin{algorithm}[H]
+\caption{Full Preorder Walk}\label{alg:fullpreorderwalk}
+\begin{algorithmic}[1]
+    \Procedure{Full\_Preorder\_Walk}{$T,r$}
+        \State \Call{Print}{$r$}
+        \If{not (leaf (r))}
+        \ForAll{$v \in r.children$}
+            \State \Call{Full\_Preorder\_Walk}{$T,v$}
+            \State \Call{Print}{$r$}
+        \EndFor
+        \EndIf
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+Se si considera l'albero in figura \ref{fig:exalbero}, la visita in preordine risulta 
+$ \pi = \langle a,b,c,d,e \rangle$,
+mentre la visita in preordine completa è
+$ \pi = \langle a,b,c,b,d,b,a,e,a \rangle$.
+
+\begin{figure}[h]
+    \centering
+    \caption{Esempio di visita in preordine completa}
+    \label{fig:expreordervisit}
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \caption{Albero d'esempio}
+        \label{fig:exalbero}
+        \begin{tikzpicture} [
+                scale=1,
+                vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+                edge/.style = {draw,thick,-},
+            ]
+            \foreach \pos/\name in {
+            {(0,0)/c}, {(2,0)/d}, {(1,1.5)/b}, {(3,1.5)/e}, {(2,3)/a}}
+                \node[vertex] (\name) at \pos {$\name$};
+            \foreach \source/ \dest in {
+                    b/c,b/d,a/b,a/e}
+                \path[edge] (\source) -- (\dest);
+        \end{tikzpicture}
+    \end{subfigure}
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \caption{$FPW$}
+        \label{fig:fullpreordervisit}
+        \begin{tikzpicture} [
+                scale=1,
+                vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+                edge/.style = {draw,thick,-},
+                arrow edge/.style = {draw,thick,->},
+                bent right/.style = {bend right=20},
+                bent left/.style = {bend left=20},
+            ]
+            \foreach \pos/\name in {
+            {(0,0)/c}, {(2,0)/d}, {(1,1.5)/b}, {(3,1.5)/e}, {(2,3)/a}}
+                \node[vertex] (\name) at \pos {$\name$};
+            \foreach \source/ \dest in {
+                    b/c,b/d,a/b,a/e}
+                \path[arrow edge] (\source) edge [bent right] (\dest);
+            \foreach \source/ \dest in {
+                    c/b,d/b,b/a,e/a}
+                \path[arrow edge] (\source) edge [bent right] (\dest);
+        \end{tikzpicture}
+    \end{subfigure}
+\end{figure}
+
+La visita in preordine completa forma un ciclo (non semplice) all'interno dell'albero (figura \ref{fig:fullpreordervisit}).
+
+\begin{proposizione}
+    \label{prop:costofpw}
+    Il costo della $FPW$ è due volte il costo del $MST$
+    \begin{equation*}
+        c(FPW) = 2 \cdot c(MST)
+        % = 2 \cdot c(T^*)
+    \end{equation*}
+    \begin{proof}
+        La $FPW$ utilizza ogni arco del $MST$ esattamente due volte. La prima volta mentre sta scendendo ricorsivamente l'albero, seleziona $\left\{ r,v \right\}$, e la seconda mentre risale, selezionando $\left\{ v,r \right\}$.
+    \end{proof}
+\end{proposizione}
+
+\subsubsection{Algoritmo di approssimazione}
+% Approx TTSP, pag 53.8
+\begin{algorithm}[H]
+\caption{Approssimatore per Triangle TSP}\label{alg:dnc}
+\begin{algorithmic}[1]
+    \Procedure{Approx\_T\_TSP}{$i$}
+        \State $T_G \gets$ \Call{Prim}{$ \langle G, c\rangle$}
+        \State $\pi \gets$ \Call{Preorder\_Visit}{$T_G$}
+        \State * sia $\pi = \langle v_1, v_2, \cdots, v_{|V|}\rangle $ *
+        \State return $\langle \pi, v_1 \rangle $
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+Se si considera di nuovo l'albero in figura \ref{fig:exalbero}, l'algoritmo ritorna
+$ \pi = \langle a,b,c,d,e,a \rangle$.
+
+\begin{figure}[h]
+    \centering
+    \caption{Risultato dell'algoritmo}
+    \label{fig:approxttsp2}
+    \begin{tikzpicture} [
+            scale=1,
+            vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+            edge/.style = {draw,thick,-},
+        ]
+        \foreach \pos/\name in {
+                {(0,0)/c}, {(2,0)/d}, {(1,1.5)/b}, {(3,1.5)/e}, {(2,3)/a}}
+            \node[vertex] (\name) at \pos {$\name$};
+        \foreach \source/ \dest in {
+                b/c,c/d,a/b,a/e,d/e}
+            \path[edge] (\source) edge (\dest);
+    \end{tikzpicture}
+\end{figure}
+
+% Fattore approssimazione approx TTSP, pag 55
+Riguardo al fattore di approssimazione di questo algoritmo, vanno trovati \emph{bound} per
+\begin{equation*}
+    \rho =
+    \frac{
+    |H'|
+    }{
+    |H^*|
+    }
+    =
+    \frac{
+        \text{costo soluzione ammissibile ritornata}
+    }{
+        \text{costo soluzione ottima}
+    }
+\end{equation*}
+Dove si indica $H'$ la soluzione trovata al problema $T\_TSP$, $H^*$ la soluzione ottima al problema, $T^*$ il \emph{minimum spanning tree} del grafo.
+
+\begin{itemize}
+    \item Per $|H'|$: il ciclo ritornato è una sotto sequenza della \emph{full preorder walk}, dove vengono selezionati i nodi la prima volta che vengono visti (ed aggiunta la radice).
+        \begin{equation*}
+            H' = \langle a,b,c,d,e,a \rangle
+            \quad
+            FPW = \langle \underline{a},\underline{b},\underline{c},b,\underline{d},b,a,\underline{e},a \rangle
+        \end{equation*}
+        Per la proprietà dello \emph{shortcutting}, vale $
+        c(H') \leq c(FPW)
+        $
+        e dalla proposizione \ref{prop:costofpw} si conosce $
+        c(FPW) = 2 \, c(MST)
+        = 2 \, c(T^*)
+        $.
+        Componendo si ottiene 
+        \begin{equation*}
+            c(H')
+            % \leq c(FPW)
+            % = 2 \cdot c(T^*)
+            \leq 2 \, c(T^*)
+        \end{equation*}
+    \item Per $|H^*|$:
+        Se dal ciclo ottimo
+        $H^*$
+        si rimuove un arco $e$ qualsiasi, si ottiene uno \emph{spanning tree}
+        generico
+        % (di costo non necessariamente minimo)
+        , che è di sicuro non di costo inferiore al migliore albero di copertura trovato:
+        \begin{equation*}
+            c(|H^*|) \geq 
+            c(|H^*| - \{ e \} ) =
+            c(ST) \geq 
+            c(T^*)
+        \end{equation*}
+\end{itemize}
+Componendo i risultati
+\begin{equation*}
+    \rho =
+    \frac{
+        |H'|
+    }{
+        |H^*|
+    }
+    \leq
+    \frac{
+        2 \, c(T^*)
+    }{
+        |H^*|
+    }
+    \leq
+    \frac{
+        2 \, c(T^*)
+    }{
+        c(T^*)
+    }
+    = 2
+\end{equation*}
 
 \subsection{Algoritmo di Christofides}
-pag 56
+% pag 56
 
-multigrafo, pag 56.2
-circuito euleriano, pag 56.5
-teorema di eulero, pag 56.7
-prop nodi dispari in numero pari, pag 57.5
+\subsubsection{Multigrafi e circuiti Euleriani}
 
-\subsubsection{Chrisotfides}
+% multigrafo, pag 56.2
+\begin{definition}[Multigrafo]
+    \label{def:multigrafo}
+    Un multigrafo $G=(V,E)$ non orientato è costruito su un insieme di nodi e un multiinsieme di archi.
+    Ogni arco $e \in E$ può essere presente in multiple copie:
+    \begin{equation*}
+        \text{molteplicità:}
+        \quad
+        m(e) = \text{\# copie di $e$}
+    \end{equation*}
+    Il grado di un nodo deve tenere conto di tutte le copie degli archi incidenti:
+    \begin{equation*}
+        deg(v) = \sum_{e : v \in e}^{} m(e)
+    \end{equation*}
+    Cammini e cicli sono definiti come per un grafo.
+\end{definition}
+
+% circuito Euleriano, pag 56.5
+\begin{definition}[Circuito Euleriano]
+    \label{def:circuitoeuleriano}
+    Un circuito Euleriano è un ciclo \emph{non semplice} che tocca tutti gli archi del grafo.
+    Un (multi)grafo è Euleriano se ammette un circuito Euleriano.
+\end{definition}
+
+\begin{definition}[Grafo Euleriano]
+    \label{def:grafoeuleriano}
+    Un (multi)grafo è Euleriano se ammette un circuito Euleriano.
+\end{definition}
+
+% teorema di eulero, pag 56.7
+\begin{theorem}
+    \label{teo:grafoeuleriano}
+    Un multigrafo connesso è Euleriano se e solo se tutti i vertici del grafo hanno grado pari.
+\end{theorem}
+
+% prop nodi dispari in numero pari, pag 57.5
+\begin{proposizione}
+    Dato un (multi)grafo non orientato, il numeri di vertici di grado dispari, è sempre pari.
+    \begin{proof}
+        Ogni arco incide su due vertici, per cui
+        \begin{equation*}
+            2 |E| 
+            =
+            \sum_{v \in V}^{} deg(v)
+            = 
+            \sum_{v \in V_{EVEN}}^{} deg(v)
+            +
+            \sum_{v \in V_{ODD}}^{} deg(v)
+        \end{equation*}
+        La somma dei due termini deve essere pari,
+        % Dei due termini della somma,
+        il primo è pari perché somma di contributi pari,
+        quindi anche il secondo deve essere pari.
+        Perché una somma di contributi dispari sia pari, deve essere un numero pari di contributi.
+    \end{proof}
+\end{proposizione}
+
+% def matching perfetto, pag 57.3
+\begin{definition}
+    \label{def:matchingperfetto}
+    Dato un grafo $G$ con $|V| = 2k$ un matching perfetto è un insieme di archi $M \subseteq E$ tale che
+    \begin{itemize}
+        \item $\forall e_1, e_2 \in M : e_1 \cap e_2 = \emptyset$
+        \item $\forall v \in V, \exists e \in M : v \in e$
+    \end{itemize}
+\end{definition}
+
+\subsubsection{Christofides}
 pag 56.9, 57.1
 
+Christofides nel 1976 \cite{Chr76} ha trovato un algoritmo di 3/2-approssimazione per TTSP.
+
 Fattore approssimazione, pag 58-59.5
+
+\subsection{Altri risultati sull'approssimazione di TSP}
+
+Arora ha mostrato nel 1998 \cite{Arora:1998:PTA:290179.290180} che $EUCLIDEAN\_TSP$ (la distanza per esempio è la norma 2) ammette un algoritmo PTAS,
+per cui
+$
+\forall \varepsilon,
+\rho \leq 1+\varepsilon
+$
+e la complessità è $
+O \left( n^{1/\varepsilon} \right)
+$.
+
+Papadimitriou e Vempala hanno mostrato nel 2006 \cite{Papadimitriou:2006:s00493-006-0008-z} che il $TRIANGLE\_TSP$ con archi simmetrici non può essere approssimato con un fattore migliore di 219/220.
 
 \section{Set Cover}
 
@@ -1010,7 +1327,7 @@ Fattore approssimazione, pag 58-59.5
 \begin{algorithm}[H]
 \caption{Divide and Conquer}\label{alg:dnc}
 \begin{algorithmic}[1]
-    \Procedure{D\&C}{$i$}
+    \Procedure{Divide\&Conquer}{$i$}
         \If{$|i| \leq n_0$}
         \Comment{BASE}
             \State *risolvo direttamente*
@@ -1019,7 +1336,7 @@ Fattore approssimazione, pag 58-59.5
         \Comment{DIVIDE}
         \For{$j \gets 1 $ to $ k $ }
         \Comment{RECURSE}
-            \State $s_j \gets $ \Call{D\&C}{$i_j$}
+            \State $s_j \gets $ \Call{Divide\&Conquer}{$i_j$}
         \EndFor
         \State $s \gets A_C(\langle s_1, s_2, \dots, s_k \rangle)$
         \Comment{CONQUER}
@@ -1271,6 +1588,38 @@ Grafi facili da mantenere
                 \path[selected edge] (\source.center) -- (\dest.center);
             \foreach \source / \dest in {F/D}
                 \path[ignored edge] (\source.center) -- (\dest.center);
+        \end{pgfonlayer}
+    \end{tikzpicture}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \caption{$FPW$}
+    \label{fig:exbend}
+    \begin{tikzpicture} [
+            scale=1.4,
+            vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+            edge/.style = {draw,thick,-},
+            outbound edge/.style = {draw,line width=8pt,-,blue!30},
+            selected edge/.style = {draw,line width=8pt,-,red!30},
+            arrow edge/.style = {draw,thick,->},
+            bent right/.style = {bend right=20},
+            bent left/.style = {bend left=20},
+        ]
+        \foreach \pos/\name in {
+        {(0,0)/c}, {(2,0)/d}, {(1,1.5)/b}, {(3,1.5)/e}, {(2,3)/a}}
+            \node[vertex] (\name) at \pos {$\name$};
+        \foreach \source/ \dest in {
+                b/c,b/d,a/b,a/e}
+            \path[arrow edge] (\source) edge [bent right] (\dest);
+        \foreach \source/ \dest in {
+                c/b,d/b,b/a,e/a}
+            \path[arrow edge] (\source) edge [bent right] (\dest);
+        \begin{pgfonlayer}{background}
+            \foreach \source / \dest in {a/b}
+                \path[outbound edge] (\source) edge [bent right] (\dest);
+            \foreach \source / \dest in {b/a}
+                \path[selected edge] (\source) edge [bent right] (\dest);
         \end{pgfonlayer}
     \end{tikzpicture}
 \end{figure}

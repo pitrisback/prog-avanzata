@@ -242,7 +242,7 @@ Un semplice problema che evidenzia l'importanza della codifica è l'algoritmo ch
 \begin{algorithm}[H]
 \caption{\emph{Gauss}}\label{alg:gauss}
 \begin{algorithmic}[1]
-    \Procedure{\emph{Gauss}}{$m$}
+    \Procedure{Gauss}{$m$}
         \State $sum \gets 0$
         \For{$i \gets 1 $ to $ m $ }
             \State $sum \gets sum + i$
@@ -343,7 +343,7 @@ In questo caso la soluzione è difficile da trovare, ma verificare se un cammino
 \begin{algorithm}[H]
 \caption{Verificatore per Hamiltonian}\label{alg:verifyh}
 \begin{algorithmic}[1]
-    \Procedure{VERIFY\_H}{$x, y$}
+    \Procedure{Verify\_H}{$x, y$}
         \Comment{verifico:}
         \If{$x \neq \langle G=(V,E) \rangle$}
         \Comment{che $x$ sia istanza ben formata}
@@ -873,7 +873,7 @@ Un verificatore per il problema è semplice da implementare, e risulta lineare n
 \begin{algorithm}[H]
 \caption{Soddisfacibilità di un circuito}\label{alg:cooksoddisfa}
 \begin{algorithmic}[1]
-    \Procedure{VERIFY\_BC\_SAT}{$x,y$}
+    \Procedure{Verify\_BC\_Sat}{$x,y$}
         \State * controlla se $x = \langle  I \cup G \cup \left\{ o \right\}, W  \rangle$ è aciclico *
         \State * controlla se $y = 
         \langle
@@ -1828,7 +1828,7 @@ Per prima cosa dovrà eliminare le istanze negative, poi andrà a modificare l'i
 \begin{algorithm}[H]
 \caption{Soluzione di \emph{Subset Sum}}\label{alg:findss}
 \begin{algorithmic}[1]
-    \Procedure{FIND\_SS}{$ \langle S, t \rangle $}
+    \Procedure{Find\_SS}{$ \langle S, t \rangle $}
         \If{\Call{$A_{SS}$}{$ \langle S, t \rangle $} = \texttt{`No'}}
             \State return $\nexists S'$
         \EndIf
