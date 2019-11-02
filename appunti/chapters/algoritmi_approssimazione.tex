@@ -1314,9 +1314,7 @@ Christofides nel 1976 \cite{Chr76} ha trovato un algoritmo di 3/2-approssimazion
 
 L'idea è di partire da un $MST$ ed aggiungere archi in modo da rendere pari ogni nodo, e poi semplificare il cammino Euleriano trovato usando lo \emph{shortcutting}, come mostrato in figura \ref{fig:christofides}.
 
-% \begin{figure}[h]
-\begin{figure}[!b]
-% \begin{figure}[H]
+\begin{figure}[H]
     \centering
     \caption{Algoritmo di Christofides}
     \label{fig:christofides}
@@ -1365,10 +1363,7 @@ L'idea è di partire da un $MST$ ed aggiungere archi in modo da rendere pari ogn
             \end{pgfonlayer}
         \end{tikzpicture}
     \end{subfigure}
-\end{figure}
-    % \\[2pt]
-% magic to split a figure https://tex.stackexchange.com/a/278748
-\begin{figure}[htb]\ContinuedFloat
+    \\[2pt]
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{subfigure}[b]{0.45\textwidth}
         \centering
@@ -1851,3 +1846,113 @@ Grafi facili da mantenere
         \end{pgfonlayer}
     \end{tikzpicture}
 \end{figure}
+
+% \lipsum{10}
+
+\begin{figure}[!b]
+% \begin{figure}[H]
+    \centering
+    \caption{Algoritmo di Christofides splittato in due pagine}
+    \label{fig:mchristofides}
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \caption{$T^*$ con i nodi dispari evidenziati}
+        \label{fig:mchristmst}
+        \begin{tikzpicture} [
+                scale=1,
+                vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+                edge/.style = {draw,thick,-},
+                selected vertex/.style = {vertex, fill=blue!24},
+            ]
+            \foreach \pos/\name in {
+                    {(0,0)/c}, {(2,0)/d}, {(1,1.5)/b}, {(3,1.5)/e}, {(2,3)/a}}
+                \node[vertex] (\name) at \pos {$\name$};
+            \foreach \source/ \dest in {
+                    b/c,b/d,a/b,a/e}
+                \path[edge] (\source) edge (\dest);
+            \foreach \vertex in {b,c,d,e}
+                \path node[selected vertex] at (\vertex) {$\vertex$};
+        \end{tikzpicture}
+    \end{subfigure}
+    \quad
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \caption{Sottografo (completo) indotto dai nodi dispari, e matching perfetto di costo minimo evidenziato}
+        \label{fig:mchristmatching}
+        \begin{tikzpicture} [
+                scale=1,
+                vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+                edge/.style = {draw,thick,-},
+                selected edge/.style = {draw,line width=5pt,-,blue!24},
+            ]
+            \foreach \pos/\name in {
+                    {(0,0)/c}, {(2,0)/d}, {(1,1.5)/b}, {(3,1.5)/e}}
+                \node[vertex] (\name) at \pos {$\name$};
+            \foreach \source/ \dest in {
+                    b/c,b/d,b/e,c/e,c/d,e/d}
+                \path[edge] (\source) edge (\dest);
+            \begin{pgfonlayer}{background}
+                \foreach \source / \dest in {b/c,d/e}
+                    \path[selected edge] (\source.center) -- (\dest.center);
+            \end{pgfonlayer}
+        \end{tikzpicture}
+    \end{subfigure}
+\end{figure}
+    % \\[2pt]
+% magic to split a figure https://tex.stackexchange.com/a/278748
+\begin{figure}[htb]\ContinuedFloat
+    \caption{Algoritmo di Christofides splittato in due pagine (cont.)}
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \caption{Ciclo Euleriano
+            $ \langle c,b,d,e,a,b,c \rangle$
+        }
+        \label{fig:mchristeulertour}
+        \begin{tikzpicture} [
+                scale=1,
+                vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+                edge/.style = {draw,thick,-},
+                bent right/.style = {bend right=20},
+            ]
+            \foreach \pos/\name in {
+                    {(0,0)/c}, {(2,0)/d}, {(1,1.5)/b}, {(3,1.5)/e}, {(2,3)/a}}
+                \node[vertex] (\name) at \pos {$\name$};
+            \foreach \source/ \dest in {
+                    b/d,a/b,a/e,d/e}
+                \path[edge] (\source) edge (\dest);
+            \foreach \source/ \dest in {
+                    c/b,b/c}
+                \path[edge] (\source) edge [bent right] (\dest);
+        \end{tikzpicture}
+    \end{subfigure}
+    \quad
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \caption{Dopo lo \emph{shortcutting}:
+            $ \langle c,b,d,e,a,\cancel{b},c \rangle$
+        }
+        \label{fig:mchristresult}
+        \begin{tikzpicture} [
+                scale=1,
+                vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+                edge/.style = {draw,thick,-},
+                bent right/.style = {bend right=30},
+            ]
+            \foreach \pos/\name in {
+                    {(0,0)/c}, {(2,0)/d}, {(1,1.5)/b}, {(3,1.5)/e}, {(2,3)/a}}
+                \node[vertex] (\name) at \pos {$\name$};
+            \foreach \source/ \dest in {
+                    b/d,a/e,d/e,b/c}
+                \path[edge] (\source) edge (\dest);
+            \foreach \source/ \dest in {
+                    a/c}
+                \path[edge] (\source) edge [bent right] (\dest);
+        \end{tikzpicture}
+    \end{subfigure}
+\end{figure}
+
+\lipsum{10}
