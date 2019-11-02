@@ -722,12 +722,12 @@ Si ricordano le definizioni dei problemi di $HAMILTON$ e $TSP$:
     \texttt{istanza:} \quad & \langle G=(V,E) \rangle \\
     \texttt{domanda:} \quad & G \text{ contiene un ciclo semplice che tocca tutti i nodi (\emph{tour})?} \\
     \text{TSP:} & \quad \\
-    \texttt{istanza:} \quad & \langle G_C=(V,E_C), w, k \rangle \\
+    \texttt{istanza:} \quad & \langle G_C=(V,E_C), c, k \rangle \\
     \text{dove} \quad & G_C \text{ grafo completo non orientato} \\
-    & w : V \times V = E \to \mathbb{N} \\
+    & c : V \times V = E \to \mathbb{N} \\
     & k \in \mathbb{N} \\
     \texttt{domanda:} \quad & G \text{ contiene un ciclo \emph{Hamiltoniano} di costo $\leq k$?} \\
-    \text{dove} \quad &  c(\langle v_1, \cdots, v_{|V|+1} \rangle) = \sum_{i=1}^{|V|} w(v_i, v_{i+1} )  \\
+    \text{dove} \quad &  c(\langle v_1, \cdots, v_{|V|+1} \rangle) = \sum_{i=1}^{|V|} c(v_i, v_{i+1} )  \\
 \end{align*}
 
 \subsection{Inapprossimabilità del $TSP$ generale}
@@ -845,15 +845,141 @@ $f(x) \in L_{ \bpi_{m} }$
 si riuscirebbe a decidere un problema $\bnpc$ in tempo polinomiale.
 
 \section{Triangle TSP}
-pag 52
+% pag 52
 
 \subsection{Disuguaglianza triangolare}
-pag 51
+% pag 51
 
-\subsection{Riduzione da TSP a TTSP}
-pag 52
+Il problema generale del $TSP$ non è di grande utilità pratica, spesso un grafo è immerso in una metrica euclidea per cui gli archi soddisfano la disuguaglianza triangolare, ovvero i costi degli archi non possono essere arbitrari.
 
-\subsection{Approx TTSP}
+\begin{definition}[Disuguaglianza triangolare]
+    \label{def:disuguaglianzatriangolare}
+    Una funzione di costo del tipo
+    $c (u,v)$
+    intera, posivita, simmetrica,
+    soddisfa la disuguaglianza triangolare se
+    \begin{equation*}
+        \forall u,v,z \in V
+        \Rightarrow
+        c(u,v) \leq c(u,z) + c(z,v)
+    \end{equation*}
+\end{definition}
+
+Anche altri spazi metrici hanno questa proprietà, per esempio lo spazio metrico indotto dai cammini minimi in un grafo.
+
+\begin{definition}[Shortcutting]
+    \label{def:shortcutting}
+    In un grafo completo dove vale la disuguaglianza triangolare, si può modificare un cammino
+    \begin{equation*}
+        \pi = \langle \cdots, u, z, v, \cdots \rangle
+        \leadsto
+        \pi' = \langle \cdots, u, v, \cdots \rangle
+    \end{equation*}
+    e vale
+    \begin{equation*}
+        c (\pi') \leq c(\pi)
+    \end{equation*}
+    Questa proprietà si dice \emph{shortcutting} (scorciatoia).
+\end{definition}
+
+\subsection{Riduzione da TSP a TRIANGLE\_TSP}
+% pag 52
+Si modifica il problema del $TSP$ nel problema
+$TRIANGLE\_TSP$:
+
+\begin{align*}
+    \text{TRIANGLE\_TSP:} & \quad \\
+    \texttt{istanza:} \quad & \langle G=(V,E^K), c, k \rangle \\
+    \text{dove} \quad & G \text{ grafo completo non orientato} \\
+    & c : V \times V \to \mathbb{N} \text{ soddisfa la disuguaglianza triangolare}\\
+    & k \in \mathbb{N} \\
+    \texttt{domanda:} \quad & G \text{ contiene un ciclo \emph{Hamiltoniano} di costo $\leq k$?}
+\end{align*}
+Questa è una restrizione di un problema $\bnpc$, è stato ristretto così tanto da diventare polinomiale?
+\begin{proof}[Dimostrazione $TSP \lp TRIANGLE\_TSP$]
+    La funzione $f$ trasforma istanze del $TSP$ generale in istanze in cui la funzione costo rispetta la disuguaglianza triangolare scalando tutti i costi di una costante additiva.
+    \begin{align*}
+        f :
+        \langle
+        G = (V,E^K), c, k
+        \rangle
+        \to
+        &
+        \langle
+        G = (V,E^K), c', k'
+        \rangle
+        \\
+        W
+        % &= 
+        =
+        \max_{e \in E^K} \left\{ c \left( e \right) \right\}
+        ,
+        \quad
+        % \\
+        \forall e \in E^K
+        \quad
+        &
+        c'(e)
+        =
+        c(e) + W
+    \end{align*}
+    Questa funzione 
+    \begin{itemize}
+        \item è calcolabile in tempo polinomiale: $W$ è parte dell'istanza (che è polinomiale), e si somma il valore su $n^2$ archi.
+        \item soddisfa la disuguaglianza triangolare:
+            \begin{align*}
+                \forall u,v,z
+                \quad
+                c'(u,v)
+                &= 
+                c(u,v) + W
+                \\
+                & \leq
+                W + W
+                \\
+                & \leq
+                c(u,z) + W + c(z,v) + W
+                \\
+                & \leq
+                c'(u,z) + c'(z,v)
+            \end{align*}
+        \item è una riduzione:
+            ogni tour di costo $T$ in
+            $G=(V,E^K)$
+            sotto $c$ diventa un tour di costo $T + |V| W$ in 
+            $G=(V,E^K)$ sotto $c'$ e viceversa.
+            Ogni tour infatti ha esattamente $|V|$ archi, quindi a prescindere dai loro costi singoli il costo del tour varia di $|V|W$.
+            $G$ ha un tour di costo $\leq k$ sotto $c$
+            se e solo se 
+            $G$ ha un tour di costo $\leq k +|V|W$ sotto $c'$.
+            La funzione viene specificata completamente definendo $k' = k + |V|W$.
+            \begin{equation*}
+                f :
+                \langle
+                G = (V,E^K), c, k
+                \rangle
+                \to
+                \langle
+                G = (V,E^K), c', k+|V|W
+                \rangle
+            \end{equation*}
+            E si è mostrato che
+            \begin{equation*}
+                \langle
+                G, c, k
+                \rangle
+                \in TSP
+                \Leftrightarrow
+                \langle
+                G, c', k+|V|W
+                \rangle
+                \in T\_TSP
+            \end{equation*}
+                Per cui $T\_TSP \in \bnpc$.
+    \end{itemize}
+\end{proof}
+
+\subsection{Algoritmo di 2-approssimazione per  TRIANGLE\_TSP}
 pag 53-59
 
 MST, pag 53
@@ -863,7 +989,7 @@ Full Preorder, pag 54
 Approx TTSP, pag 53.8
 Fattore approssimazione approx TTSP, pag 55
 
-\subsection{Chrisotfides}
+\subsection{Algoritmo di Christofides}
 pag 56
 
 multigrafo, pag 56.2
@@ -879,16 +1005,6 @@ Fattore approssimazione, pag 58-59.5
 \section{Set Cover}
 
 \section{FPTAS Subset Sum}
-
-
-
-
-
-
-
-
-
-
 
 \section{Pezzi utili di \LaTeX{}}
 \begin{algorithm}[H]
