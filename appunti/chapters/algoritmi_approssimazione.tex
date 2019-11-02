@@ -1088,9 +1088,32 @@ La visita in preordine completa forma un ciclo (non semplice) all'interno dell'a
         % = 2 \cdot c(T^*)
     \end{equation*}
     \begin{proof}
-        La $FPW$ utilizza ogni arco del $MST$ esattamente due volte. La prima volta mentre sta scendendo ricorsivamente l'albero, seleziona $\left\{ r,v \right\}$, e la seconda mentre risale, selezionando $\left\{ v,r \right\}$.
+        La $FPW$ utilizza ogni arco del $MST$ esattamente due volte. La prima volta mentre sta scendendo ricorsivamente l'albero, seleziona $\left\{ r,v \right\}$, e la seconda mentre risale, selezionando $\left\{ v,r \right\}$, come mostrato in figura \ref{fig:fpwcost}.
     \end{proof}
 \end{proposizione}
+\begin{figure}[ht]
+    \centering
+    \caption{Costo $FPW$}
+    \label{fig:fpwcost}
+    \begin{tikzpicture} [
+            scale=1,
+            vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+            edge/.style = {draw,thick,-},
+            arrow edge/.style = {draw,thick,->},
+            bent right/.style = {bend right=20},
+            bent left/.style = {bend left=20},
+        ]
+        \foreach \pos/\name in {
+                {(1,1.5)/v}, {(2,3)/r}}
+            \node[vertex] (\name) at \pos {$\name$};
+        \foreach \source/ \dest in {
+                r/v,v/r}
+            \path[arrow edge] (\source) edge [bent right] (\dest);
+        \begin{pgfonlayer}{background}
+            \draw (1,1.5) -- (0,0) -- (2,0) -- cycle;
+        \end{pgfonlayer}
+    \end{tikzpicture}
+\end{figure}
 
 \subsubsection{Algoritmo di approssimazione}
 % Approx TTSP, pag 53.8
@@ -1109,7 +1132,7 @@ La visita in preordine completa forma un ciclo (non semplice) all'interno dell'a
 Se si considera di nuovo l'albero in figura \ref{fig:exalbero}, l'algoritmo ritorna
 $ \pi = \langle a,b,c,d,e,a \rangle$.
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \caption{Risultato dell'algoritmo}
     \label{fig:approxttsp2}
@@ -1543,6 +1566,40 @@ Una lista
     \item[--] $L_A = L$ (il linguaggio deciso da $A$ è $L$)
     \item[--] $T_A(|x|) = O(|x|^k)$ per qualche costante $k \geq 0$
 \end{itemize}
+
+Teoremi e varie
+
+\begin{theorem}
+    Un teorema senza nome
+\end{theorem}
+
+\begin{corollario}
+    Un primo corollario
+\end{corollario}
+
+\begin{corollario}
+    Un secondo corollario
+\end{corollario}
+
+\begin{theorem}[Nome del teorema]
+    Un teorema con nome
+\end{theorem}
+
+\begin{corollario}
+    Un primo corollario del teorema con nome
+\end{corollario}
+
+\begin{definition}
+    Una definizione utile, la seconda di questa sezione
+\end{definition}
+
+\begin{proposizione}[Nome della proposizione]
+    Una proposizione con nome
+\end{proposizione}
+
+\begin{corollario}
+    Un primo corollario della proposizione con nome
+\end{corollario}
 
 \subsection{Grafi}
 

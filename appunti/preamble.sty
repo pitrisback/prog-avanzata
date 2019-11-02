@@ -115,19 +115,24 @@
 \DeclareMathOperator*{\argmax}{arg\,max}
 
 %% CUSTOM THEOREM/DEF %%
+% https://www.overleaf.com/learn/latex/Theorems_and_proofs
 
 \theoremstyle{definition}
 \newtheorem{definition}{Definizione}[section]
 
-\theoremstyle{theorem}
+% the theorem counter resets with the section
+\theoremstyle{plain}
 \newtheorem{theorem}{Teorema}[section]
 
-\theoremstyle{theorem}
+% the lemma uses the same counter as theorem
+\theoremstyle{plain}
 \newtheorem{lemma}[theorem]{Lemma}
 
-\theoremstyle{theorem}
-\newtheorem{corollario}[theorem]{Corollario}
+% the corollary counter resets at each theorem
+\theoremstyle{plain}
+\newtheorem{corollario}{Corollario}[theorem]
 
-\theoremstyle{theorem}
+% the proposizione uses the same counter as theorem
+\theoremstyle{plain}
 \newtheorem{proposizione}[theorem]{Proposizione}
 
