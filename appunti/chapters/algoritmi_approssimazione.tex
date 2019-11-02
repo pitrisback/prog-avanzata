@@ -1268,7 +1268,7 @@ Componendo i risultati
 
 % prop nodi dispari in numero pari, pag 57.5
 \begin{proposizione}
-    Dato un (multi)grafo non orientato, il numeri di vertici di grado dispari, è sempre pari.
+    Dato un (multi)grafo non orientato, il numeri di vertici di grado dispari è sempre pari.
     \begin{proof}
         Ogni arco incide su due vertici, per cui
         \begin{equation*}
@@ -1289,7 +1289,7 @@ Componendo i risultati
 \end{proposizione}
 
 % def matching perfetto, pag 57.3
-\begin{definition}
+\begin{definition}[Matching perfetto]
     \label{def:matchingperfetto}
     Dato un grafo $G$ con $|V| = 2k$ un matching perfetto è un insieme di archi $M \subseteq E$ tale che
     \begin{itemize}
@@ -1297,11 +1297,140 @@ Componendo i risultati
         \item $\forall v \in V, \exists e \in M : v \in e$
     \end{itemize}
 \end{definition}
+Il grafo deve avere un numero pari di nodi perché ogni arco ne copre due.
+\\
+Se $G$ è pesato esiste un matching perfetto di costo minimo, che può essere individuato con l'algoritmo di \emph{Gabow} in tempo $
+O(|E||V|)
+$, che in caso di grafo denso ($
+|E| = \Theta (|V|^2)
+$) diventa $
+O(|V|^3)
+$.
 
 \subsubsection{Christofides}
-pag 56.9, 57.1
+% pag 56.9, 57.1
 
-Christofides nel 1976 \cite{Chr76} ha trovato un algoritmo di 3/2-approssimazione per TTSP.
+Christofides nel 1976 \cite{Chr76} ha trovato un algoritmo di 3/2-approssimazione per TRIANGLE\_TSP.
+
+L'idea è di partire da un $MST$ ed aggiungere archi in modo da rendere pari ogni nodo, e poi semplificare il cammino Euleriano trovato usando lo \emph{shortcutting}.
+
+\begin{equation*}
+    G' : 
+    E_{T^*}
+    \cup
+    E_{M^*}
+\end{equation*}
+
+\begin{figure}[h]
+    \centering
+    \caption{Algoritmo di Christofides}
+    \label{fig:christofides}
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \caption{$T^*$ con i nodi dispari evidenziati}
+        \label{fig:christmst}
+        \begin{tikzpicture} [
+                scale=1,
+                vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+                edge/.style = {draw,thick,-},
+                selected vertex/.style = {vertex, fill=blue!24},
+            ]
+            \foreach \pos/\name in {
+                    {(0,0)/c}, {(2,0)/d}, {(1,1.5)/b}, {(3,1.5)/e}, {(2,3)/a}}
+                \node[vertex] (\name) at \pos {$\name$};
+            \foreach \source/ \dest in {
+                    b/c,b/d,a/b,a/e}
+                \path[edge] (\source) edge (\dest);
+            \foreach \vertex in {b,c,d,e}
+                \path node[selected vertex] at (\vertex) {$\vertex$};
+        \end{tikzpicture}
+    \end{subfigure}
+    \quad
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \caption{Sottografo (completo) indotto dai nodi dispari, e matching perfetto di costo minimo evidenziato}
+        \label{fig:christmatching}
+        \begin{tikzpicture} [
+                scale=1,
+                vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+                edge/.style = {draw,thick,-},
+                selected edge/.style = {draw,line width=5pt,-,blue!24},
+            ]
+            \foreach \pos/\name in {
+                    {(0,0)/c}, {(2,0)/d}, {(1,1.5)/b}, {(3,1.5)/e}}
+                \node[vertex] (\name) at \pos {$\name$};
+            \foreach \source/ \dest in {
+                    b/c,b/d,b/e,c/e,c/d,e/d}
+                \path[edge] (\source) edge (\dest);
+            \begin{pgfonlayer}{background}
+                \foreach \source / \dest in {b/c,d/e}
+                    \path[selected edge] (\source.center) -- (\dest.center);
+            \end{pgfonlayer}
+        \end{tikzpicture}
+    \end{subfigure}
+    \\[2pt]
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \caption{Ciclo Euleriano
+            $ \langle c,b,d,e,a,b,c \rangle$
+        }
+        \label{fig:christeulertour}
+        \begin{tikzpicture} [
+                scale=1,
+                vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+                edge/.style = {draw,thick,-},
+                bent right/.style = {bend right=20},
+            ]
+            \foreach \pos/\name in {
+                    {(0,0)/c}, {(2,0)/d}, {(1,1.5)/b}, {(3,1.5)/e}, {(2,3)/a}}
+                \node[vertex] (\name) at \pos {$\name$};
+            \foreach \source/ \dest in {
+                    b/d,a/b,a/e,d/e}
+                \path[edge] (\source) edge (\dest);
+            \foreach \source/ \dest in {
+                    c/b,b/c}
+                \path[edge] (\source) edge [bent right] (\dest);
+        \end{tikzpicture}
+    \end{subfigure}
+    \quad
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \caption{Dopo lo \emph{shortcutting}:
+            $ \langle c,b,d,e,a,\cancel{b},c \rangle$
+        }
+        \label{fig:christeulertour}
+        \begin{tikzpicture} [
+                scale=1,
+                vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+                edge/.style = {draw,thick,-},
+                bent right/.style = {bend right=30},
+            ]
+            \foreach \pos/\name in {
+                    {(0,0)/c}, {(2,0)/d}, {(1,1.5)/b}, {(3,1.5)/e}, {(2,3)/a}}
+                \node[vertex] (\name) at \pos {$\name$};
+            \foreach \source/ \dest in {
+                    b/d,a/e,d/e,b/c}
+                \path[edge] (\source) edge (\dest);
+            \foreach \source/ \dest in {
+                    a/c}
+                \path[edge] (\source) edge [bent right] (\dest);
+        \end{tikzpicture}
+    \end{subfigure}
+\end{figure}
+\begin{equation*}
+    \quad
+    \text{con} 
+    \quad
+    c\left( 
+    M^*
+    \right)
+    \leq
+    \frac{c\left( H^* \right)}{2}
+\end{equation*}
 
 Fattore approssimazione, pag 58-59.5
 
@@ -1385,7 +1514,7 @@ Grafi facili da mantenere
     \centering
     \caption{Algoritmo di Prim}
     \label{fig:prim1}
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{subfigure}[b]{0.45\textwidth}
         \centering
         \caption{Archi uscenti dal primo nodo}
@@ -1429,7 +1558,7 @@ Grafi facili da mantenere
         \end{tikzpicture}
     \end{subfigure}
     \quad
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{subfigure}[b]{0.45\textwidth}
         \centering
         \caption{Arco selezionato}
@@ -1466,8 +1595,8 @@ Grafi facili da mantenere
             \end{pgfonlayer}
         \end{tikzpicture}
     \end{subfigure}
-    \\
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \\[2pt]
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{subfigure}[b]{0.45\textwidth}
         \centering
         \caption{Secondo arco selezionato}
@@ -1505,7 +1634,7 @@ Grafi facili da mantenere
         \end{tikzpicture}
     \end{subfigure}
     \quad
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{subfigure}[b]{0.45\textwidth}
         \centering
         \caption{Terzo arco selezionato, notare il primo arco ignorato, interno al $MST$.
