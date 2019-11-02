@@ -74,7 +74,7 @@ Molto informalmente, dato un programma $f$ che decide se le computazioni termina
 Sono problemi per cui non esiste né un algoritmo $A_{\bpi{}}$ che li risolva, e neppure un \emph{lower bound} esponenziale.
 Tuttavia c'è forte evidenza che il \emph{lower bound} esista, infatti si può provare che tutti i problemi in questa classe sono equivalenti, e questa proprietà di chiusura spinge verso la loro difficoltà.
 
-\section{Problemi Decisionali}
+\section{Problemi decisionali}
 % pag 4.2
 
 \subsection{Problemi di ottimizzazione}
@@ -93,7 +93,7 @@ si vuole individuare la soluzione di costo massimo (o minimo)
     s_{i}^{*} = \argmax \left\{ c(s) : s \in \bs{} (i) \right\}
 \end{equation*}
 
-\subsection{Problemi Decisionali}
+\subsection{Problemi decisionali}
 % pag 4.2
 
 Per definire problemi e complessità degli algoritmi in modo rigoroso è necessario standardizzare i problemi computazionali.
@@ -291,7 +291,7 @@ La codifica unaria quindi maschera l'algoritmo come molto buono, nascondendo la 
 \section{Classi di problemi}
 \label{sse:classidiprob}
 
-\subsection{Decisione in tempo polinomiale}
+\subsection{Decisione in tempo polinomiale (classe P)}
 % pag 9.5
 
 % MAYBE spostare questa definizione prima, dove introduce il legame linguaggio/algoritmo/problema
@@ -322,7 +322,7 @@ ossia l'insieme di stringhe per cui la computazione ha esito positivo.
 \end{definition}
 
 
-\subsection{Verifica in tempo polinomiale}
+\subsection{Verifica in tempo polinomiale (classe NP)}
 % pag 10
 
 La classe $\bnp{}$ non viene caratterizzata utilizzando automi non deterministici, ma analizzando la complessità della \emph{verifica} della correttezza di una soluzione di un dato problema, senza preoccuparsi di come si è trovata questa soluzione.
@@ -497,8 +497,6 @@ Sotto l'ipotesi $\bp{} \neq \bnp{} $, si trova una classe di linguaggi $\bnpc{} 
 
 % TODO aggiungi disegno insiemi p np
 
-
-\section{Problemi NP-completi}
 
 \subsection{Riduzione tra linguaggi}
 
@@ -1453,7 +1451,8 @@ Va dimostrato formalmente che:
     Non può succedere che lo stesso valore $b_i$ venga associato una volta a 0 una volta ad 1, perché ci sarebbero due letterali nella clique che sono uno la negazione dell'altro. Dopo questo assegnamento, c'è un letterale vero per ogni clausola, per cui $\Phi ( \vec{b} ) = 1$, e la forula è soddisfacibile.
 \end{proof}
 
-\subsection{\emph{Independent Set - Vertex Cover}}
+\subsection{Independent Set - Vertex Cover}
+% \subsection{\emph{Independent Set - Vertex Cover}}
 % TODO pag 24
 
 Si dimostra che $IS \in \bnpc$ e $VC \in \bnpc$, riducendo da $CLIQUE$.

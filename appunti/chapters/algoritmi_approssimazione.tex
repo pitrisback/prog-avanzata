@@ -300,7 +300,7 @@ quando si generano in tempo polinomiale delle sottoistanze piccole (di dimension
 
 \subsection{Introduzione}
 
-Dato un grafo non orientato, si vuole identificare il \emph{Vertex Cover} di taglia minima.
+Dato un grafo $G=(V,E)$ non orientato, si vuole identificare il \emph{Vertex Cover} di taglia minima, ovvero un sottoinsieme di vertici $V^* \subseteq V$ tale che ogni ogni arco in $E$ ha almeno un estremo in $V^*$.
 
 \subsubsection{Approccio Greedy}
 
@@ -452,57 +452,53 @@ Ovvero, \emph{l'analisi} dell'algoritmo può essere migliorata, rendendo per ese
 Si determina un grafo sotto cui l'algoritmo di approssimazione performa il peggio possibile e ottiene proprio il fattore di approssimazione.
 
 Per esempio il grafo in figura \ref{fig:vcapprox} ha un \emph{Vertex Cover} di taglia minima $3$, che si può verificare con una ricerca esaustiva data la piccola taglia.
-\begin{figure}[h]
-    \centering
-    \caption{Grafo con $VC$ di taglia minima 3 (nodi rossi)}
-    \label{fig:vcapprox}
-    \begin{tikzpicture} [
-            auto,
-            swap,
-            scale=1.4,
-            vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
-            selected vertex/.style = {vertex, fill=red!24},
-            edge/.style = {draw,thick,-},
-            weight/.style = {font=\small},
-            selected edge/.style = {draw,line width=5pt,-,red!50},
-            outbound edge/.style = {draw,line width=5pt,-,blue!50},
-            ignored edge/.style = {draw,line width=5pt,-,black!20}
-        ]
-        % First we draw the vertices
-        \foreach \pos/\name in {
-                {(0,0)/A}, {(0,2)/B}, {(2,2)/C}, {(4,2)/D},
-                {(2,0)/E}, {(4,0)/F}, {(6,2)/G}}
-            \node[vertex] (\name) at \pos {$\name$};
-        % Connect vertices with edges and draw weights
-        \foreach \source/ \dest in {
-                A/B, B/C, C/E, C/D, E/F, D/E, D/G, F/D}
-            \path[edge] (\source) -- (\dest);
-        % color a node
-        \foreach \vertex in {B, D, E}
-            \path node[selected vertex] at (\vertex) {$\vertex$};
-    \end{tikzpicture}
-\end{figure}
+
 Applicando l'algoritmo di approssimazione, e scegliendo volontariamente gli archi in un ordine sfortunato, però, risulta un \emph{Vertex Cover} da $6=2 \cdot 3$ elementi, per cui l'approssimazione non è migliorabile (figura \ref{fig:vcapproxbad}).
 \begin{figure}[h]
     \centering
-    \caption{Esempio di esecuzione pessima dell'algoritmo di approssimazione}
+    \caption{Esempio di esecuzione pessima dell'algoritmo di approssimazione.
+        Gli archi blu sono quelli presi in esame all'iterazione corrente, gli archi rossi sono quelli coperti dai nodi selezionati.
+        I nodi blu sono quelli selezionati in $V'$.
+    }
     \label{fig:vcapproxbad}
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{subfigure}[b]{0.45\textwidth}
         \centering
-        \caption{Primo arco scelto $\left\{ B,C \right\}$}
-        \label{fig:vcapproxbad1}
+        \caption{$VC$ ottimo di taglia 3 (nodi verdi)}
+        \label{fig:vcapprox}
         \begin{tikzpicture} [
-                auto,
-                swap,
                 scale=1,
                 vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
-                selected vertex/.style = {vertex, fill=red!24},
+                selected vertex/.style = {vertex, fill=green!24},
                 edge/.style = {draw,thick,-},
-                weight/.style = {font=\small},
-                selected edge/.style = {draw,line width=5pt,-,red!50},
-                outbound edge/.style = {draw,line width=5pt,-,blue!50},
-                ignored edge/.style = {draw,line width=5pt,-,black!20}
+            ]
+            % First we draw the vertices
+            \foreach \pos/\name in {
+                    {(0,0)/A}, {(0,2)/B}, {(2,2)/C}, {(4,2)/D},
+                    {(2,0)/E}, {(4,0)/F}, {(6,2)/G}}
+                \node[vertex] (\name) at \pos {$\name$};
+            % Connect vertices with edges and draw weights
+            \foreach \source/ \dest in {
+                    A/B, B/C, C/E, C/D, E/F, D/E, D/G, F/D}
+                \path[edge] (\source) -- (\dest);
+            % color a node
+            \foreach \vertex in {B, D, E}
+                \path node[selected vertex] at (\vertex) {$\vertex$};
+        \end{tikzpicture}
+    \end{subfigure}
+    \quad
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \caption{Primo arco: $V' = \left\{ B,C \right\}$}
+        \label{fig:vcapproxbad1}
+        \begin{tikzpicture} [
+                scale=1,
+                vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+                selected vertex/.style = {vertex, fill=blue!24},
+                edge/.style = {draw,thick,-},
+                selected edge/.style = {draw,line width=5pt,-,blue!35},
+                ignored edge/.style = {draw,line width=5pt,-,red!25}
             ]
             % First we draw the vertices
             \foreach \pos/\name in {
@@ -520,27 +516,23 @@ Applicando l'algoritmo di approssimazione, e scegliendo volontariamente gli arch
                 \foreach \source / \dest in {B/C}
                     \path[selected edge] (\source.center) -- (\dest.center);
                 \foreach \source / \dest in {A/B,C/E,C/D}
-                    \path[outbound edge] (\source.center) -- (\dest.center);
+                    \path[ignored edge] (\source.center) -- (\dest.center);
             \end{pgfonlayer}
         \end{tikzpicture}
     \end{subfigure}
-    \quad
+    \\[2pt]
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{subfigure}[b]{0.45\textwidth}
         \centering
-        \caption{Secondo arco scelto $\left\{ E,F \right\}$}
+        \caption{Secondo arco $V' = \left\{ B,C,E,F \right\}$}
         \label{fig:vcapproxbad2}
         \begin{tikzpicture} [
-                auto,
-                swap,
                 scale=1,
                 vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
-                selected vertex/.style = {vertex, fill=red!24},
+                selected vertex/.style = {vertex, fill=blue!24},
                 edge/.style = {draw,thick,-},
-                weight/.style = {font=\small},
-                selected edge/.style = {draw,line width=5pt,-,red!50},
-                outbound edge/.style = {draw,line width=5pt,-,blue!50},
-                ignored edge/.style = {draw,line width=5pt,-,black!20}
+                selected edge/.style = {draw,line width=5pt,-,blue!35},
+                ignored edge/.style = {draw,line width=5pt,-,red!25}
             ]
             % First we draw the vertices
             \foreach \pos/\name in {
@@ -555,28 +547,27 @@ Applicando l'algoritmo di approssimazione, e scegliendo volontariamente gli arch
                 \foreach \vertex in {B, C, E, F}
                 \path node[selected vertex] at (\vertex) {$\vertex$};
             \begin{pgfonlayer}{background}
-                \foreach \source / \dest in {B/C, E/F}
+                \foreach \source / \dest in {E/F}
                     \path[selected edge] (\source.center) -- (\dest.center);
-                \foreach \source / \dest in {A/B,C/E,C/D,D/E,D/F}
-                    \path[outbound edge] (\source.center) -- (\dest.center);
+                \foreach \source / \dest in {B/C,A/B,C/E,C/D,D/E,D/F}
+                    \path[ignored edge] (\source.center) -- (\dest.center);
             \end{pgfonlayer}
         \end{tikzpicture}
     \end{subfigure}
-    \\
+    \quad
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{subfigure}[b]{0.45\textwidth}
         \centering
-        \caption{Terzo arco scelto $\left\{ D,G \right\}$}
+        \caption{Terzo arco $V' = \left\{ B,C,E,F,D,G \right\}$}
         \label{fig:vcapproxbad3}
         \begin{tikzpicture} [
                 scale=1,
                 vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
-                selected vertex/.style = {vertex, fill=red!24},
+                selected vertex/.style = {vertex, fill=blue!24},
                 edge/.style = {draw,thick,-},
                 weight/.style = {font=\small},
-                selected edge/.style = {draw,line width=5pt,-,red!50},
-                outbound edge/.style = {draw,line width=5pt,-,blue!50},
-                ignored edge/.style = {draw,line width=5pt,-,black!20}
+                selected edge/.style = {draw,line width=5pt,-,blue!35},
+                ignored edge/.style = {draw,line width=5pt,-,red!25}
             ]
             % First we draw the vertices
             \foreach \pos/\name in {
@@ -591,10 +582,10 @@ Applicando l'algoritmo di approssimazione, e scegliendo volontariamente gli arch
             \foreach \vertex in {B, C, E, F, D, G}
                 \path node[selected vertex] at (\vertex) {$\vertex$};
             \begin{pgfonlayer}{background}
-                \foreach \source / \dest in {B/C, E/F, D/G}
+                \foreach \source / \dest in {D/G}
                     \path[selected edge] (\source.center) -- (\dest.center);
-                \foreach \source / \dest in {A/B,C/E,C/D,D/E,D/F}
-                    \path[outbound edge] (\source.center) -- (\dest.center);
+                \foreach \source / \dest in {B/C,E/F,A/B,C/E,C/D,D/E,D/F}
+                    \path[ignored edge] (\source.center) -- (\dest.center);
             \end{pgfonlayer}
         \end{tikzpicture}
     \end{subfigure}
@@ -627,12 +618,7 @@ Seguendo la funzione trovata nella riduzione da $CLIQUE$ a $VC$, si potrebbe pen
         \begin{tikzpicture} [
                 scale=1,
                 vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
-                selected vertex/.style = {vertex, fill=red!24},
                 edge/.style = {draw,thick,-},
-                weight/.style = {font=\small},
-                selected edge/.style = {draw,line width=5pt,-,red!50},
-                outbound edge/.style = {draw,line width=5pt,-,blue!50},
-                ignored edge/.style = {draw,line width=5pt,-,black!20}
             ]
             % First we draw the vertices
             \foreach \pos/\name in {
@@ -653,12 +639,8 @@ Seguendo la funzione trovata nella riduzione da $CLIQUE$ a $VC$, si potrebbe pen
         \begin{tikzpicture} [
                 scale=1,
                 vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
-                selected vertex/.style = {vertex, fill=red!24},
+                selected vertex/.style = {vertex, fill=green!24},
                 edge/.style = {draw,thick,-},
-                weight/.style = {font=\small},
-                selected edge/.style = {draw,line width=5pt,-,red!50},
-                outbound edge/.style = {draw,line width=5pt,-,blue!50},
-                ignored edge/.style = {draw,line width=5pt,-,black!20}
             ]
             % First we draw the vertices
             \foreach \pos/\name in {
@@ -680,16 +662,10 @@ Seguendo la funzione trovata nella riduzione da $CLIQUE$ a $VC$, si potrebbe pen
         \caption{Clique in $G$}
         \label{fig:approxclique3}
         \begin{tikzpicture} [
-                auto,
-                swap,
                 scale=1,
                 vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
-                selected vertex/.style = {vertex, fill=red!24},
+                selected vertex/.style = {vertex, fill=blue!24},
                 edge/.style = {draw,thick,-},
-                weight/.style = {font=\small},
-                selected edge/.style = {draw,line width=5pt,-,red!50},
-                outbound edge/.style = {draw,line width=5pt,-,blue!50},
-                ignored edge/.style = {draw,line width=5pt,-,black!20}
             ]
             % First we draw the vertices
             \foreach \pos/\name in {
@@ -980,6 +956,7 @@ Questa è una restrizione di un problema $\bnpc$, è stato ristretto così tanto
 \end{proof}
 
 \subsection{Algoritmo di 2-approssimazione per  TRIANGLE\_TSP}
+\label{sss:ttsp2approx}
 % pag 53-59
 
 \subsubsection{Albero di copertura minimo}
@@ -1118,7 +1095,7 @@ La visita in preordine completa forma un ciclo (non semplice) all'interno dell'a
 \subsubsection{Algoritmo di approssimazione}
 % Approx TTSP, pag 53.8
 \begin{algorithm}[H]
-\caption{Approssimatore per Triangle TSP}\label{alg:dnc}
+\caption{Approssimatore per Triangle TSP}\label{alg:approxttsp}
 \begin{algorithmic}[1]
     \Procedure{Approx\_T\_TSP}{$i$}
         \State $T_G \gets$ \Call{Prim}{$ \langle G, c\rangle$}
@@ -1197,8 +1174,8 @@ Dove si indica $H'$ la soluzione trovata al problema $T\_TSP$, $H^*$ la soluzion
         % (di costo non necessariamente minimo)
         , che è di sicuro non di costo inferiore al migliore albero di copertura trovato:
         \begin{equation*}
-            c(|H^*|) \geq 
-            c(|H^*| - \{ e \} ) =
+            c(H^*) \geq 
+            c(H^* - \{ e \} ) =
             c(ST) \geq 
             c(T^*)
         \end{equation*}
@@ -1312,16 +1289,11 @@ $.
 
 Christofides nel 1976 \cite{Chr76} ha trovato un algoritmo di 3/2-approssimazione per TRIANGLE\_TSP.
 
-L'idea è di partire da un $MST$ ed aggiungere archi in modo da rendere pari ogni nodo, e poi semplificare il cammino Euleriano trovato usando lo \emph{shortcutting}.
+L'idea è di partire da un $MST$ ed aggiungere archi in modo da rendere pari ogni nodo, e poi semplificare il cammino Euleriano trovato usando lo \emph{shortcutting}, come mostrato in figura \ref{fig:christofides}.
 
-\begin{equation*}
-    G' : 
-    E_{T^*}
-    \cup
-    E_{M^*}
-\end{equation*}
-
-\begin{figure}[h]
+% \begin{figure}[h]
+\begin{figure}[!b]
+% \begin{figure}[H]
     \centering
     \caption{Algoritmo di Christofides}
     \label{fig:christofides}
@@ -1370,7 +1342,10 @@ L'idea è di partire da un $MST$ ed aggiungere archi in modo da rendere pari ogn
             \end{pgfonlayer}
         \end{tikzpicture}
     \end{subfigure}
-    \\[2pt]
+\end{figure}
+    % \\[2pt]
+% magic to split a figure https://tex.stackexchange.com/a/278748
+\begin{figure}[htb]\ContinuedFloat
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{subfigure}[b]{0.45\textwidth}
         \centering
@@ -1402,7 +1377,7 @@ L'idea è di partire da un $MST$ ed aggiungere archi in modo da rendere pari ogn
         \caption{Dopo lo \emph{shortcutting}:
             $ \langle c,b,d,e,a,\cancel{b},c \rangle$
         }
-        \label{fig:christeulertour}
+        \label{fig:christresult}
         \begin{tikzpicture} [
                 scale=1,
                 vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
@@ -1421,22 +1396,89 @@ L'idea è di partire da un $MST$ ed aggiungere archi in modo da rendere pari ogn
         \end{tikzpicture}
     \end{subfigure}
 \end{figure}
+
+% Fattore approssimazione, pag 58-59.5
+
+Il grafo ottenuto (prima dello \emph{shortcutting}), è
 \begin{equation*}
-    \quad
-    \text{con} 
-    \quad
-    c\left( 
-    M^*
-    \right)
+    G' = 
+    (
+        V, \,
+        E_{T^*}
+        \cup
+        M^*
+    )
+\end{equation*}
+È già stato mostrato nella sezione \ref{sss:ttsp2approx} che
+$ c(T^*) \leq c(H^*) $.
+Resta da dimostrare che
+% \begin{equation*}
+$
+    c( M^*)
+    \leq
+    % \frac{c\left( H^* \right)}{2}
+    c\left( H^* \right) / 2
+% \end{equation*}
+$.
+Si supponga di conoscere $H^*$ e di aver calcolato $T^*$. Alcuni nodi in $T^*$ saranno di grado pari \emph{in} $T^*$. Usando lo \emph{shortcutting}, si rimuovono questi nodi da $
+H^*
+$, ottenendo $
+H^{*'}
+$, con chiaramente $
+c( H^{*'})
+\leq
+c(H^* )
+$.
+I nodi dispari in $T^*$ erano in numero pari, quindi $
+H^{*'}
+$ ha un numero pari di vertici.
+Colorando in modo alternato gli archi del ciclo, gli archi di ciascun colore sono un matching: $
+H^{*'}
+= M_B \cup M_R
+$, il cui costo è pari al costo del ciclo $
+c( H^{*'}) = c(M_B) + c(M_R)
+$. Combinando i due vincoli sui costi si ottiene
+\begin{equation*}
+    c(M_B) + c(M_R)
+    \leq
+    c(H^* )
+\end{equation*}
+Se si indica il matching di costo inferiore con $M_X$, deve valere
+\begin{equation*}
+    c(M_X)
+    \leq
+    \frac{
+    c(H^* )
+    }{2}
+\end{equation*}
+($x+y\leq z \to \min \left\{ x,y \right\} \leq z/2$).
+Il matching perfetto 
+costruito sui nodi dispari di $T^*$
+dall'algoritmo di Christofides è quello ottimo $M^*$, di costo $
+    c(M^*)
+    \leq
+    c(M_X)
+$. Combinando,
+\begin{equation*}
+    c( M^*)
     \leq
     \frac{c\left( H^* \right)}{2}
 \end{equation*}
-
-Fattore approssimazione, pag 58-59.5
+In conclusione
+\begin{equation*}
+    c (H') \leq
+    c ( E_{T^*} \cup M^*) \leq 
+    c\left( H^* \right)
+    +
+    \frac{c\left( H^* \right)}{2}
+    =
+    \frac{3}{2} \,
+    c\left( H^* \right)
+\end{equation*}
 
 \subsection{Altri risultati sull'approssimazione di TSP}
 
-Arora ha mostrato nel 1998 \cite{Arora:1998:PTA:290179.290180} che $EUCLIDEAN\_TSP$ (la distanza per esempio è la norma 2) ammette un algoritmo PTAS,
+Arora ha mostrato nel 1998 \cite{Arora:1998:PTA:290179.290180} che $EUCLIDEAN\_TSP$ (in cui la distanza per esempio è la norma 2) ammette un algoritmo PTAS,
 per cui
 $
 \forall \varepsilon,
@@ -1446,7 +1488,7 @@ e la complessità è $
 O \left( n^{1/\varepsilon} \right)
 $.
 
-Papadimitriou e Vempala hanno mostrato nel 2006 \cite{Papadimitriou:2006:s00493-006-0008-z} che il $TRIANGLE\_TSP$ con archi simmetrici non può essere approssimato con un fattore migliore di 219/220.
+Papadimitriou e Vempala hanno mostrato nel 2006 \cite{Papadimitriou:2006:s00493-006-0008-z} che il $TRIANGLE\_TSP$ con archi simmetrici non può essere approssimato con un fattore migliore di 220/219.
 
 \section{Set Cover}
 
