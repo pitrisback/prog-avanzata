@@ -2297,13 +2297,16 @@ Per provare che $LONG-PATH$ è NP-hard, si riduce da $HAMILTON$.
             \begin{tikzpicture} [
                     scale=1,
                     vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+                    selected vertex/.style={circle,fill=blue!25,minimum size=20pt,inner sep=0pt},
                     empty vertex/.style={circle,minimum size=20pt,inner sep=0pt},
                     edge/.style = {draw,thick,-},
                     dotted edge/.style = {draw,thick,dotted},
                     bent right/.style = {bend right=30,},
                 ]
                 \foreach \pos/\name/\label in {
-                        {(1.5,0)/x1/$x$},
+                        {(1.5,0)/x1/$x$}}
+                    \node[selected vertex] (\name) at \pos {\label};
+                \foreach \pos/\name/\label in {
                         {(0,1.8)/c/$u_1$},
                         {(0.8,3)/a/$u_2$},
                         {(3,1.8)/e/$u_k$}}
@@ -2327,6 +2330,7 @@ Per provare che $LONG-PATH$ è NP-hard, si riduce da $HAMILTON$.
             \begin{tikzpicture} [
                     scale=1,
                     vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+                    selected vertex/.style={circle,fill=blue!25,minimum size=20pt,inner sep=0pt},
                     empty vertex/.style={circle,minimum size=20pt,inner sep=0pt},
                     edge/.style = {draw,thick,-},
                     dotted edge/.style = {draw,thick,dotted},
@@ -2334,7 +2338,9 @@ Per provare che $LONG-PATH$ è NP-hard, si riduce da $HAMILTON$.
                 ]
                 \foreach \pos/\name/\label in {
                         {(1,0)/x1/$u_x$},
-                        {(2,0)/x2/$v_x$},
+                        {(2,0)/x2/$v_x$}}
+                    \node[selected vertex] (\name) at \pos {\label};
+                \foreach \pos/\name/\label in {
                         {(0,1.8)/c/$u_1$},
                         {(0.8,3)/a/$u_2$},
                         {(3,1.8)/e/$u_k$}}
@@ -2422,7 +2428,7 @@ $
 si aggiunge un nodo $u_e$ e una coppia di archi $
 \left\{ u_1, u_e \right\}, 
 \left\{ u_2, u_e \right\}
-$.
+$ (figura \ref{fig:dosevc}).
 In questo modo gli archi sono triplicati, e i nodi sono $|V|+|E|$.
 Formalmente:
 \begin{align*}
@@ -2453,7 +2459,87 @@ Formalmente:
 \end{align*}
 Nota: sono stati eliminati i nodi isolati
 (i nodi isolati non servono per VC).
-\\
+
+\begin{figure}[H]
+    \centering
+    \caption{Creazione dei triangoli con apice $u_e$}
+    \label{fig:dosevc}
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \caption{Grafo originale}
+        \label{fig:dosevc:orig}
+        \begin{tikzpicture} [
+                auto,
+                scale=1,
+                vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+                selected vertex/.style = {vertex, fill=red!24},
+                edge/.style = {draw,thick,-},
+                weight/.style = {font=\small},
+            ]
+            \foreach \pos/\name in {
+                    {(0,2)/a},
+                    {(2,-1)/c},
+                    {(2,3)/b},
+                    {(2,1)/d}}
+                \node[vertex] (\name) at \pos {$\name$};
+            \foreach \source/ \dest /\weight in {
+                    d/c/e_1,d/a/e_2,a/b/e_3,b/d/e_4}
+                \path[edge] (\source) -- node[weight] {$\weight$} (\dest);
+        \end{tikzpicture}
+    \end{subfigure}
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \caption{Grafo espanso}
+        \label{fig:dosevc:triangoli}
+        \begin{tikzpicture} [
+                auto,
+                scale=1,
+                vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+                selected vertex/.style = {vertex, fill=blue!24},
+                weight/.style = {font=\small},
+                edge/.style = {draw,thick,-},
+                selected edge/.style = {draw,line width=5pt,-,blue!24},
+            ]
+            % vecchi vertici
+            \foreach \pos/\name in {
+                    {(0,2)/a},
+                    {(2,-1)/c},
+                    {(2,3)/b},
+                    {(2,1)/d}}
+                \node[vertex] (\name) at \pos {$\name$};
+            % nuovi vertici colorati, con label
+            \foreach \pos/\name/\label in {
+                    {(0,0)/e2/$u_{e_1}$},
+                    {(0,4)/e3/$u_{e_2}$},
+                    {(4,2)/e4/$u_{e_3}$},
+                    {(4,0)/e1/$u_{e_4}$}}
+                \node[selected vertex] (\name) at \pos {\label};
+            % vecchi edge, con label
+            \foreach \source/ \dest /\weight in {
+                    d/c/e_1,d/a/e_2,a/b/e_3,b/d/e_4}
+                \path[edge] (\source) -- node[weight] {$\weight$} (\dest);
+            % nuovi edge
+            \foreach \source / \dest in {
+                    a/e3,b/e3,
+                    a/e2,d/e2,
+                    c/e1,d/e1,
+                    d/e4,b/e4}
+                \path[edge] (\source) -- (\dest);
+            % colora nuovi edge
+            \begin{pgfonlayer}{background}
+                \foreach \source / \dest in {
+                        a/e3,b/e3,
+                        a/e2,d/e2,
+                        c/e1,d/e1,
+                        d/e4,b/e4}
+                    \path[selected edge] (\source.center) -- (\dest.center);
+            \end{pgfonlayer}
+        \end{tikzpicture}
+    \end{subfigure}
+\end{figure}
+
 Si vuole mostrare che
 \begin{equation*}
     x =
