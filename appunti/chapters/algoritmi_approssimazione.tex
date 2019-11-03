@@ -2058,3 +2058,48 @@ Grafi facili da mantenere
 \end{figure}
 
 \lipsum{10}
+
+\begin{figure}[h]
+    \centering
+    \caption{$3-CNF-SAT$ to $CLIQUE$}
+    \label{fig:3cnfsatex}
+    \begin{tikzpicture} [
+            scale=1,
+            vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+            edge/.style = {draw,thin,-},
+            outbound edge/.style = {draw,line width=4pt,-,blue!30},
+            selected edge/.style = {draw,line width=4pt,-,red!30},
+        ]
+        % First we draw the vertices
+        \foreach \pos/\name/\label in {
+                % top left
+                {(-1.5,5)/c/x_3},
+                {(-2.5,3.5)/b/x_2},
+                {(-3.5,2)/a/\bar{x_1}},
+                % top right
+                {(1.5,5)/d/x_1},
+                {(2.5,3.5)/e/x_2},
+                {(3.5,2)/f/\bar{x_3}},
+                % bottom row
+                {(2,0)/g/\bar{x_3}},
+                {(0,0)/h/\bar{x_2}},
+                {(-2,0)/i/x_1}}
+            \node[vertex] (\name) at \pos {\name $\label$};
+        % Connect vertices with edges
+        \foreach \source/ \dest in {
+                f/g,f/i,
+                e/g,e/i,
+                d/g,d/h,d/i,
+                c/d,c/e,c/h,c/i,
+                b/d,b/e,b/f,b/g,b/i,
+                a/e,a/f,a/g,a/h}
+            \path[edge] (\source) -- (\dest);
+        % color some edges on background layer
+        \begin{pgfonlayer}{background}
+            \foreach \source / \dest in {c/d,d/i,i/c}
+                \path[outbound edge] (\source.center) -- (\dest.center);
+            \foreach \source / \dest in {a/e,e/g,g/a}
+                \path[selected edge] (\source.center) -- (\dest.center);
+        \end{pgfonlayer}
+    \end{tikzpicture}
+\end{figure}

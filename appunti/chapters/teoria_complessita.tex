@@ -1301,7 +1301,7 @@ Anche formule semplici sono difficili da soddisfare. Cosa c'entra quel 3? Nell'a
 Se la riduzione per restrizione è complicata, perché si deve provare che il problema un po' più facile di quello NP-completo è ancora NP-completo, se si lavora per generalizzazione le cose sono più semplici: se su un sottoinsieme di istanze il problema è già difficile, resta difficile su insiemi più ampi (sotto alcune ipotesi).
 
 \subsection{Clique}
-% TODO pag 21
+% pag 21
 
 \begin{definition}[Clique]
     \label{def:clique}
@@ -1394,7 +1394,6 @@ L'idea si formalizza definendo $E_{\Phi}$
 \end{equation*}
 Si definisce così $A_f$, quadratica nella taglia della formula.
 
-% TODO formula e grafo d'esempio pag 22.9 23
 Va dimostrato formalmente che:
 \begin{equation*}
     \langle  \Phi  \rangle \: \in 3-CNF-SAT
@@ -1450,6 +1449,71 @@ Va dimostrato formalmente che:
     Questo non necessariamente definisce i valori per tutti i $b_i$, ci può essere uno stesso letterale che soddisfa più clausole. Se ci sono valori non assegnati, li si pone a un valore arbitrario.
     Non può succedere che lo stesso valore $b_i$ venga associato una volta a 0 una volta ad 1, perché ci sarebbero due letterali nella clique che sono uno la negazione dell'altro. Dopo questo assegnamento, c'è un letterale vero per ogni clausola, per cui $\Phi ( \vec{b} ) = 1$, e la forula è soddisfacibile.
 \end{proof}
+
+% formula e grafo d'esempio pag 22.9 23
+Per esempio, si consideri la formula 
+\begin{equation*}
+    \Phi \left( x_1, x_2, x_3 \right) = 
+    \left( \bar{x_1} \vee x_2 \vee x_3 \right) \wedge
+    \left( x_1 \vee x_2 \vee \bar{x_3} \right) \wedge
+    \left( x_1 \vee \bar{x_2} \vee \bar{x_3} \right)
+\end{equation*}
+In figura \ref{fig:clique3cnfsat} è mostrato il grafo corrispondente, e due possibili clique al suo interno.
+La clique rossa induce l'assegnamento
+$
+b_1 = 0,
+b_2 = 1,
+b_3 = 0
+$, che effettivamente soddisfa la formula.
+La clique blu induce solo due valori dell'assegnamento:
+$
+b_1 = 1,
+b_3 = 1
+$, che da soli già soddisfano la formula, e il valore per $b_2$ può essere quindi scelto in modo arbitrario.
+\begin{figure}[h]
+    \centering
+    \caption{Esempio di trasformazione di formula in grafo}
+    \label{fig:clique3cnfsat}
+    \begin{tikzpicture} [
+            scale=1,
+            vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+            edge/.style = {draw,thin,-},
+            outbound edge/.style = {draw,line width=4pt,-,blue!30},
+            selected edge/.style = {draw,line width=4pt,-,red!30},
+        ]
+        % First we draw the vertices
+        \foreach \pos/\name/\label in {
+                % top left
+                {(-1.5,5)/c/x_3},
+                {(-2.5,3.5)/b/x_2},
+                {(-3.5,2)/a/\bar{x_1}},
+                % top right
+                {(1.5,5)/d/x_1},
+                {(2.5,3.5)/e/x_2},
+                {(3.5,2)/f/\bar{x_3}},
+                % bottom row
+                {(2,0)/g/\bar{x_3}},
+                {(0,0)/h/\bar{x_2}},
+                {(-2,0)/i/x_1}}
+            \node[vertex] (\name) at \pos {$\label$};
+        % Connect vertices with edges
+        \foreach \source/ \dest in {
+                f/g,f/i,
+                e/g,e/i,
+                d/g,d/h,d/i,
+                c/d,c/e,c/h,c/i,
+                b/d,b/e,b/f,b/g,b/i,
+                a/e,a/f,a/g,a/h}
+            \path[edge] (\source) -- (\dest);
+        % color some edges on background layer
+        \begin{pgfonlayer}{background}
+            \foreach \source / \dest in {c/d,d/i,i/c}
+                \path[outbound edge] (\source.center) -- (\dest.center);
+            \foreach \source / \dest in {a/e,e/g,g/a}
+                \path[selected edge] (\source.center) -- (\dest.center);
+        \end{pgfonlayer}
+    \end{tikzpicture}
+\end{figure}
 
 \subsection{Independent Set - Vertex Cover}
 % \subsection{\emph{Independent Set - Vertex Cover}}
