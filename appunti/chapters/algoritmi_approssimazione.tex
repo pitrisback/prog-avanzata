@@ -42,7 +42,7 @@ i sottoproblemi $S_{i, j}$ dove $S_i$ è un prefisso di $S$: $ S_i = \{ s_1, \do
 e dove $1 \leq j \leq t$.
 Questi sottoproblemi sono
 % Quanti sono questi sottoproblemi? Ce ne sono
-$n \cdot t$, ma $t$ è il numero nell'istanza,
+$n \, t$, ma $t$ è il numero nell'istanza,
 % quanti bit ci sono per rappresentarlo?
 che si rappresenta con solamente $\log t$ bit.
 Il numero di problemi è quindi esponenziale nella taglia dell'istanza, se $t = 2^{50}$, si genererebbe un numero enorme di problemi, ma il numero viene rappresento con $50$ bit.
@@ -524,7 +524,7 @@ Applicando l'algoritmo di approssimazione, e scegliendo volontariamente gli arch
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{subfigure}[b]{0.45\textwidth}
         \centering
-        \caption{Secondo arco $V' = \left\{ B,C,E,F \right\}$}
+        \caption{Secondo arco: $V' = \left\{ B,C,E,F \right\}$}
         \label{fig:vcapproxbad2}
         \begin{tikzpicture} [
                 scale=1,
@@ -558,7 +558,7 @@ Applicando l'algoritmo di approssimazione, e scegliendo volontariamente gli arch
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{subfigure}[b]{0.45\textwidth}
         \centering
-        \caption{Terzo arco $V' = \left\{ B,C,E,F,D,G \right\}$}
+        \caption{Terzo arco: $V' = \left\{ B,C,E,F,D,G \right\}$}
         \label{fig:vcapproxbad3}
         \begin{tikzpicture} [
                 scale=1,
@@ -682,7 +682,7 @@ Seguendo la funzione trovata nella riduzione da $CLIQUE$ a $VC$, si potrebbe pen
     \end{subfigure}
 \end{figure}
 Questo vale se il \emph{Vertex Cover} trovato è di dimesione massima. Se però si considera un'istanza di $CLIQUE$ $G=(V,E)$,
-per cui la clique massima ha dimensione $|V^*|=n/2+1$, il $VC$ nel complementato avrà taglia $n-\left( n/2 +1 \right) = n/2 -1$. L'algoritmo di approssimazione sbaglia al massimo di un fattore 2, per cui $|V'|=2 \cdot \left( n/2 -1 \right) = n-2$. La clique trovata ha taglia $|V-V'|=n-\left( n-2 \right) = 2$. Il fattore di approssimazione risulta allora
+per cui la clique massima ha dimensione $|V^*|=n/2+1$, il $VC$ nel complementato avrà taglia $n-\left( n/2 +1 \right) = n/2 -1$. L'algoritmo di approssimazione sbaglia al massimo di un fattore 2, per cui $|V'|=2 \, \left( n/2 -1 \right) = n-2$. La clique trovata ha taglia $|V-V'|=n-\left( n-2 \right) = 2$. Il fattore di approssimazione risulta allora
 \begin{equation*}
     \rho_{AC} \geq \frac{n/2+1}{2} \approx \frac{n}{4}
 \end{equation*}
@@ -1084,8 +1084,7 @@ La visita in preordine completa forma un ciclo (non semplice) all'interno dell'a
     \label{prop:costofpw}
     Il costo della $FPW$ è due volte il costo del $MST$
     \begin{equation*}
-        c(FPW) = 2 \cdot c(MST)
-        % = 2 \cdot c(T^*)
+        c(FPW) = 2 \, c(MST)
     \end{equation*}
     \begin{proof}
         La $FPW$ utilizza ogni arco del $MST$ esattamente due volte. La prima volta mentre sta scendendo ricorsivamente l'albero, seleziona $\left\{ r,v \right\}$, e la seconda mentre risale, selezionando $\left\{ v,r \right\}$, come mostrato in figura \ref{fig:fpwcost}.
@@ -1185,8 +1184,6 @@ Dove si indica $H'$ la soluzione trovata al problema $T\_TSP$, $H^*$ la soluzion
         Componendo si ottiene 
         \begin{equation*}
             c(H')
-            % \leq c(FPW)
-            % = 2 \cdot c(T^*)
             \leq 2 \, c(T^*)
         \end{equation*}
     \item Per $|H^*|$:
