@@ -1438,9 +1438,12 @@ $
     c\left( H^* \right) / 2
 % \end{equation*}
 $.
-Si supponga di conoscere $H^*$ e di aver calcolato $T^*$. Alcuni nodi in $T^*$ saranno di grado pari \emph{in} $T^*$. Usando lo \emph{shortcutting}, si rimuovono questi nodi da $
+Si supponga di conoscere $H^*$ e di aver calcolato $T^*$. Alcuni nodi in $T^*$ saranno di grado pari \emph{in} $T^*$
+(fig \ref{fig:christeven}).
+Usando lo \emph{shortcutting}, si rimuovono questi nodi da $
 H^*
-$, ottenendo $
+$
+(fig \ref{fig:christremoved}), ottenendo $
 H^{*'}
 $, con chiaramente $
 c( H^{*'})
@@ -1450,7 +1453,9 @@ $.
 I nodi dispari in $T^*$ erano in numero pari, quindi $
 H^{*'}
 $ ha un numero pari di vertici.
-Colorando in modo alternato gli archi del ciclo, gli archi di ciascun colore sono un matching: $
+Colorando in modo alternato gli archi del ciclo
+(fig \ref{fig:christredblue}),
+gli archi di ciascun colore sono un matching perfetto (non ottimo): $
 H^{*'}
 = M_B \cup M_R
 $, il cui costo è pari al costo del ciclo $
@@ -1493,6 +1498,106 @@ In conclusione
     \frac{3}{2} \,
     c\left( H^* \right)
 \end{equation*}
+
+\begin{figure}[H]
+    \centering
+    \caption{Costo del matching perfetto ottimo}
+    \label{fig:christofidescost}
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \caption{$T^*$ con i nodi pari evidenziati}
+        \label{fig:christeven}
+        \begin{tikzpicture} [
+                scale=1,
+                vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+                selected vertex/.style = {vertex, fill=red!24},
+                edge/.style = {draw,thick,-},
+            ]
+            \foreach \pos/\name in {
+                    {(0,0)/c}, {(2,0)/d}, {(1,1.5)/b}, {(3,1.5)/e}, {(2,3)/a}}
+                \node[vertex] (\name) at \pos {$\name$};
+            \foreach \source/ \dest in {
+                    b/c,b/d,a/b,a/e}
+                \path[edge] (\source) edge (\dest);
+            \foreach \vertex in {a}
+                \path node[selected vertex] at (\vertex) {$\vertex$};
+        \end{tikzpicture}
+    \end{subfigure}
+    \quad
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \caption{Tour ottimo $H^*$}
+        \label{fig:christoptimalh}
+        \begin{tikzpicture} [
+                scale=1,
+                vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+                edge/.style = {draw,thick,-},
+            ]
+            \foreach \pos/\name in {
+            {(0,1.8)/c}, {(2.5,0)/d}, {(0.5,0)/b}, {(3,1.8)/e}, {(1.5,3)/a}}
+                \node[vertex] (\name) at \pos {$\name$};
+            \foreach \source/ \dest in {
+            b/d,a/e,d/e,b/c,a/c}
+                \path[edge] (\source) edge (\dest);
+        \end{tikzpicture}
+    \end{subfigure}
+    \\[2pt]
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \caption{Tour ridotto $H^{*'}$}
+        \label{fig:christremoved}
+        \begin{tikzpicture} [
+                scale=1,
+                vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+                edge/.style = {draw,thick,-},
+                ignored edge/.style = {draw,line width=5pt,-,red!24},
+                selected edge/.style = {draw,line width=5pt,-,blue!24},
+            ]
+            \foreach \pos/\name in {
+            {(0,1.8)/c}, {(2.5,0)/d}, {(0.5,0)/b}, {(3,1.8)/e}, {(1.5,3)/a}}
+                \node[vertex] (\name) at \pos {$\name$};
+            \foreach \source/ \dest in {
+                    b/d,c/e,d/e,b/c}
+                \path[edge] (\source) edge (\dest);
+            \begin{pgfonlayer}{background}
+                \foreach \source / \dest in {a/c,a/e}
+                    \path[ignored edge] (\source.center) -- (\dest.center);
+                \foreach \source / \dest in {e/c}
+                    \path[selected edge] (\source.center) -- (\dest.center);
+            \end{pgfonlayer}
+        \end{tikzpicture}
+    \end{subfigure}
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \caption{Matching $M_R$ e $M_B$}
+        \label{fig:christredblue}
+        \begin{tikzpicture} [
+                scale=1,
+                vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+                edge/.style = {draw,thick,-},
+                ignored edge/.style = {draw,line width=5pt,-,red!24},
+                selected edge/.style = {draw,line width=5pt,-,blue!24},
+            ]
+            \foreach \pos/\name in {
+            {(0,1.8)/c}, {(2.5,0)/d}, {(0.5,0)/b}, {(3,1.8)/e}, {(1.5,3)/a}}
+                \node[vertex] (\name) at \pos {$\name$};
+            \foreach \source/ \dest in {
+                    b/d,c/e,d/e,b/c}
+                \path[edge] (\source) edge (\dest);
+            \begin{pgfonlayer}{background}
+                \foreach \source / \dest in {b/c,d/e}
+                    \path[ignored edge] (\source.center) -- (\dest.center);
+                \foreach \source / \dest in {e/c,b/d}
+                    \path[selected edge] (\source.center) -- (\dest.center);
+            \end{pgfonlayer}
+        \end{tikzpicture}
+    \end{subfigure}
+\end{figure}
+
 
 \subsection{Altri risultati sull'approssimazione di TSP}
 
