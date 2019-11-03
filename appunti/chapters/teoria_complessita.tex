@@ -998,6 +998,8 @@ Questa catena vale in entrambe le direzioni, e quindi prova che
 
 \section{Riduzioni notevoli}
 
+\subsection{Da BC\_SAT a \emph{formula satisfiability} (SAT)}
+
 \begin{definition}[Formula]
     \label{def:formula}
     Una formula $\langle \Phi \left( x_1, \cdots, x_n \right) \rangle$ è un'espressione totalmente parentesizzata, costruita su $\vec{x}$ e gli operatori (connettori):
@@ -1042,7 +1044,7 @@ Come per $BC\_SAT$, si definisce assegnamento di valori di verità alle variabil
 
 Una formula si dice soddisfacibile se esiste $\vec{b}$ per cui assume valore $1$.
 
-\subsection{Da BC\_SAT a \emph{formula satisfiability} (SAT)}
+\subsubsection{Definizione del problema SAT}
 Si vuole provare che $SAT$ appartiene a $\bnpc$.
 \begin{align*}
     SAT:& \\
@@ -1538,6 +1540,49 @@ In entrambe le riduzioni come gadget si sfrutta il grafo complementare:
     e vale $G^{C^{C}} = G$
 \end{definition}
 
+
+\begin{figure}[H]
+    \centering
+    \caption{Grafo complemetare}
+    \label{fig:grafocomp}
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \caption{Grafo originale}
+        \label{fig:grafocomp:orig}
+        \begin{tikzpicture} [
+                scale=1,
+                vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+                edge/.style = {draw,thick,-},
+            ]
+            \foreach \pos/\name in {
+            {(0,1.8)/c}, {(2.5,0)/d}, {(0.5,0)/b}, {(3,1.8)/e}, {(1.5,3)/a}}
+                \node[vertex] (\name) at \pos {$\name$};
+            \foreach \source/ \dest in {
+                    b/d,a/b,a/d,b/e,c/e}
+                \path[edge] (\source) edge (\dest);
+        \end{tikzpicture}
+    \end{subfigure}
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \caption{Grafo complementare}
+        \label{fig:grafocomp:comp}
+        \begin{tikzpicture} [
+                scale=1,
+                vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+                edge/.style = {draw,thick,-},
+            ]
+            \foreach \pos/\name in {
+            {(0,1.8)/c}, {(2.5,0)/d}, {(0.5,0)/b}, {(3,1.8)/e}, {(1.5,3)/a}}
+                \node[vertex] (\name) at \pos {$\name$};
+            \foreach \source/ \dest in {
+                    a/c,b/c,a/e,d/e,c/d}
+                \path[edge] (\source) edge (\dest);
+        \end{tikzpicture}
+    \end{subfigure}
+\end{figure}
+
 \subsubsection{\emph{Independent Set}}
 
 \begin{definition}[\emph{Independent Set}]
@@ -1693,8 +1738,87 @@ La trasformazione è nuovamente una serie di equivalenze:
 \end{align*}
 \end{proof}
 
-Le riduzioni valgono in tutte le permutazioni, per ESERCIZIO si provi ad esempio che $VC \lp IS$
+\subsubsection{Riduzione $ IS \lp VC $ }
 
+Le riduzioni valgono in tutte le permutazioni, per ESERCIZIO si provi ad esempio che $IS \lp VC$
+
+I due problemi sono complementari:
+
+\begin{figure}[H]
+    \centering
+    \caption{IS (blu) e VC (rosso) sono insiemi di vertici complementari}
+    \label{fig:isvc}
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{tikzpicture} [
+            scale=1,
+            vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+            is vertex/.style = {vertex, fill=blue!24},
+            vc vertex/.style = {vertex, fill=red!24},
+            edge/.style = {draw,thick,-},
+        ]
+        \foreach \pos/\name in {
+        {(0,1.8)/c}, {(2.5,0)/d}, {(0.5,0)/b}, {(3,1.8)/e}, {(1.5,3)/a}}
+            \node[vertex] (\name) at \pos {$\name$};
+        \foreach \source/ \dest in {
+                c/e,b/e,b/d,a/e,d/e,c/d}
+            \path[edge] (\source) edge (\dest);
+        \foreach \vertex in {a,b,c}
+            \path node[is vertex] at (\vertex) {$\vertex$};
+        \foreach \vertex in {d,e}
+            \path node[vc vertex] at (\vertex) {$\vertex$};
+    \end{tikzpicture}
+\end{figure}
+
+\begin{proof}[Dimostrazione $ IS \lp VC $ ]
+Si trasforma un'istanza di $IS$ in una di $VC$
+\begin{equation*}
+    f : \langle G = (V,E), k \rangle  \to  \langle G = (V,E), |V|-k \rangle
+\end{equation*}
+La trasformazione è simile a quella da $CLIQUE$:
+\begin{align*}
+    &
+    x = \langle G = (V,E), k \rangle \in IS \Leftrightarrow
+    \\
+    % definizione di IS
+    \Leftrightarrow &
+    \exists V' \subseteq V : 
+    \left( |V'| = k \right)
+    \wedge
+    \left( 
+        \forall u, v \in V, u \ne v :
+        \left( u \in V' \right) \wedge \left( v \in V' \right)
+        \Rightarrow
+        \left\{ u,v \right\} \notin E
+    \right)
+    % \\
+    \intertext{usando la contropositiva ($a \Rightarrow b \leadsto \neg b \Rightarrow \neg a$)}
+    \Leftrightarrow &
+    \exists V' \subseteq V : 
+    \left( |V'| = k \right)
+    \wedge
+    \left( 
+        \forall u, v \in V, u \ne v :
+        \left\{ u,v \right\} \in E
+        \Rightarrow
+        \left( u \notin V' \right) \vee \left( v \notin V' \right)
+    \right)
+    \intertext{considerando $V'' = V - V'$}
+    % definizione di VC taglia k
+    \Leftrightarrow &
+    \exists V'' : % = V - V' :
+    \left( |V''| = |V|-k \right)
+    \wedge
+    \left( 
+        \forall u, v \in V, u \ne v :
+        \left\{ u,v \right\} \in E
+        \Rightarrow
+        \left( u \in V'' \right) \vee \left( v \in V'' \right)
+    \right)
+    \\
+    \Leftrightarrow &
+    f(x) = \langle G = (V,E), |V|-k \rangle \in VC
+\end{align*}
+\end{proof}
 
 \subsection{Subset Sum}
 \label{sss:subsetsum}
