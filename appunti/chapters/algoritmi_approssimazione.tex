@@ -1719,7 +1719,8 @@ $.
 La gloriosa analisi di Pucci risulta assai più intuitiva delle paginate di conti del Cormen.
 
 Si definiscono:
-\begin{itemize}
+% \begin{itemize}
+\begin{itemize}[noitemsep,parsep=0pt,partopsep=0pt,topsep=0pt]
     \item $n = |X|$: la taglia di $X$
     \item $U_t$:
         l'insieme di elementi ancora da coprire all'inizio dell'iterazione $t$
@@ -1756,13 +1757,57 @@ Si è così trovato un rate rispetto allo stato attuale della taglia di $U_t$, c
     \left( 1- \frac{1}{k} \right)^2 |U_{t-1}|
     \leq
     \left( 1- \frac{1}{k} \right)^3 |U_{t-2}|
+    \leq \ldots
     \\
-    \text{per \emph{unfolding}: }
-    & \leq \ldots
-    \\
+    \text{(per \emph{unfolding}) } \quad \quad
+    % & \leq \ldots
+    % \\
     & \leq
     \left( 1- \frac{1}{k} \right)^{i+1} |U_{t-i}|
+    % \\
+    % \text{per \emph{unfolding}: }
+    % & \leq \ldots
+\intertext{Il caso base si raggiunge per $i= t -1$}
+    | U_{t+1} |
+    & \leq \left( 1- \frac{1}{k} \right)^t |U_1|
+    \\
+    \text{(vale  $|U_1| = |X| = n$) } \quad \quad
+    & 
+    = n \left( 1- \frac{1}{k} \right)^t
+    \intertext{
+        Vale
+        $1-x \leq e^{-x}$.
+        Per $x>0$ la disuguaglianza è stretta.
+        $(1-x)^t \leq (e^{-x})^t$
+    }
+    \text{($x=1/k$) } \quad \quad
+    & <
+    n e^{-t/k}
+    \\
+% \intertext{Scegliendo $t = k \log n$}
+    \text{(Scegliendo $t = k \log n$) } \quad \quad
+    &=
+    n e^{-(k \log n)/k}
+    = n e^{-n} 
+    =  1
+% \intertext{Ovvero si è mostrato che:}
+    \\
+    | U_{t+1} |
+    <  1
+    &
+    \Rightarrow
+    | U_{t+1} |
+    = 0
+\intertext{Per cui la $(t+1)$-esima iterazione non avviene.
+L'insieme $C$ ha taglia pari al numero di iterazioni, per cui
+}
+    |C| &= t \leq k \log n
+    = |C^*| \log n
+    \\
+    \rho (n) &= 
+    \frac{|C|}{|C^*|} \leq \log n
 \end{align*}
+
 
 
 \section{FPTAS Subset Sum}
