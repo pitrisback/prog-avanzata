@@ -1612,6 +1612,159 @@ Papadimitriou e Vempala hanno mostrato nel 2006 \cite{Papadimitriou:2006:s00493-
 
 \section{Set Cover}
 
+\subsubsection{Definizione}
+
+Dato un insieme $X$ e
+una famiglia di sottoinsiemi
+$
+\bff \subseteq \left\{ S : S \subseteq X \right\}
+$,
+un \emph{set cover } $C$ di $X$ è un insieme di sottoinsiemi $S$ di $X$, tali per cui ogni elemento di $X$ è in almeno un sottoinsieme selezionato
+(chiaramente ogni elemento $x \in X$ deve appartenere ad almeno un sottoinsieme $S \in \bff$).
+\begin{equation*}
+    C \subseteq \bff : 
+    \forall x \in X, \exists S \in C :
+    x \in S
+\end{equation*}
+Si cerca il \emph{set cover} di taglia minima $C^*$.
+
+Il problema viene posto come problema decisionale:
+\begin{align*}
+    SC: & \\
+    \texttt{istanza:} \quad & \langle X, \bff, k \rangle \\
+    \text{dove} \quad &
+    \bff \subseteq \left\{ S : S \subseteq X \right\} = \mathcal{B} \left( X \right)
+    \\
+    & \forall  x \in X : \exists S \in \bff : x \in S
+    \\
+    \texttt{domanda:} \quad &
+    \exists \, C \subseteq \bff \text{ con } |C| \leq k
+\end{align*}
+
+Il problema è simile al \emph{vertex cover}, ma molto più generale, si può quindi ridurre da $VC$ a $SC$.
+\begin{proof}
+    $VC \lp SC$:
+    si esibisce una trasformazione da un problema di $VC$ in uno di $SC$, rappresentando un grafo come insieme $x$ e $\bff$.
+    \begin{align*}
+        f
+        &
+        : 
+        \langle G = \left( V,E \right), k \rangle 
+        \in VC
+        \to
+        \langle X, \bff, k \rangle 
+        \in SC
+        \\*
+        X &= E
+        \\*
+        \bff &= 
+        \left\{ N_v = \left\{ 
+                e \in E : v \in e
+            \right\}
+            \forall v \in V
+        \right\}
+    \end{align*}
+    Dove $\bff$ è definito come la capacità di copertura di ogni vertice.
+    Se si conosce un $VC$, è un insieme di nodi che copre ogni arco. Si selezionano i corrispettivi insiemi $N_v$, a ciascuno dei quali appartengono tutti gli archi coperti da $v$. In questo modo ogni elemento di $X$ appartiene ad almeno un insieme $N_v$.
+    \\
+    La trasformazione è lineare nella taglia dell'istanza, ed è da notare che \emph{preserva} l'approssimazione.
+\end{proof}
+
+\subsection{Approccio \emph{Greedy}}
+
+L'approccio più intuitivo si rivela estremamente efficace: si seleziona ad ogni iterazione l'insieme $T \in \bff$ che contiene il numero massimo di elementi ancora da coprire.
+\begin{algorithm}[H]
+\caption{Approssimatore per \emph{Set Cover}}\label{alg:approxsc}
+\begin{algorithmic}[1]
+    \Procedure{Approx\_Set\_Cover}{$ \langle X, \bff \rangle $}
+        \State $U \gets X$
+        \Comment{elementi ancora da coprire}
+        \State $C \gets \emptyset$
+        \While{$U \ne \emptyset$}
+            \State $S \gets \argmax \left\{ | T \cap U | : T \in \bff \right\}$
+            \State $U \gets U - S$
+            \Comment{si rimuovono da $U$ gli elementi in $U \cap S$}
+            \State $C \gets C \cup \left\{ S \right\}$
+        \EndWhile
+        \State return $C$
+        % \Comment{CONQUER}
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+L'algoritmo è terminante, perché $\bff$ è una famiglia di copertura, ossia ogni elemento di $X$ appartiene ad almeno uno degli insiemi $S$.
+Almeno un elemento del residuo $U$ è quindi nell'insieme $T$ selezionato, e quindi almeno un elemento viene rimosso da $U$ a ciascuna iterazione; $|U|$ decresce monotonicamente, e quando si svuota l'algoritmo termina.
+
+L'algoritmo è corretto, perché termina proprio quando tutti gli elementi sono coperti.
+
+L'algoritmo ha complessità ragionevole. Con un implementazione naive, il numero di iterazioni è pari a $
+\min \{ |X|, |\bff| \}
+$, perché si copre almeno un elemento per iterazione ($|X|$) e se venissero selezionati tutti i sottoinsiemi l'algoritmo terminerebbe di sicuro, perché la famiglia è di copertura (|$\bff|$).
+Il calcolo dell'$\argmax$ costa $|\bff||X|$ al caso peggiore, bisogna verificare se ogni elemento appartiene ad ogni insieme della famiglia.
+La complessità risulta quindi $
+O \left( 
+\min \{ |X|, |\bff| \}
+|\bff||X|
+\right)
+$, ovvero cubica nella taglia dell'istanza.
+
+Con una struttura dati più sofisticata, si ottiene un'implementazione di complessità lineare dell'algoritmo
+$
+\Theta \left( 
+    \sum_{s \in S}^{} |S|
+\right)
+$.
+
+\subsubsection{Fattore di approssimazione}
+
+La gloriosa analisi di Pucci risulta assai più intuitiva delle paginate di conti del Cormen.
+
+Si definiscono:
+\begin{itemize}
+    \item $n = |X|$: la taglia di $X$
+    \item $U_t$:
+        l'insieme di elementi ancora da coprire all'inizio dell'iterazione $t$
+        (vale $U_1 = X$)
+    \item $S_t$:
+        il sottoinsieme selezionato all'iterazione $t$:
+        $S \gets \argmax \left\{ | T \cap U_t | : T \in \bff \right\}$
+\end{itemize}
+Se si eseguono $h$ iterazioni, allora $|C|=h$.
+Si studia la dinamica di $|U_t|$, che deve essere veloce, se si vuole coprire con pochi insiemi gli elementi.
+L'insieme $X$ è coperto ottimamente dall'insieme ignoto $
+C^* = \left\{
+    S_1^*,
+    S_2^*,
+    \cdots,
+    S_k^*
+\right\}
+$, di taglia $|C^*|=k$.
+All'iterazione generica $t>0$, ci sono ancora degli elementi scoperti in $U_t$.
+Esistono $k$ sottoinsiemi di $\bff$ che coprono $U_t$, e per \emph{pigeon hole}, almeno uno di questi deve essere grande:
+\begin{equation*}
+    \exists S_j^* :
+    | S_j^* \cap U_t | \geq \frac{|U_t|}{k}
+\end{equation*}
+Se tutti gli insiemi fossero di taglia minore, anche immaginandoli composti di elementi distinti, non coprirebbero $U_t$.
+Si è così trovato un rate rispetto allo stato attuale della taglia di $U_t$, che comporta una disequazione di ricorrenza:
+\begin{align*}
+    | U_{t+1} |
+    \leq
+    |U_t| - \frac{|U_t|}{k}
+    &= \left( 1- \frac{1}{k} \right) |U_t|
+    \\
+    & \leq
+    \left( 1- \frac{1}{k} \right)^2 |U_{t-1}|
+    \leq
+    \left( 1- \frac{1}{k} \right)^3 |U_{t-2}|
+    \\
+    \text{per \emph{unfolding}: }
+    & \leq \ldots
+    \\
+    & \leq
+    \left( 1- \frac{1}{k} \right)^{i+1} |U_{t-i}|
+\end{align*}
+
+
 \section{FPTAS Subset Sum}
 
 \section{Pezzi utili di \LaTeX{}}
