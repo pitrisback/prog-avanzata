@@ -1893,8 +1893,116 @@ Il fattore che si trova è
     \quad
     \bar{k} = \max \left\{ |S| : S \in \bff \right\}
 \end{equation*}
+Se l'insieme più grande nella famiglia è di taglia paragonabile all'intero insieme $X$, il fattore resta logaritmico nella taglia dell'istanza. Assai più interessante il caso in cui $\bff$ è composta da molti insiemi piccoli: se la taglia è costante, anche $\rho$ lo è.
 
-Si esegue un'analisi ammortizzata, assegnando un peso agli elementi coperti: se ad un'iterazione si coprono parecchi elementi, questi avranno costo basso, mentre in un'iterazione ``sprecata'', che copre pochi elementi, sarà assegnato un costo maggiore.
+Per esempio, in un caso particolare di \emph{vertex cover}, si può usare la soluzione approssimata per \emph{set cover} ottenendo una soluzione di qualità migliore.
+Si modifica l'istanza di $VC$, aggiungendo il vincolo $
+deg(v) \leq 3, \forall v \in V
+$.
+Questo problema resta NP-completo, in maniera simile a $3-CNF-SAT$ è il caso estremo di difficoltà.
+Si usa la trasformazione vista per la riduzione, che produce la famiglia
+$
+        \bff = 
+        \left\{ N_v = \left\{ 
+                e \in E : v \in e
+            \right\}
+            \forall v \in V
+        \right\}
+$
+con chiaramente $|N_v| \leq 3$.
+Il fattore di approssimazione risulta allora
+\begin{equation*}
+    \rho = H_3 =
+    \frac{1}{1} +
+    \frac{1}{2} +
+    \frac{1}{3} = 
+    \frac{11}{6} < 2
+\end{equation*}
+migliore di quello visto per la soluzione approssimata di $VC$.
+
+\begin{proof}
+    Si esegue un'analisi ammortizzata, assegnando un peso agli elementi coperti: se ad un'iterazione si coprono parecchi elementi, questi avranno costo basso, mentre in un'iterazione ``sprecata'', che copre pochi elementi, sarà assegnato un costo maggiore.
+    Si associa quindi peso unitario ad ogni iterazione, che viene suddiviso uniformemente sugli elementi coperti a quell'iterazione.
+    \\
+    La notazione usata è la stessa, all'iterazione $t$ mancano ancora da coprire gli elementi in $U_t$, e viene selezionato l'insieme $S_t$.
+    \\
+    Agli elementi coperti per la prima volta si associa un costo nella maniera seguente
+    \begin{equation*}
+        \forall x \in
+        U_t \cap S_t
+        \quad
+        \leadsto
+        \quad
+        c_x =
+        \frac{1}{
+            | U_t \cap S_t |
+        }
+    \end{equation*}
+    Si calcola per primo il costo della soluzione ammissibile ricavata
+    \begin{align*}
+        |C|
+        &=
+        \sum_{t=1}^{|C|} 1
+        \\
+        &=
+        \sum_{t=1}^{|C|} 
+        \sum_{x \in 
+            U_t \cap S_t
+        }
+        \frac{1}{
+            | U_t \cap S_t |
+        }
+        \\
+        &=
+        \sum_{t=1}^{|C|} 
+        \sum_{x \in 
+            U_t \cap S_t
+        }
+        c_x
+        \intertext{gli insiemi $U_t \cap S_t$ sono disgiunti ad ogni iterazione, si coprono solo nuovi elementi, quindi la somma si semplifica alla somma di tutti i pesi possibili}
+        &= 
+        \sum_{x \in X}^{} c_x
+    \end{align*}
+    La relazione tra il \emph{set cover} ottimo e la pesatura si ricava utilizzando il lemma seguente, la cui dimostrazione è molto articolata.
+    \begin{lemma}
+        \label{lem:armonico}
+        Vale, $\forall S \in \bff$
+        \begin{equation*}
+            \sum_{x \in S}^{} c_x \leq
+            H_{|S|}
+        \end{equation*}
+    \end{lemma}
+    Si prosegue quindi dal risultato raggiunto
+    \begin{align*}
+        |C|
+        &= 
+        \sum_{x \in X}^{} c_x
+        \intertext{il \emph{set cover} ottimo prende ogni nodo \emph{almeno} una volta}
+        & \leq 
+        \sum_{S \in C^*}^{} \left( 
+            \,
+            \sum_{x \in S}^{} c_x
+        \right)
+        \intertext{applicando il lemma \ref{lem:armonico}}
+        & \leq 
+        \sum_{S \in C^*} H_{|S|}
+        \intertext{selezionando il termine massimo e sommandolo $|C^*|$ volte, risulta}
+        & \leq 
+        |C^*| \,
+        H_{
+            \max \left\{ |S| : S \in \bff \right\}
+        }
+        \intertext{ovvero}
+        \rho = \frac{|C|}{|C^*|}
+        & \leq \,
+        H_{
+            \max \left\{ |S| : S \in \bff \right\}
+        }
+    \end{align*}
+\end{proof}
+
+
+
 \section{FPTAS Subset Sum}
 
 \section{Pezzi utili di \LaTeX{}}
