@@ -119,19 +119,18 @@
 %% CUSTOM THEOREM/DEF %%
 % https://www.overleaf.com/learn/latex/Theorems_and_proofs
 
+% DEFINITION
 \theoremstyle{definition}
-\newtheorem{definition}{Definizione}[section]
-
+\newtheorem{definition/}{Definizione}[section]
 % magic for marking the end of the definitions
 % https://tex.stackexchange.com/a/292371
-\theoremstyle{definition}
-\newtheorem{defi/}{Definition}
+\newenvironment{definition}
+  % {\renewcommand{\qedsymbol}{$\blacksquare$}%
+  {\renewcommand{\qedsymbol}{$\square$}%
+   \pushQED{\qed}\begin{definition/}}
+  {\popQED\end{definition/}}
 
-\newenvironment{defi}
-  {\renewcommand{\qedsymbol}{$\blacksquare$}%
-   \pushQED{\qed}\begin{defi/}}
-  {\popQED\end{defi/}}
-
+% THEOREM
 
 % the theorem counter resets with the section
 \theoremstyle{plain}
