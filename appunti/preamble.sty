@@ -63,6 +63,7 @@
 
 \usepackage{tikz} % for tikzpicture
 \usetikzlibrary{shapes} % node shapes
+\usepackage{pgfplots} % for plots inside tikz
 
 % some say this should be the last package added...
 \usepackage{hyperref}	% enable hyperlinks to referenced elements
@@ -120,6 +121,17 @@
 
 \theoremstyle{definition}
 \newtheorem{definition}{Definizione}[section]
+
+% magic for marking the end of the definitions
+% https://tex.stackexchange.com/a/292371
+\theoremstyle{definition}
+\newtheorem{defi/}{Definition}
+
+\newenvironment{defi}
+  {\renewcommand{\qedsymbol}{$\blacksquare$}%
+   \pushQED{\qed}\begin{defi/}}
+  {\popQED\end{defi/}}
+
 
 % the theorem counter resets with the section
 \theoremstyle{plain}

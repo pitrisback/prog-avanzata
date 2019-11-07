@@ -1108,6 +1108,7 @@ La visita in preordine completa forma un ciclo (non semplice) all'interno dell'a
         \foreach \source/ \dest in {
                 r/v,v/r}
             \path[arrow edge] (\source) edge [bent right] (\dest);
+            \node at (1,-0.35) {$FPW(T,v)$};
         \begin{pgfonlayer}{background}
             \draw (1,1.5) -- (0,0) -- (2,0) -- cycle;
         \end{pgfonlayer}
@@ -1808,8 +1809,92 @@ L'insieme $C$ ha taglia pari al numero di iterazioni, per cui
     \frac{|C|}{|C^*|} \leq \log n
 \end{align*}
 
+\subsubsection{Fattore di approssimazione più stretto}
 
+Il fattore di approssimazione ricavato è relativo al caso peggiore.
+In alcune istanze particolari, però, si riesce a ricavare un \emph{bound} molto più stretto, addirittura costante, legato ai numeri armonici.
 
+\begin{defi}[Numero armonico]
+    \label{def:numeroarmonico}
+    Un numero armonico è dato dalla serie troncata degli inversi dei naturali
+    \begin{equation*}
+        H_k = \sum_{i=1}^{k} \frac{1}{i}
+    \end{equation*}
+    I valori dei numeri armonici sono legati strettamente ai logaritmi, infatti la \rfig{fig:numeriarmonici} mostra come si possa limitare il valore
+    \begin{equation*}
+        1 + \int_{1}^{k} \frac{1}{x} dx
+        \leq
+        H_k
+        \leq
+        \int_{1}^{k+1} \frac{1}{x} dx
+    \end{equation*}
+    che integrando risulta
+    \begin{equation*}
+        \log \left( k+1 \right)
+        \leq
+        H_k
+        \leq
+        1 + \log \left( k \right)
+    \end{equation*}
+    e che si approssima come
+    \begin{equation*}
+        H_k = \log k + O\left( 1 \right)
+    \end{equation*}
+\end{defi}
+
+\begin{figure}[htp]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}
+            \addplot[
+                color=red,
+                domain=0.5:5,
+            ]{1/x};
+            \addlegendentry{$1/x$} 
+            \addplot[
+                color=green,
+                ]
+                coordinates {
+                (1,1)
+                (2,1)
+                (2,1/2)
+                (3,1/2)
+                (3,1/3)
+                (4,1/3)
+                (4,1/4)
+                (5,1/4)
+                };
+            \addlegendentry{Limite superiore} 
+            \addplot[
+                color=blue,
+                ]
+                coordinates {
+                (0,1)
+                (1,1)
+                (1,1/2)
+                (2,1/2)
+                (2,1/3)
+                (3,1/3)
+                (3,1/4)
+                };
+            \addlegendentry{Limite inferiore} 
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Approssimazione dei numeri armonici}
+    \label{fig:numeriarmonici}
+\end{figure}
+
+Il fattore che si trova è
+\begin{equation*}
+    \rho \leq H_{\bar{k}}
+    \approx \log (\bar{k})
+    \quad
+    \text{con}
+    \quad
+    \bar{k} = \max \left\{ |S| : S \in \bff \right\}
+\end{equation*}
+
+Si esegue un'analisi ammortizzata, assegnando un peso agli elementi coperti: se ad un'iterazione si coprono parecchi elementi, questi avranno costo basso, mentre in un'iterazione ``sprecata'', che copre pochi elementi, sarà assegnato un costo maggiore.
 \section{FPTAS Subset Sum}
 
 \section{Pezzi utili di \LaTeX{}}
