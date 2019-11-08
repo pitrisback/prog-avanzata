@@ -2160,7 +2160,7 @@ Vale $ S_0 = \emptyset $.
     \EndProcedure
 \end{algorithmic}
 \end{algorithm}
-L'algoritmo genera tutte le soluzioni ammissibili: all'iterazione $i$, unisce tutti i sottoinsiemi che non contengono $x_i$, i cui costi sono già in $L_{i-1}$, e i sottoinsimi che contengono $x_i$, mantenendo solo quelli ammissibili con la somma $ L_{i-1} \pt x_i $.
+L'algoritmo genera tutte le soluzioni ammissibili: all'iterazione $i$, unisce tutti i sottoinsiemi che non contengono $x_i$, i cui costi sono già in $L_{i-1}$, e i sottoinsiemi che contengono $x_i$, mantenendo solo quelli ammissibili con la somma $ L_{i-1} \pt x_i $.
 
 La lunghezza delle liste al massimo raddoppia ad ogni iterazione, $|L_i| \leq 2|L_{i-1}|$ per $i\geq 1$, e $|L_0|=1$, per cui $|L_i| = O \left( 2^i \right)$.
 
@@ -2282,6 +2282,232 @@ Si vuole dimostrare che
 \begin{equation*}
     \rho = \frac{Z^*}{Z'} \leq 1 + \varepsilon
 \end{equation*}
+
+Per ricavare il fattore di approssimazione, occorre dimostrare il seguente lemma:
+\begin{lemma}
+    \label{lem:ss_costo_approx}
+    Sia $y$ un costo ammissibile arbitrario di un sottoinsieme $S' \subseteq S_i$
+    \begin{equation*}
+        y = \sum_{s \in S'} s \leq t \\
+    \end{equation*}
+    Allora $y$ è approssimato da un elemento $z \in L_i $ tale che
+    \begin{equation*}
+        \frac{y}{
+            \left( 
+            1+
+            % \frac{\varepsilon}{2n}
+            \varepsilon / 2n
+            \right)^i
+        } \leq z \leq y
+    \end{equation*}
+    \begin{proof}
+        Si dimostra per induzione su $i$.
+        \\
+        \emph{Base:}
+        Per $i=0,
+        L_0 = \langle 0 \rangle 
+        $ che approssima sé stesso.
+        \\
+        \emph{HP induttiva:}
+        Per $i>0$
+        \begin{equation*}
+            \forall S_{i-1} \quad \text{ vale } 
+            \quad
+            \frac{y}{
+                \left( 
+                1+
+                \varepsilon / 2n
+                \right)^{i-1}
+            } \leq z \leq y
+        \end{equation*}
+        \\
+        \emph{Tesi:}
+        Per un generico $S' \subseteq S_i$, possono verificarsi due casi
+        \begin{enumerate}
+            \item $x_i \notin S'$: per cui $S' \subseteq S_{i-1}$ e vale l'ipotesi induttiva per $i-1$
+                \begin{equation*}
+                    \exists z' \in L_{i-1} :
+                    \frac{y}{
+                        \left( 
+                        1+
+                        \varepsilon / 2n
+                        \right)^{i-1}
+                    } \leq z' \leq y
+                \end{equation*}
+                ma non è detto che $z'$ sia selezionato dal trim, e venga mantenuto in $L_i$
+                \begin{itemize}
+                    \item $z' \in L_i$: allora c'è un elemento nella lista per cui
+                        % $\exists z' \in L_{i} :$
+                        \begin{align*}
+                            \leq
+                            &
+                            \frac{y}{
+                                \left( 
+                                1+
+                                \varepsilon / 2n
+                                \right)^{i-1}
+                            }
+                            \leq z' \leq y
+                            \\
+                            \frac{y}{
+                                \left( 
+                                1+
+                                \varepsilon / 2n
+                                \right)^{i}
+                            }
+                            \leq
+                            &
+                        \end{align*}
+                    \item $z' \notin L_i$: $z'$ viene approssimato da $z'' \in L_{i} $
+                        \begin{align*}
+                            \leq
+                            &
+                            \frac{z'}{
+                                \left( 
+                                1+
+                                \varepsilon / 2n
+                                \right)
+                            } \leq z'' \leq z'
+                            \\
+                            \frac{y}{
+                                \left( 
+                                1+
+                                \varepsilon / 2n
+                                \right)^{i-1}
+                            }
+                            \frac{1}{
+                                \left( 
+                                1+
+                                \varepsilon / 2n
+                                \right)
+                            }
+                            \leq
+                            &
+                            \quad \text{(per l'HP induttiva)}
+                            \\
+                            \frac{y}{
+                                \left( 
+                                1+
+                                \varepsilon / 2n
+                                \right)^{i}
+                            }
+                            \leq
+                            &
+                        \end{align*}
+                \end{itemize}
+            \item $x_i \in S'$: ovvero $x_i$ è un elemento nuovo.
+                Sia $S'' = S' - \{ x_i \} $
+                \begin{equation*}
+                    y = c(S') =
+                    \sum_{s \in S'} s =
+                    \sum_{s \in S''} s + x_i
+                    \\
+                \end{equation*}
+                e $S'' \subseteq S_{i-1}$, per cui vale l'HP induttiva su $S''$
+                \begin{equation*}
+                    \sum_{s \in S''} s =
+                    y - x_i
+                    \\
+                \end{equation*}
+                ed esiste $z' \in L_{i-1}$ per cui
+                \begin{align*}
+                    \frac{
+                    y - x_i
+                    }{
+                        \left( 
+                        1+
+                        \varepsilon / 2n
+                        \right)^{i-1}
+                    }
+                    \leq
+                    &
+                    \,
+                    z'
+                    \leq
+                    y - x_i
+                    % \\
+                    \intertext{si somma $x_i$ a tutti i membri}
+                    \frac{
+                    y - x_i
+                    }{
+                        \left( 
+                        1+
+                        \varepsilon / 2n
+                        \right)^{i-1}
+                    }
+                    + x_i
+                    \leq
+                    &
+                    \,
+                    z'
+                    + x_i
+                    \leq
+                    y
+                    % \\
+                    \intertext{dividendo $x_i$ per una quantità maggiore di 1 il valore scende}
+                    \frac{
+                    y - x_i
+                    }{
+                        \left( 
+                        1+
+                        \varepsilon / 2n
+                        \right)^{i-1}
+                    }
+                    +
+                    \frac{
+                    x_i
+                    }{
+                        \left( 
+                        1+
+                        \varepsilon / 2n
+                        \right)^{i-1}
+                    }
+                    \leq
+                    &
+                    \\
+                    \frac{
+                    y
+                    }{
+                        \left( 
+                        1+
+                        \varepsilon / 2n
+                        \right)^{i-1}
+                    }
+                    \leq
+                    &
+                \end{align*}
+                $ z' \in L_{i-1}
+                $ è l'approssimatore usato dall'HP induttiva ma non è detto che \\ $
+                z'' = z' + x_i \in L_{i-1} \pt x_i
+                $
+                \begin{itemize}
+                    \item $\bar{z} \in L_i$: come nel caso 1,
+                        \begin{equation*}
+                            \frac{y}{
+                                \left( 
+                                1+
+                                \varepsilon / 2n
+                                \right)^{i}
+                            }
+                            \leq
+                            \frac{y}{
+                                \left( 
+                                1+
+                                \varepsilon / 2n
+                                \right)^{i-1}
+                            }
+                            \leq \bar{z} \leq y
+                        \end{equation*}
+                    \item $\bar{z} \notin L_i$: esiste $
+                        \bar{\bar{z}}
+                        \in L_i
+                        $ che approssima $\bar{z}$
+                        e ci si riporta al caso 1
+                        % TODO ma COME?
+                \end{itemize}
+        \end{enumerate}
+    \end{proof}
+\end{lemma}
 
 
 \subsubsection{Complessità}
