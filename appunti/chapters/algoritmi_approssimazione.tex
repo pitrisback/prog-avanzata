@@ -2072,6 +2072,8 @@ $, ovvero $ poly(n) $ e $poly( \log t)$), e polinomiale in $1/\varepsilon$.
 
 Si cerca qualcosa di molto uniforme, per $\varepsilon \to 0$ deve diventare esatto. Si parte da uno schema enumerativo (esponenziale), e lo si modula in funzione di $\varepsilon$ in modo da enumerare soltanto un sottoinsieme delle soluzioni, ottenendo un algoritmo di complessità scalabile in $\varepsilon$.
 
+\subsubsection{Definizioni prerequisite}
+
 Nel corso della dimostrazione saranno utilizzati strutture dati, operatori e algoritmi specifici.
 
 Sia $
@@ -2138,6 +2140,9 @@ Vale $ S_0 = \emptyset $.
     La procedura $MERGE\_SD$ esegue il \emph{merge} senza duplicati tra due liste, in tempo lineare se le liste sono ordinate.
     \label{def:mergesd}
 \end{definition}
+
+\subsection{Solutore esatto esponenziale}
+
 \begin{algorithm}[H]
 \caption{Solutore esponenziale per subset sum}\label{alg:ss_exp}
 \begin{algorithmic}[1]
@@ -2177,7 +2182,10 @@ Le operazioni eseguite sono lineari nella lunghezza delle liste, per cui la comp
     = O \left( 2^n \right)
     = O \left( 2^{|S|} \right)
 \end{align*}
-La versione apprissimata dell'algoritmo si ottiene mantenendo non l'intera lista di costi ammissibili, ma solo un suo campionamento. Si eliminano costi ``simili'', che possono essere approssimati l'uno dall'altro. Si mantengono rappresentazioni per difetto.
+
+\subsection{Soluzione approssimata}
+
+La versione approssimata dell'algoritmo si ottiene considerando non l'intera lista di costi ammissibili, ma solo un suo campionamento. Si eliminano costi ``simili'', che possono essere approssimati l'uno dall'altro. Si mantengono rappresentazioni per difetto.
 % TODO chiarisci perché per difetto pag 67
 \begin{definition}
     \label{def:deltadiradamento}
@@ -2199,8 +2207,85 @@ La versione apprissimata dell'algoritmo si ottiene mantenendo non l'intera lista
             2, 10, 12, 20
             \rangle
     $.
-    Esiste un algoritmo greedy per ottenere il trimming minimo, di complessità lineare se la lista è ordinata.
 \end{definition}
+Esiste un algoritmo greedy per ottenere il trimming minimo, di complessità lineare se la lista è ordinata.
+\begin{algorithm}[H]
+\caption{Estrazione del trimming minimo}\label{alg:trimming_minimo}
+\begin{algorithmic}[1]
+    \Procedure{Trim}{$L, \delta$}
+        \State * $L = \langle y_0, \cdots, y_{k-1} \rangle $ *
+        \State $L' \gets \langle y_0 \rangle $
+        \State $last \gets y_0$
+        \For{$i \gets 1 $ to $ k-1 $ }
+            \If{$y_i > last (1-\delta)$}
+            \label{alg:trimming_minimo:check}
+                \State $L' \gets \langle L', y_i \rangle $
+                \State $last \gets y_i$
+            \EndIf
+        \EndFor
+        \State return $L'$
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+Se la lista ridotta è $
+L' = \langle z_0, \cdots, z_{h} \rangle
+$, per $j \geq 1$ vale $
+z_{j+1} > z_j \left( 1+\delta \right)
+$, perché l'elemento successivo viene selezionato solo se il check alla riga \ref{alg:trimming_minimo:check} passa.
+Il rate di approssimazione degli elementi è quindi
+\begin{equation*}
+    \frac{
+        z_{j+1}
+    }{
+        z_j
+    } >  1+\delta 
+\end{equation*}
+Se si dirada il diradamento $i$ volte, questo rate cresce in maniera esponenziale: $
+\left( 1+\delta \right)^i
+$.
+
+Si può quindi modificare l'algoritmo ottenendo
+\begin{algorithm}[H]
+\caption{Solutore approssimato per subset sum}\label{alg:ss_approx}
+\begin{algorithmic}[1]
+    \Procedure{Approx\_SS}{$ \langle S,t \rangle, \varepsilon$}
+        \State $n \gets |S|$
+        \State * $ S = \left\{ x_1, \cdots, x_n \right\} $ *
+        \State $ L_0 \gets \langle 0 \rangle $
+        \For{$i \gets 1 $ to $ n $ }
+            \State $L_i \gets \Call{Merge\_SD}{
+                        L_{i-1},
+                        L_{i-1} \pt x_i
+                    }$
+            \State $L_i \gets \Call{Trim}{
+                        L_{i},
+                        % \frac{\varepsilon}{2n}
+                        \varepsilon / 2n
+                    }$
+        \EndFor
+        \State return $\max (L_n)$
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+L'algoritmo è corretto, perché il costo ritornato è il costo di un sottoinsieme, non vengono creati elementi spuri.
+
+\subsubsection{Fattore di approssimazione}
+% pag 69
+
+Siano $
+Z^* = c (S^*)
+$ il costo ottimo e $
+Z' = \max \left( L_n \right)
+$ il valore ammissibile restituito.
+Si vuole dimostrare che
+\begin{equation*}
+    \rho = \frac{Z^*}{Z'} \leq 1 + \varepsilon
+\end{equation*}
+
+
+\subsubsection{Complessità}
+% pag 72
 
 \section{Pezzi utili di \LaTeX{}}
 \begin{algorithm}[H]
