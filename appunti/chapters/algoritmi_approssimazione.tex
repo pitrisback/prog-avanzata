@@ -2003,7 +2003,204 @@ migliore di quello visto per la soluzione approssimata di $VC$.
 
 
 
-\section{FPTAS Subset Sum}
+\section{FPTAS per Subset Sum}
+
+\subsubsection{Definizione del problema di ottimizzazione e decisionale}
+
+Il problema di \emph{subset sum} si pone come problema di ottimizzazione
+\begin{align*}
+    MAX\_SS: & \\
+    \texttt{istanza:} \quad &
+    \langle S,t \rangle
+    \\
+    \text{dove} \quad & S \subseteq \mathbb{N} - \left\{ 0 \right\} \text{ finito} \\
+    & t \in \mathbb{N} \\
+    & c(S) = \sum_{s \in S'} s \leq t \\
+    \texttt{soluzioni ammissibili:} \quad &
+    \bs \left( i \right)
+    =
+    \left\{ 
+        S' \subseteq S : c(S) \leq t
+    \right\}
+    \\
+    \texttt{soluzione ottima:} \quad &
+    s^* = \argmax 
+    \left\{ 
+        c(s) : s \in
+        \bs \left( i \right)
+    \right\}
+\end{align*}
+E nella sua versione decisionale
+\begin{align*}
+    D\_SS: & \\
+    \texttt{istanza:} \quad & \langle S,t,k \rangle \\
+    \texttt{domanda:} \quad &
+    \exists
+    S' \subseteq S
+    \text{ ammissibile
+    % } c(S') \leq t
+    % \\
+    % & \text{
+    tale che } c(S') \geq k
+\end{align*}
+
+\subsection{FPTAS}
+
+Data una certa istanza $
+\langle S,t \rangle
+$, con $|S|=n$, fissato $\varepsilon$, si vuole trovare un algoritmo $
+A\_SS (
+\langle S,t \rangle
+, \varepsilon )
+$ che ritorni una soluzione ammissibile $
+S' \subseteq S
+$ con una certa qualità garantita
+\begin{equation*}
+    \forall \varepsilon,
+    \quad
+    \rho = \frac{
+        c(S^*)
+    }{
+        c(S)
+    } \leq 1 + \varepsilon
+\end{equation*}
+L'algoritmo deve essere polinomiale nella taglia dell'istanza ($
+poly (
+\langle S,t \rangle
+)
+$, ovvero $ poly(n) $ e $poly( \log t)$), e polinomiale in $1/\varepsilon$.
+
+Si cerca qualcosa di molto uniforme, per $\varepsilon \to 0$ deve diventare esatto. Si parte da uno schema enumerativo (esponenziale), e lo si modula in funzione di $\varepsilon$ in modo da enumerare soltanto un sottoinsieme delle soluzioni, ottenendo un algoritmo di complessità scalabile in $\varepsilon$.
+
+Nel corso della dimostrazione saranno utilizzati strutture dati, operatori e algoritmi specifici.
+
+Sia $
+S = \left\{ x_1, \cdots, x_n \right\}
+$, un suo prefisso è $
+S_i = \left\{ x_1, \cdots, x_i \right\}
+$.
+Vale $ S_0 = \emptyset $.
+
+\begin{definition}
+    \label{def:listasenzaduplicati}
+    $L_i$ è una lista ordinata, senza duplicati di tutti i costi ammissibili di sottoinsiemi di $S_i$.
+    Il suo primo elemento è sempre 0, assumendo che l'insieme vuoto sommi a 0: $
+    L_0 = \langle 0 \rangle
+    \leftrightarrow
+    S_0 = \emptyset
+    $.
+    Gli elementi della lista sono al massimo $2^i$.
+    Per esempio:
+    \begin{align*}
+        S &= 
+        \left\{ x_1 = 3, x_2 = 4, x_3 = 7 \right\}, t = 12
+        \\
+        L_0 &= \langle 0 \rangle
+        \\
+        L_1 &= \langle 0, 3 \rangle
+        \\
+        L_2 &= \langle 0, 3, 4, 7 \rangle
+        \\
+        L_3 &= \langle 0, 3, 4, 7, 10, 11 \rangle
+    \end{align*}
+\end{definition}
+\begin{definition}
+    \label{def:operatorept}
+    Si definisce l'operatore $
+    \pt \left( L_i, x \right)
+    $, che somma a una lista un costo, mantenendo solo i costi ammissibili.
+    Lo si scrive in maniera infissa $
+    L_i \pt x
+    $.
+    \begin{algorithm}[H]
+    \caption{Somma ammissibile}\label{alg:operatorept}
+    \begin{algorithmic}[1]
+        \Procedure{$\pt$}{$L, x$}
+            \State * $L = \langle y_0, \cdots, y_{k-1} \rangle $ *
+            \State $k \gets L.len$
+            \State $i \gets 0$
+            \State $L' \gets \langle \rangle $
+            \While{ $
+                \left( y_i + x \leq t \right)
+                \wedge
+                \left( i < k \right)
+            $ }
+                \State $L' \gets \langle L', y_i + x \rangle $
+                \State $i \gets i + 1$
+            \EndWhile
+            \State return $L'$
+        \EndProcedure
+    \end{algorithmic}
+    \end{algorithm}
+    Il \emph{while} gira finché il nuovo costo è inferiore al target, e ci sono elementi nella lista.
+\end{definition}
+\begin{definition}
+    La procedura $MERGE\_SD$ esegue il \emph{merge} senza duplicati tra due liste, in tempo lineare se le liste sono ordinate.
+    \label{def:mergesd}
+\end{definition}
+\begin{algorithm}[H]
+\caption{Solutore esponenziale per subset sum}\label{alg:ss_exp}
+\begin{algorithmic}[1]
+    \Procedure{EXP\_SS}{$ \langle S,t \rangle $}
+        \State $n \gets |S|$
+        \State * $ S = \left\{ x_1, \cdots, x_n \right\} $ *
+        \State $ L_0 \gets \langle 0 \rangle $
+        \For{$i \gets 1 $ to $ n $ }
+            \State $L_i \gets \Call{Merge\_SD}{
+                        L_{i-1},
+                        L_{i-1} \pt x_i
+                    }$
+        \EndFor
+        \State return $\max (L_n)$
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+L'algoritmo genera tutte le soluzioni ammissibili: all'iterazione $i$, unisce tutti i sottoinsiemi che non contengono $x_i$, i cui costi sono già in $L_{i-1}$, e i sottoinsimi che contengono $x_i$, mantenendo solo quelli ammissibili con la somma $ L_{i-1} \pt x_i $.
+
+La lunghezza delle liste al massimo raddoppia ad ogni iterazione, $|L_i| \leq 2|L_{i-1}|$ per $i\geq 1$, e $|L_0|=1$, per cui $|L_i| = O \left( 2^i \right)$.
+
+Le operazioni eseguite sono lineari nella lunghezza delle liste, per cui la complessità risulta
+\begin{align*}
+    T_{EXP\_SS} 
+    =
+    \sum_{i=1}^{n}
+    \Theta 
+    \left( 
+        |L_i|
+    \right)
+    = 
+    \Theta 
+    \left( 
+        \sum_{i=1}^{n}
+        2^i
+    \right)
+    = O \left( 2^n \right)
+    = O \left( 2^{|S|} \right)
+\end{align*}
+La versione apprissimata dell'algoritmo si ottiene mantenendo non l'intera lista di costi ammissibili, ma solo un suo campionamento. Si eliminano costi ``simili'', che possono essere approssimati l'uno dall'altro. Si mantengono rappresentazioni per difetto.
+% TODO chiarisci perché per difetto pag 67
+\begin{definition}
+    \label{def:deltadiradamento}
+    Un $\delta$-diradamento, detto anche $\delta$-trim o trim di una lista $L$, è una sua sottolista $L'$ tale che
+    \begin{equation*}
+        \forall y \in L, \,
+        \exists z \in L' :
+        \frac{y}{1+\delta} \leq z \leq y
+    \end{equation*}
+    che si riscrive come $
+        z \leq y \leq z \left( 1+\delta \right)
+    $: è un approssimazione per difetto, ma ogni $y$ non è troppo diverso da $z$.
+    Il minimo della lista è sempre apprissimato da sé stesso.
+    Per esempio $
+        L = \langle
+            2, 10, 11, 12, 20, 21
+            \rangle, \delta = 1/10 $ è approssimata da $
+        L' = \langle
+            2, 10, 12, 20
+            \rangle
+    $.
+    Esiste un algoritmo greedy per ottenere il trimming minimo, di complessità lineare se la lista è ordinata.
+\end{definition}
 
 \section{Pezzi utili di \LaTeX{}}
 \begin{algorithm}[H]
