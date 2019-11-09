@@ -3015,17 +3015,36 @@ il valore per $\rho$ risulta
 \end{equation*}
 Scrivere un algoritmo deterministico con questa qualità di approssimazione è possibile, in generale si può sempre de-randomizzare un algoritmo, ma si complica enormemente il codice. Intuitivamente, l'approccio probabilistico gestisce il caso peggiore mostrando che è raro, mentre l'approccio deterministico deve lavorare per evitarlo.
 
-
-
-% \begin{align*}
-    % \E{Y_i} 
-    % &= 
-    % Prob \left( Y_i = 1 \right)
-    % \\
-    % &= 
-    % 1- Prob \left( Y_i = 0 \right)
-% \end{align*}
 \subsection{Tecnica di arrotondamento}
+
+Si modifica il problema di \emph{vertex cover} introducendo dei pesi per i nodi, e cercando il \emph{vertex cover} di peso minimo.
+\begin{align*}
+    D\_MW\_VC: & \\
+    \texttt{istanza:} \quad & \langle G=(V,E), w, k \rangle \\
+    \text{dove} \quad &
+    w(v) \text{ pesa i vertici}
+    \\
+    \texttt{domanda:} \quad &
+    \exists \text{ vertex cover } V^* :
+    \sum_{v \in V^*} w(v) \leq k
+\end{align*}
+Il problema si riduce a $VC$ se i pesi sono unitari, e resta quindi $\bnpc$.
+
+Si riscrive come problema di programmazione lineare intera, codificando la selezione dei vertici nel vettore $x$, dove $x_v=1$ se il vertice $v$ è scelto.
+\begin{equation*}
+    \begin{cases}
+        \min \quad \sum_{v \in V^*} w(v) x_v
+        \\
+        x_u + x_v \geq 1
+        &
+        \forall e = \left\{ u,v \right\} \in E
+        \\
+        x_v \in \setzo{}
+        &
+        \forall v \in V
+    \end{cases}
+\end{equation*}
+
 
 \section{Pezzi utili di \LaTeX{}}
 \begin{algorithm}[H]
