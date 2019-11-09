@@ -2007,7 +2007,7 @@ migliore di quello visto per la soluzione approssimata di $VC$.
 
 \subsubsection{Definizione del problema di ottimizzazione e decisionale}
 
-Il problema di \emph{subset sum} si pone come problema di ottimizzazione
+Il problema di \emph{subset sum} si pone come problema di ottimizzazione di massimo
 \begin{align*}
     MAX\_SS: & \\
     \texttt{istanza:} \quad &
@@ -2015,20 +2015,21 @@ Il problema di \emph{subset sum} si pone come problema di ottimizzazione
     \\
     \text{dove} \quad & S \subseteq \mathbb{N} - \left\{ 0 \right\} \text{ finito} \\
     & t \in \mathbb{N} \\
-    & c(S) = \sum_{s \in S'} s \leq t \\
+    \texttt{costo:} \quad &
+    c(S) = \sum_{s \in S'} s \leq t \\
     \texttt{soluzioni ammissibili:} \quad &
     \bs \left( i \right)
     =
     \left\{ 
         S' \subseteq S : c(S) \leq t
     \right\}
-    \\
-    \texttt{soluzione ottima:} \quad &
-    s^* = \argmax 
-    \left\{ 
-        c(s) : s \in
-        \bs \left( i \right)
-    \right\}
+    % \\
+    % \texttt{soluzione ottima:} \quad &
+    % s^* = \argmax 
+    % \left\{ 
+        % c(s) : s \in
+        % \bs \left( i \right)
+    % \right\}
 \end{align*}
 E nella sua versione decisionale
 \begin{align*}
@@ -2770,7 +2771,11 @@ Questa maggiorazione indica che il valore dell'esponente non può essere elevato
         }
     \right)
     \intertext{tornando alla complessità, $k_i = |L_i|$}
-    T_{A\_SS} &= 
+    T_{A\_SS}
+    \left( 
+        | \langle S,t \rangle |
+    \right)
+    &= 
     O \left( 
         \sum_{i=0}^{n-1} | L_{i} |
     \right)
@@ -2785,6 +2790,242 @@ Questa maggiorazione indica che il valore dell'esponente non può essere elevato
 \end{align*}
 Come desiderato, la complessità è poliomiale nella taglia dell'input e in $1 / \varepsilon$.
 
+\section{Altre tecniche di approssimazione}
+
+Tutto il sapere umano sugli algoritmi di approssimazione è raccolto in \emph{Approximation Algorithms} \cite{Vazirani:2001:AA:500776} di Vijay V. Vazirani.
+
+\subsection{Algoritmi randomizzati}
+
+\subsubsection{Paradigma}
+
+\begin{definition}
+    La primitiva $RANDOM(S)$ seleziona
+    % in maniera uniforme
+    dall'insieme $S$
+    un elemento $S_i$
+    , estratto uniformemente, con reimbussolamento.
+    Invocazioni successive di $RANDOM$ sono indipendenti.
+    Nel caso particolare per cui $S = \setzo{}$, la primitiva si dice anche $COIN\_FLIP$.
+    \label{def:random}
+\end{definition}
+
+Dato un problema $\bpi$, un algoritmo che lo risolve $
+A_{\bpi} (i)
+$ restituisce ancora una soluzione ammissibile $
+s \in \bs(i)
+$, ma la soluzione è una variabile aleatoria $
+\mathbf{s}
+$.
+
+Anche il costo $
+c(
+\mathbf{s}
+)
+$ è una variabile aleatoria, di cui si studia il valore atteso: $
+\E{ c( \mathbf{s}) }
+$.
+
+Il fattore di approssimazione si riscrive come
+\begin{equation*}
+    \rho
+    \leq
+    \max 
+    \left\{ 
+        \frac{
+            \E{ c( \mathbf{s}) }
+        }{
+            c \left( 
+                s^*
+            \right)
+        }
+        ,
+        \frac{
+            c \left( 
+                s^*
+            \right)
+        }{
+            \E{ c( \mathbf{s}) }
+        }
+    \right\}
+\end{equation*}
+(il primo per problemi di minimo, il secondo per problemi di massimo)
+
+Anche la complessità può essere aleatoria, se il numero di iterazioni è controllato da qualche chiamata a $RANDOM$.
+
+Anche il fattore di approssimazione può essere aleatorio, ma per problemi di massimo in cui la variabile aleatoria è al denominatore, l'analisi è estremamente complessa.
+
+\subsubsection{3-CNF-SAT come problema di ottimizzazione}
+
+Il problema di $3-CNF-SAT$ si pone come problema di ottimizzazione (massimo):
+
+\begin{align*}
+    MAX\_3-CNF-SAT: & \\
+    \texttt{istanza:} \quad &
+    % \langle \Phi \left( x_1, \cdots, x_n \right) \rangle
+    \langle \Phi \rangle
+    \text{ in 3-CNF} \\
+    \text{dove} \quad
+    & 
+        \Phi \left( x_1, \cdots, x_n \right) = 
+        \bigwedge\limits_{j=1}^{m}
+        C_j
+        \\
+    & C_j =y_j^1 \vee y_j^2 \vee y_j^3
+    \\
+    % & c( \, \vec{b} \, ) = 
+    \texttt{costo:} \quad &
+    c( \vec{b} ) = 
+    \text{ \# clausole vere sotto $\vec{b}$}
+    \\
+    \texttt{soluzioni ammissibili:} \quad &
+    \bs \left( i \right)
+    =
+    \setzo{n}
+    % \\
+    % \texttt{soluzione ottima:} \quad &
+    % s^* = \argmax 
+    % \left\{ 
+        % c(s) : s \in
+        % \bs \left( i \right)
+    % \right\}
+% \end{align*}
+    \intertext{
+        Per una formula soddisfacibile vale $
+        c( \vec{b} ) = m
+        $.
+        Nella versione decisionale:
+    }
+% \begin{align*}
+    D\_3-CNF-SAT: & \\
+    \texttt{istanza:} \quad &
+    \langle \Phi, k \rangle \\
+    \texttt{domanda:} \quad &
+    c( \vec{b} ) \geq k ?
+\end{align*}
+
+L'algoritmo randomizzato è quello più intuitivo: si costruisce un assegnamento casuale e si conta il numero di clausole vere.
+
+\begin{algorithm}[H]
+\caption{3-CNF-SAT randomizzato}\label{alg:3cnfsat_random}
+\begin{algorithmic}[1]
+    \Procedure{Random\_Approx\_3-CNF-SAT}{$ \langle \Phi \rangle $}
+        \State * sia $ \Phi = \Phi \left( x_1, \cdots, x_n \right) \in 3-CNF $ *
+        \For{$i \gets 1 $ to $ n $ }
+            \State $b_i \gets $ \Call{Random}{$\setzo{}$}
+        \EndFor
+        \State $ num \gets 0 $
+        \For{$j \gets 1 $ to $ m $ }
+            \If{$C_j ( \vec{b} ) = 1$}
+                \State $ num \gets num + 1 $
+            \EndIf
+        \EndFor
+        \State return $num$
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+Per studiare la qualità dell'approssimazione, si calcola il valore atteso del costo ritornato.
+
+Si associa una variabile indicatrice $Y_i$ ad ogni clausola.
+\begin{equation*}
+    Y_i = 
+    \begin{cases}
+        0 & C_i ( \vec{b} ) = 0 \\
+        1 & C_i ( \vec{b} ) = 1
+    \end{cases}
+\end{equation*}
+Si calcola per prima la probabilità che una clausola sia verificata:
+una clausola è la disgiunzione di tre letterali \emph{distinti}, $C_j =y_j^1 \vee y_j^2 \vee y_j^3$, che sono quindi indipendenti (sono assegnati da chiamate diverse di $RANDOM$). Perché una clausola sia falsa, tutti i letterali devono essere falsi:
+\begin{align*}
+    Prob \left( Y_i = 1 \right)
+    = 
+    1- Prob \left( Y_i = 0 \right)
+    =
+    1 - \prod_{j=1}^{3} Prob(y_{j}^{i} = 0)
+    = 1 -
+    \frac{1}{8}
+    =
+    \frac{7}{8}
+\end{align*}
+Il costo corrisponde al numero di variabili a 1:
+\begin{equation*}
+    Y = num = \sum_{i=1}^{m} Y_i
+\end{equation*}
+Il suo valore atteso è
+\begin{align*}
+    \E{ c( \vec{b} ) }
+    =
+    \E{Y}
+    =
+    \E{
+    \sum_{i=1}^{m} Y_i
+    }
+    &= 
+    \sum_{i=1}^{m}
+    \E{Y_i}
+    \intertext{
+        L'aspettazione della variabile indicatrice è la probabilità che si avveri l'evento (e la variabile assuma valore 1): $
+            \E{Y_i} 
+            = 
+            Prob \left( Y_i = 1 \right)
+        $
+    }
+    &= 
+    \sum_{i=1}^{m}
+    Prob \left( Y_i = 1 \right)
+    \\
+    &= 
+    \sum_{i=1}^{m}
+    \frac{7}{8}
+    =
+    m
+    \frac{7}{8}
+\end{align*}
+Ricordando che il costo ottimo è maggiorato dal numero di clausole ($
+    c( \vec{b}^* )
+    \leq m
+$), 
+il valore per $\rho$ risulta
+\begin{equation*}
+    \rho
+    =
+    \frac{
+        c( \vec{b}^* )
+    }{
+        \E{
+            c( \vec{b} )
+        }
+    }
+    =
+    \frac{
+        c( \vec{b}^* )
+    }{
+        \frac{7}{8}
+        m
+    }
+    \leq
+    \frac{
+        m
+    }{
+        \frac{7}{8}
+        m
+    }
+    =
+    \frac{8}{7}
+\end{equation*}
+Scrivere un algoritmo deterministico con questa qualità di approssimazione è possibile, in generale si può sempre de-randomizzare un algoritmo, ma si complica enormemente il codice. Intuitivamente, l'approccio probabilistico gestisce il caso peggiore mostrando che è raro, mentre l'approccio deterministico deve lavorare per evitarlo.
+
+
+
+% \begin{align*}
+    % \E{Y_i} 
+    % &= 
+    % Prob \left( Y_i = 1 \right)
+    % \\
+    % &= 
+    % 1- Prob \left( Y_i = 0 \right)
+% \end{align*}
+\subsection{Tecnica di arrotondamento}
 
 \section{Pezzi utili di \LaTeX{}}
 \begin{algorithm}[H]
