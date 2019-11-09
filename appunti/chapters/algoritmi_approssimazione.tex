@@ -2357,6 +2357,8 @@ Per ricavare il fattore di approssimazione, occorre dimostrare il seguente lemma
                             }
                             \leq
                             &
+                            \quad
+                            \text{\textquotedbl}
                         \end{align*}
                     \item $z' \notin L_i$: $z'$ viene approssimato da $z'' \in L_{i} $
                         \begin{align*}
@@ -2383,6 +2385,8 @@ Per ricavare il fattore di approssimazione, occorre dimostrare il seguente lemma
                             }
                             \leq
                             &
+                            \quad
+                            \text{\textquotedbl}
                             \quad \text{(per l'HP induttiva)}
                             \\
                             \frac{y}{
@@ -2393,6 +2397,8 @@ Per ricavare il fattore di approssimazione, occorre dimostrare il seguente lemma
                             }
                             \leq
                             &
+                            \quad
+                            \text{\textquotedbl}
                         \end{align*}
                 \end{itemize}
             \item $x_i \in S'$: ovvero $x_i$ è un elemento nuovo.
@@ -2464,6 +2470,8 @@ Per ricavare il fattore di approssimazione, occorre dimostrare il seguente lemma
                     }
                     \leq
                     &
+                    \quad
+                    \text{\textquotedbl}
                     \\
                     \frac{
                     y
@@ -2475,6 +2483,8 @@ Per ricavare il fattore di approssimazione, occorre dimostrare il seguente lemma
                     }
                     \leq
                     &
+                    \quad
+                    \text{\textquotedbl}
                 \end{align*}
                 $ z' \in L_{i-1}
                 $ è l'approssimatore usato dall'HP induttiva ma non è detto che \\ $
@@ -2508,10 +2518,273 @@ Per ricavare il fattore di approssimazione, occorre dimostrare il seguente lemma
         \end{enumerate}
     \end{proof}
 \end{lemma}
-
+Dal lemma, esiste $z' \in L_n$ che approssima il costo ottimo $z^*$:
+\begin{equation*}
+    \frac{z^*}{
+        \left( 
+        1+
+        \varepsilon / 2n
+        \right)^n
+    } \leq z' \leq z^* 
+    = c(S^*)
+\end{equation*}
+Per cui vale
+\begin{align*}
+    \leq
+    &
+    \frac{z^*}{
+        z'
+    }
+    =
+    \left( 
+        1+
+        % \varepsilon / 2n
+        \frac{\varepsilon}{2n}
+    \right)^n
+    \\
+    \rho \left( n, \varepsilon \right)
+    = 
+    \frac{z^*}{
+        \max \left( L_n \right)
+    }
+    \leq
+    &
+    \quad
+    \text{\textquotedbl}
+    \quad
+    \left( \max \left( L_n \right) \geq z' \right)
+\end{align*}
+La funzione con cui si effettua la maggiorazione su $\rho$ è crescente (ha derivata positiva)
+e il suo limite è
+\begin{equation*}
+    \lim_{n \to + \infty}
+    \left( 1+
+        \frac{\varepsilon}{2n}
+    \right)^n
+    = 
+    e^{\varepsilon/2}
+\end{equation*}
+per cui viene limitata superiormente da questa quantità
+\begin{align*}
+    \rho \left( n, \varepsilon \right)
+    &=  
+    \left( 1+
+        \frac{\varepsilon}{2n}
+    \right)^n
+    \leq 
+    e^{\varepsilon/2}
+    % \\
+    \intertext{per $x<1$ vale $e^x < 1 + x + x^2$}
+    % NOTEVOLE
+    % \text{(per $x<1$ vale $e^x < 1 + x + x^2$)}
+    % \quad
+    &
+    \leq 1 +
+    \frac{\varepsilon}{2} +
+    \left( 
+        \frac{\varepsilon}{2}
+    \right)^2
+    \\
+    \left( 
+    \left( 
+        % \frac{\varepsilon}{2}
+        \varepsilon/2
+    \right)^2
+    \leq 
+    % \frac{\varepsilon}{2}
+    \varepsilon/2
+    \right)
+    \quad
+    &
+    \leq 1 +
+    \frac{\varepsilon}{2} +
+    \frac{\varepsilon}{2}
+    \\
+    &
+    = 1 + \varepsilon
+\end{align*}
 
 \subsubsection{Complessità}
 % pag 72
+
+Per quanto riguarda la complessità, ad ogni iterazione il numero di operazioni è legato alla lunghezza della lista, per cui
+\begin{align*}
+    % T_{A\_SS} &= 
+    T_{A\_SS} = 
+    O \left( 
+        \sum_{i=1}^{n} | L_{i-1} |
+    \right)
+    % \\
+    % &= 
+    = 
+    O \left( 
+        \sum_{i=0}^{n-1} | L_{i} |
+    \right)
+    % \\
+\end{align*}
+Sia $
+L_i = \langle z_0 = 0, z_1, \cdots,
+z_{k_i - 1}
+\rangle 
+$, allora $
+| L_i | = k_i
+$.
+Si è già visto che 
+\begin{equation*}
+    \frac{
+        z_{j+1}
+    }{
+        z_j
+    }
+    >
+    % \left(
+        1+
+        \frac{\varepsilon}{2n}
+    % \right)
+\end{equation*}
+Si può scrivere con una serie telescopica
+\begin{align*}
+    \frac{
+        z_{k_i - 1}
+    }{
+        z_1
+    }
+    =
+    \frac{
+        z_{k_i - 1}
+    }{
+        z_{k_i - 2}
+    }
+    \frac{
+        z_{k_i - 2}
+    }{
+        z_{k_i - 3}
+    }
+    \cdots
+    \frac{
+        z_2
+    }{
+        z_1
+    }
+    >
+    \left(
+        1+
+        \frac{\varepsilon}{2n}
+    \right)^{k_i -2}
+\end{align*}
+Ovvero
+\begin{align*}
+    z_{k_i - 1}
+    >
+    \left(
+        1+
+        \frac{\varepsilon}{2n}
+    \right)^{k_i -2}
+    z_1
+\end{align*}
+E ricordando che il costo è ammissibile, $t \geq
+z_{k_i - 1}
+$, e $z_1 \geq 1$, vale
+\begin{align*}
+    t >
+    % z_{k_i - 1}
+    % >
+    % \left(
+        % 1+
+        % \frac{\varepsilon}{2n}
+    % \right)^{k_i -2}
+    % z_1
+    % \geq
+    \left(
+        1+
+        \frac{\varepsilon}{2n}
+    \right)^{k_i -2}
+\end{align*}
+Questa maggiorazione indica che il valore dell'esponente non può essere elevato, e la lunghezza delle liste non può essere elevata. Si cerca quindi una maggiorazione di $k_i$ rispetto a $n,t$ (che sono legati alla taglia dell'istanza). Prendendo il logaritmo dei membri
+\begin{align*}
+    \left( 
+        k_i - 2
+    \right)
+    \log \left( 
+        1+
+        \frac{\varepsilon}{2n}
+    \right)
+    &<
+    \log t
+    \\
+    k_i 
+    &<
+    \frac{
+        \log t
+    }{
+        \log \left( 
+            1+
+            \frac{\varepsilon}{2n}
+        \right)
+    }
+    + 2
+    \intertext{
+        per $|x|<1$
+        vale
+        $\log \left( 1+x \right) 
+        \geq
+        % \frac{x}{1+x}
+        x/\left( 1+x \right)
+        $
+    }
+    % k_i 
+    &<
+    \log t
+    \frac{
+        \left( 
+            1+
+            % \frac{\varepsilon}{2n}
+            \varepsilon/2n
+        \right)
+    }{
+        % \frac{\varepsilon}{2n}
+        \varepsilon/2n
+    }
+    + 2
+    \intertext{e $\forall \varepsilon \leq n$ vale 
+        $
+        1 +
+        \varepsilon/2n
+        \leq
+        3/2
+        $
+    }
+    % k_i 
+    &<
+    \frac{3}{2}
+    \frac{2n}{\varepsilon}
+    \log t
+    + 2
+    \intertext{sia $n$ sia $\log t$ sono sublineari nella taglia dell'istanza}
+    k_i &= 
+    O \left( 
+        \frac{
+            | \langle S,t \rangle |^2
+        }{
+            \varepsilon
+        }
+    \right)
+    \intertext{tornando alla complessità, $k_i = |L_i|$}
+    T_{A\_SS} &= 
+    O \left( 
+        \sum_{i=0}^{n-1} | L_{i} |
+    \right)
+    =
+    O \left( 
+        \frac{
+            | \langle S,t \rangle |^3
+        }{
+            \varepsilon
+        }
+    \right)
+\end{align*}
+Come desiderato, la complessità è poliomiale nella taglia dell'input e in $1 / \varepsilon$.
+
 
 \section{Pezzi utili di \LaTeX{}}
 \begin{algorithm}[H]
