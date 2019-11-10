@@ -3033,7 +3033,10 @@ Il problema si riduce a $VC$ se i pesi sono unitari, e resta quindi $\bnpc$.
 Si riscrive come problema di programmazione lineare intera, codificando la selezione dei vertici nel vettore $x$, dove $x_v=1$ se il vertice $v$ è scelto.
 \begin{equation*}
     \begin{cases}
-        \min \quad \sum_{v \in V^*} w(v) x_v
+        \quad
+        \min
+        &
+        \sum_{v \in V^*} w(v) x_v
         \\
         x_u + x_v \geq 1
         &
@@ -3044,7 +3047,162 @@ Si riscrive come problema di programmazione lineare intera, codificando la selez
         \forall v \in V
     \end{cases}
 \end{equation*}
+Risolvendo il problema si ricava il \emph{minimal weight vertex cover}
+\begin{equation*}
+    C^* = \left\{ 
+        v \in V : x_v^* = 1
+    \right\}
+\end{equation*}
+infatti vale
+\begin{equation*}
+    \sum_{v \in V^*} w(v) x_v
+    =
+    \sum_{v \in C^*} w(v)
+\end{equation*}
+e il vettore $\vec{x}^*$ minimizza la prima quantità.
 
+La risoluzione del problema di programmazione lineare intera è però comunque NP-hard, quindi si cerca una soluzione approssimata, analizzando il rilassamento continuo del problema, che ammette un solutore polinomiale.
+\begin{equation*}
+    \begin{cases}
+        % \min 
+        \quad
+        \min 
+        &
+        \sum_{v \in V^*} w(v) x_v = z^*
+        \\
+        x_u + x_v \geq 1
+        &
+        \forall e = \left\{ u,v \right\} \in E
+        \\
+        0 \leq x_v \leq 1
+        &
+        \forall v \in V
+    \end{cases}
+\end{equation*}
+Lo spazio delle soluzioni a questo problema è più ampio, quindi il costo individuato è un \emph{lower bound} al costo del \emph{minimal weight vertex cover} ottimo: $z^* \leq w(C^*)$.
+
+Si utilizza una strategia di \emph{rounding}, per cui dalla soluzione $
+\vec{x}^*
+$ al problema continuo si ricava $
+\vec{
+    \bar{x}
+}^*
+$, ammissibile per il problema intero.
+\begin{equation*}
+    \bar{x}_v
+    = 1
+    \Leftrightarrow
+    x^*_v \geq 0.5
+\end{equation*}
+Il vettore ricavato è una soluzione ammissibile per il problema intero.
+Considerando un generico vincolo per il problema continuo
+$ \forall e = \left\{ u,v \right\} \in E $ vale
+\begin{align*}
+    x_v^*
+    +
+    x_u^*
+    \geq 1
+    &
+    \Leftrightarrow
+    \left( 
+        x^*_v \geq 0.5
+    \right)
+    \vee
+    \left( 
+        x^*_u \geq 0.5
+    \right)
+    \\
+    &
+    \Leftrightarrow
+    \left( 
+        \bar{x}_v = 1
+    \right)
+    \vee
+    \left( 
+        \bar{x}_u = 1
+    \right)
+\end{align*}
+
+Riguardo alla qualità del \emph{minimal weight vertex cover} $C$ trovato in questo modo, si trova una relazione tra il costo della soluzione del rilassamento continuo e il \emph{vertex cover} ritornato: 
+\begin{align*}
+    z^*
+    &= 
+    \sum_{v \in V} w(v) \,
+    x_v^*
+    % \\
+    % \text{(riduce il numero di vertici contati)}
+    \intertext{riducendo il numero di vertici contati nella somma}
+    % \quad
+    &
+    \geq
+    \sum_{
+        v \in V : 
+        x_v^*
+        \geq
+        1/2
+    } w(v) \, x_v^*
+    % \\
+    % \text{($
+    % x_v^*
+    % \geq 1/2
+    % $)}
+    % \quad
+    \intertext{che sono solo quelli con la variabile associata maggiore o uguale a $1/2$}
+    &
+    \geq
+    \frac{1}{2}
+    \sum_{
+        v \in V : 
+        x_v^*
+        \geq
+        1/2
+    } w(v)
+    \\
+    &
+    =
+    \frac{1}{2}
+    \sum_{
+        v \in V : 
+        \bar{x}_v = 1
+    } w(v)
+    \\
+    &
+    =
+    \frac{1}{2}
+    w(C)
+\end{align*}
+Il costo $z^*$ è un \emph{lower bound} alla soluzione ottima  $w(C^*)$, per cui
+\begin{equation*}
+    w(C^*)
+    \geq
+    z^*
+    \geq
+    \frac{1}{2}
+    w(C)
+\end{equation*}
+E il fattore di approssimazione risulta essere garantito (non è un approccio randomizzato)
+\begin{equation*}
+    \rho =
+    \frac{
+        w(C)
+    }{
+        w(C^*)
+    }
+    \leq
+    \frac{
+        w(C)
+    }{
+        \frac{1}{2}
+        w(C)
+    }
+    = 2
+\end{equation*}
+
+\subsection{Randomized rounding}
+
+Una tecnica ibrida estremamente efficace è stata presentata da Raghavan e Tompson in
+Randomized Rounding: A Technique for Provably Good Algorithms and Algorithmic Proofs
+\cite{Raghavan:1987:RRT:45291.45296}.
 
 \section{Pezzi utili di \LaTeX{}}
 \begin{algorithm}[H]
