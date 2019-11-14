@@ -3204,6 +3204,199 @@ Una tecnica ibrida estremamente efficace è stata presentata da Raghavan e Tomps
 Randomized Rounding: A Technique for Provably Good Algorithms and Algorithmic Proofs
 \cite{Raghavan:1987:RRT:45291.45296}.
 
+
+\section{Altri risultati}
+
+\subsection{Node cut}
+% pag 78
+
+Dato un grafo $
+G = (V,E)
+$, si cerca una bipartizione dei nodi $
+( W, V-W )
+$ per cui la capacità (\emph{size}) del taglio è massima:
+\begin{equation*}
+    S \left( W, V-W \right) = 
+    | \left\{ 
+        e = \left\{ u,v \right\} \in E : 
+        \left( u \in W \right)
+        \wedge
+        \left( v \in V-W \right)
+    \right\} |
+\end{equation*}
+
+\subsubsection{Approssimazione deterministica}
+
+L'idea è di partire da una soluzione ammissibile facile e utilizzare una strategia di ricerca locale: ad ogni iterazione si effettua una minima movimentazione della soluzione corrente, migliorandola di volta in volta, fino a trovare un ottimo locale. Chiaramente questo può non coincidere con l'ottimo globale.
+
+\begin{algorithm}[H]
+\caption{Approssimatore per max cut}\label{alg:nc_approx}
+\begin{algorithmic}[1]
+    \Procedure{Approx\_Max\_Cut}{$ G = (V,E) $}
+        \State $W \gets V$
+        \While{true}
+        \State $W2V \gets 
+                \left( 
+                    * \;
+                    \exists v \in W :
+                    S \left( W -
+                    \{ v \},
+                    \left( V-W \right)
+                    \cup
+                    \{ v \}
+                    \right)
+                    >
+                    S \left( W, V-W \right)
+                    \; *
+                \right)
+            $
+        \State $V2W \gets 
+                \left( 
+                    * \;
+                    \exists v \in V-W :
+                    S \left( W
+                    \cup
+                    \{ v \},
+                    \left( V-W \right)
+                    -
+                    \{ v \}
+                    \right)
+                    >
+                    S \left( W, V-W \right)
+                    \; *
+                \right)
+            $
+            \If{$
+                \left( 
+                    W2V
+                \right)
+                \vee
+                \left( 
+                    V2W
+                \right)
+            $}
+                \State * sposta il nodo appropriatamente *
+            \Else
+                \State return $ \left( W, V-W \right) $
+            \EndIf
+        \EndWhile
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+La soluzione ammissibile iniziale è $
+W_{init}
+= V
+$, con $
+V-W_{init} = \emptyset
+$ e di costo nullo: $
+S \left( W_{init} , V- W_{init} \right)
+= 0
+$.
+
+La cardinalità della soluzione ottima è limitata dal numero di archi:
+\begin{equation*}
+    |
+    W^*
+    |
+    =
+    |
+    \argmax_{W \subseteq V}
+    \left\{ 
+        S \left( W, V-W \right)
+    \right\}
+    |
+    \leq |E|
+\end{equation*}
+Il valore si raggiunge nel caso di grafo bipartito.
+
+Per quanto riguarda la correttezza, l'algoritmo ritorna di sicuro un taglio, perché ogni bipartizione è un taglio valido.
+Inoltre l'algoritmo termina, perché ad ogni iterazione il valore $
+S \left( W, V-W \right)
+$ cresce monotonicamente (le guardie dell'if hanno un maggiore stretto), il costo inizia da 0 e raggiunge al massimo $|E|$, per cui esegue al massimo $|E|$ iterazioni.
+
+Si dimostra che la cardinalità del taglio ritornato è almeno
+$$
+S \left( W_f, V-W_f \right)
+\geq 
+\frac{
+    |E|
+}{
+    2
+}
+\quad
+\to
+\quad
+\rho
+= 
+\frac{
+S \left( W_f, V-W_f \right)
+}{
+S \left( W_{init} , V- W_{init} \right)
+}
+\leq 2
+$$
+Si analizza il momento in cui l'algoritmo termina: perché questo succeda, non c'è nessun nodo che, se spostato, migliora il costo.
+Si indica con $d_v = deg(v)$ il grado di un nodo $v$ e con $t_v$ il numero di nodi adiacenti ma dalla ``parte opposta'' del taglio.
+Spostando $v$ il costo varia di $
+d_v - 2 t_v
+$.
+% TODO disegno taglio pag 78.9
+I vicini $t_v$ devono quindi essere più della metà, altrimenti spostandolo si otterrebbe un incremento dell'obiettivo. Si dimostra per assurdo: si supponga esista un nodo $
+% \exists
+v' \in W
+$ con $
+t_{v'}
+<
+d_{v'}
+/2
+$. Il costo risulta
+$$
+    S \left( W_f -
+    \{ v' \},
+    \left( V-W_f \right)
+    \cup
+    \{ v' \}
+    \right)
+    =
+    S \left( W_f, V-W_f \right)
+    +
+    d_{v'}
+    -
+    2 t_{v'}
+$$
+per cui si ha un incremento, ma questo è impossibile perché l'algoritmo avrebbe spostato il nodo.
+
+Vale allora
+\begin{align*}
+    S \left( W_f, V-W_f \right)
+    &= 
+    \frac{1}{2}
+    \sum_{v \in V} t_v
+    \\
+    &
+    \geq
+    \frac{1}{2}
+    \sum_{v \in V}
+    \frac{
+    d_v
+    }{2}
+    \\
+    &= 
+    \frac{1}{4}
+    \sum_{v \in V} d_v
+    \\
+    &=
+    \frac{1}{4}
+    2 |E|
+    \\
+    &=
+    \frac{ |E| }{2}
+\end{align*}
+
+\subsubsection{Algoritmo randomizzato}
+
+
 \section{Pezzi utili di \LaTeX{}}
 \begin{algorithm}[H]
 \caption{Divide and Conquer}\label{alg:dnc}
