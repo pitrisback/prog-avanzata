@@ -3396,6 +3396,91 @@ Vale allora
 
 \subsubsection{Algoritmo randomizzato}
 
+La stessa qualità di approssimazione si può ottenere con l'algoritmo randomizzato più intuitivo possibile: per ogni nodo si tira una moneta e si decide se selezionarlo in $W$ o meno.
+L'insieme è ora una variabile aleatoria, che si indica con $\bw$.
+
+Il fattore di approssimazione risulta
+\begin{equation*}
+    \rho = 
+    \frac{
+        S \left( W^*, V-W^* \right)
+    }{
+        \E{
+            S \left( \bw , V- \bw \right)
+        }
+    }
+\end{equation*}
+Si associa una variabile indicatrice $X_e$ ad ogni arco $e$, che vale 1 se è un arco del taglio.
+\begin{equation*}
+    X_e = 1 \Leftrightarrow
+    e = \left\{ u,v \right\}
+    :
+    \left( 
+        \left( u \in \bw \right)
+        \wedge
+        \left( v \in V - \bw \right)
+    \right)
+    \vee
+    \left( 
+        \left( u \in V - \bw \right)
+        \wedge
+        \left( v \in \bw \right)
+    \right)
+\end{equation*}
+I due eventi sono disgiungi, quindi
+la probabilità che una specifica variabile indicatrice (fissato $e=\{u,v\}$) sia uno è pari a
+\begin{align*}
+    Prob \left( X_e = 1 \right)
+    &= 
+    Prob \left( 
+        \left( u \in \bw \right)
+        \wedge
+        \left( v \in V - \bw \right)
+    \right)
+    \\
+    &+
+    Prob \left( 
+        \left( u \in V - \bw \right)
+        \wedge
+        \left( v \in \bw \right)
+    \right)
+    \\
+    &= 
+    \frac{1}{2}
+    \frac{1}{2}
+    +
+    \frac{1}{2}
+    \frac{1}{2}
+    =
+    \frac{1}{2}
+\end{align*}
+Il costo si riscrive come
+\begin{equation*}
+    S \left( \bw , V- \bw \right)
+    =
+    \sum_{e \in E} X_e
+\end{equation*}
+E il suo valore atteso è
+\begin{align*}
+    % \E{
+        % S \left( \bw , V- \bw \right)
+    % }
+    % =
+    \E{
+        \sum_{e \in E} X_e
+    }
+    =
+    \sum_{e \in E}
+        \E{
+            X_e
+        }
+    =
+    \sum_{e \in E}
+    Prob \left( X_e = 1 \right)
+    = \frac{|E|}{2}
+\end{align*}
+Il costo della soluzione ottima è limitato da $|E|$, quindi l'algoritmo è di 2-approssimazione.
+
 
 \section{Pezzi utili di \LaTeX{}}
 \begin{algorithm}[H]
