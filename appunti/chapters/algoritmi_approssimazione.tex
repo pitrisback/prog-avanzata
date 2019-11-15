@@ -2004,6 +2004,7 @@ migliore di quello visto per la soluzione approssimata di $VC$.
 
 
 \section{FPTAS per Subset Sum}
+\label{sec:ss_fptas}
 
 \subsubsection{Definizione del problema di ottimizzazione e decisionale}
 
@@ -3528,7 +3529,7 @@ $ che ritorna un ciclo $C$, è polinomiale sia nella taglia dell'istanza $|
     \langle
         G, c
     \rangle
-|$ sia in $1/\varepsilon$, con fattore di approssimazione
+|$ sia in $1/\varepsilon$, con fattore di approssimazione pari a
 \begin{equation*}
     \rho = 
     \frac{
@@ -3538,7 +3539,7 @@ $ che ritorna un ciclo $C$, è polinomiale sia nella taglia dell'istanza $|
     }
     \leq \left( 1+\varepsilon \right)
 \end{equation*}
-Rendendo $\varepsilon$ inversamente proporzionale a $G$, si ottiene un algoritmo che è ancora polinomiale, ma che compie un errore così piccolo da disabilitare l'apprssimazione.
+Rendendo $\varepsilon$ inversamente proporzionale alla taglia $G$, si ottiene un algoritmo che è ancora polinomiale, ma che compie un errore così piccolo da disabilitare l'approssimazione.
 \begin{equation*}
     \varepsilon = 
     \frac{1}{2|V|}
@@ -3588,7 +3589,7 @@ $ implica che ogni tour $C$ in $G^K$ deve usare almeno un arco in $E^K-E$.
 $A_{TT}$ ritorna quindi un tour di costo 
 $
 c(C) \geq |V| + 1
-$, dovendo per forza utilizzare un arco aggiunto nella trasformazione.
+$, dovendo per forza utilizzare un arco di costo 2.
 \\
 Combinando i risultati:
 \begin{equation*}
@@ -3607,6 +3608,149 @@ $\bp \neq \bnp$.
 
 \subsection{Soluzione approssimata per Subset Sum}
 % pag 80.8
+
+L'algoritmo FPTAS ricavato per Subset Sum alla sezione \ref{sec:ss_fptas} ha complessità cubica nella taglia dell'istanza. Se si ammette una soluzione approssimata, si può sviluppare un algoritmo con approccio greedy di complessità lineare.
+
+L'idea è di selezionare elementi fino a superare il target.
+
+Un esempio suggerisce in che modo conviene ordinare l'insieme: sia $
+S = \left\{ 1, 2, t-2 \right\}
+$ con ordine crescente, la soluzione è $S' = \left\{ 1, 2 \right\}$ di costo 3, che è pessima.
+L'ordinamento decrescente è evidentemente più efficace: $
+S = \left\{ t-2, 2, 1 \right\}
+$ seleziona $
+S' = \left\{ t-2, 2 \right\}
+$ che somma addirittura al target esatto.
+\begin{algorithm}[H]
+\caption{Approssimatore greedy per Subset Sum}\label{alg:ss_approx_greedy}
+\begin{algorithmic}[1]
+    \Procedure{Approx\_SS}{$ \langle S, t \rangle $}
+        \State $\langle x_1, \cdots, x_n \rangle \gets \Call{Sort\_Decr}{S} $
+        \State $S' \gets \left\{ x_1 \right\}$
+        \State $sum \gets x_1$
+        \For{$i \gets 2 $ to $ n $ }
+            \If{$ sum + x_i \leq t$}
+                \State $S' \gets S' \cup \left\{ x_i \right\}$
+                \State $sum \gets sum + x_i$
+            \Else
+                \State return $S', sum$
+            \EndIf
+        \EndFor
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+L'algoritmo termina appena la somma supera il target. La qualità della soluzione sarebbe chiaramente maggiore se venissero selezionati altri elementi successivi, e quindi minori, di quello che sfora, ma la garanzia dell'approssimazione non migliora.
+
+La complessità è lineare, l'algoritmo è corretto (soluzione ammissibile) perché si ferma proprio quando la somma supera il target.
+
+Per quanto riguarda il fattore di approssimazione, ci sono due casi.
+Nel primo, il ciclo esaurisce tutti gli elementi nell'insieme: allora $S' = S$ e anche $S' = S^*$, perché non si può fare meglio di così.
+Nel secondo caso, il ciclo si arresta durante l'iterazione $
+\bar{i}
+$, con $
+2 \leq \bar{i} \leq n
+$. L'insieme ritornato è $
+S' = \left\{ x_1, x_2, \cdots,
+x_{\bar{i}-1}
+\right\}
+$, tale che
+\begin{equation*}
+    \sum_{s \in S'} s
+    =
+    sum
+    \leq t
+    \quad
+    \text{e}
+    \quad
+    sum + 
+    x_{\bar{i}-1}
+    > t
+\end{equation*}
+Vale la catena
+\begin{align*}
+    sum
+    &
+    \geq
+    x_1
+    &
+    \text{lo contiene di sicuro}
+    \\
+    &
+    >
+    x_{\bar{i}}
+    &
+    \text{per l'ordinamento}
+    \\
+    &
+    >
+    t - sum
+    &
+    \text{condizione per l'uscita del ciclo}
+\end{align*}
+Da cui
+$$
+2 \, sum > t
+\Rightarrow
+sum > \frac{t}{2}
+$$
+E il fattore di approssimazione risulta
+\begin{equation*}
+    \rho = 
+    \frac{
+        % \displaystyle
+        \sum_{s \in S^*} s
+    }{
+        % \displaystyle
+        \sum_{s \in S'} s
+    }
+    <
+    \frac{t}{t/2}
+    = 2
+\end{equation*}
+Il fattore si può stringere lievemente, sfruttando le disequazioni strette nella catena per cui $
+a>b \to a \geq b + 1
+$
+\begin{align*}
+    sum
+    &
+    \geq
+    x_1
+    \\
+    &
+    >
+    x_{\bar{i}}
+    \geq
+    x_{\bar{i}} + 1
+    \\
+    &
+    >
+    (t - sum) + 1
+    \geq 
+    (t - sum + 1) + 1
+\end{align*}
+E continuando il ragionamento come sopra risulta 
+\begin{equation*}
+    sum \geq \frac{t+2}{t}
+    = \frac{t}{2} + 1
+\end{equation*}
+con un fattore di approssimazione
+\begin{equation*}
+    \rho = 
+    <
+    \frac{t}{t/2+1}
+    =
+    \frac{2t}{t+2}
+\end{equation*}
+Questa è l'analisi più stretta possibile, infatti per $
+S = \left\{ 4, 3, 2, 1 \right\}, t = 6
+$ viene ritornato $
+S' = \left\{ 4 \right\}
+$ a fronte di una soluzione ottima che somma a 6, per cui
+\begin{equation*}
+    \rho = \frac{6}{4}
+    = 
+    \frac{2t}{t+2}
+\end{equation*}
 
 \subsection{Soluzione approssimata per Independent Set}
 % pag 81
