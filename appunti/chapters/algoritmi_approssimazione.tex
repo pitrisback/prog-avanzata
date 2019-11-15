@@ -3481,6 +3481,138 @@ E il suo valore atteso è
 \end{align*}
 Il costo della soluzione ottima è limitato da $|E|$, quindi l'algoritmo è di 2-approssimazione.
 
+\subsection{Non esistenza di algoritmo FPTAS per Triangle-TSP}
+% pag 79.8
+
+Se $\bp = \bnp$ sarebbe disponibile la soluzione esatta.
+
+Sotto l'ipotesi $\bp \neq \bnp$, non può esistere un algoritmo FPTAS che risolva il problema di $Triangle\_TSP$, altrimenti si potrebbe esibire un decisore polinomiale per il problame di $HAMILTON$.
+
+Si riduce da $HAMILTON \lp T\_TSP$
+\begin{equation*}
+    f :
+    \langle
+        G = (V,E)
+    \rangle
+    \to
+    \langle
+        G^K = (V,E^K), c
+    \rangle
+\end{equation*}
+dove il grafo $G^K$ è il grafo completato, e i costi sono associati agli archi nella maniera seguente:
+\begin{equation*}
+     c(e) = 
+    \begin{cases}
+        1 & e \in E \\
+        2 & e \notin E
+    \end{cases}
+\end{equation*}
+Questa pesatura verifica la disuguaglianza triangolare: le possibili somme del costo di due archi sono
+% $
+(1+1),
+(1+2),
+(2+2)
+% $
+e i costi del singolo arco sono $
+1,2
+$, ovvero sempre minori o uguali delle somme.
+
+Si supponga esista uno schema di approssimazione pienamente polinomiale che risolve il problema $
+A_{TT} \left( 
+    \langle
+        G^K = (V,E^K), c
+    \rangle
+    , \varepsilon
+\right)
+$ che ritorna un ciclo $C$, è polinomiale sia nella taglia dell'istanza $|
+    \langle
+        G, c
+    \rangle
+|$ sia in $1/\varepsilon$, con fattore di approssimazione
+\begin{equation*}
+    \rho = 
+    \frac{
+        c \left( C \right)
+    }{
+        c \left( C^* \right)
+    }
+    \leq \left( 1+\varepsilon \right)
+\end{equation*}
+Rendendo $\varepsilon$ inversamente proporzionale a $G$, si ottiene un algoritmo che è ancora polinomiale, ma che compie un errore così piccolo da disabilitare l'apprssimazione.
+\begin{equation*}
+    \varepsilon = 
+    \frac{1}{2|V|}
+    \quad
+    \to
+    \quad
+    A_{TT} \left( 
+        \langle
+            G^K = (V,E^K), c
+        \rangle
+        ,
+        \frac{1}{2|V|}
+    \right)
+\end{equation*}
+Lo schema FPTAS è polinomiale in $1/\varepsilon$ per cui risulta $poly(|V|) = poly (|
+\langle
+G,c
+\rangle 
+|)
+$.
+\\
+Nel primo caso, se $ \langle G = (V,E) \rangle \in HAMILTON$, esiste in $G$ un cammino Hamiltoniano, che esiste anche in $G^K$ e ha costo $|V|$, perché tutti gli archi utilizzati sono originali.
+L'algoritmo ritorna un ciclo $C$ il cui costo è
+\begin{align*}
+    c(C) 
+    &
+    \leq
+    \left( 1 + \varepsilon \right)
+    c(C^*)
+    % \\
+    % &= 
+    =
+    \left( 1 +
+        \frac{1}{2|V|}
+    \right)
+    |V|
+    = |V| + \frac{1}{2}
+\end{align*}
+I costi possono solo essere interi, per cui 
+$
+c(C) \leq |V|
+$.
+\\
+Nel caso di istanza negativa, $
+\langle G = (V,E) \rangle \notin HAMILTON
+$ implica che ogni tour $C$ in $G^K$ deve usare almeno un arco in $E^K-E$.
+$A_{TT}$ ritorna quindi un tour di costo 
+$
+c(C) \geq |V| + 1
+$, dovendo per forza utilizzare un arco aggiunto nella trasformazione.
+\\
+Combinando i risultati:
+\begin{equation*}
+    \langle G \rangle \in HAMILTON
+    \Leftrightarrow
+    A_{TT}
+    \left( 
+        f ( \langle G \rangle)
+        ,
+        \frac{1}{2|V|}
+    \right)
+    \text{ ritorna un tour di costo } c(C) \leq |V|
+\end{equation*}
+Si riesce quindi a decidere $HAMILTON$ in tempo polinomiale, che viola l'ipotesi che si era fatta per cui
+$\bp \neq \bnp$.
+
+\subsection{Soluzione approssimata per Subset Sum}
+% pag 80.8
+
+\subsection{Soluzione approssimata per Independent Set}
+% pag 81
+
+\section{Problema del Bilanciamento del Carico}
+% pag 82.5
 
 \section{Pezzi utili di \LaTeX{}}
 \begin{algorithm}[H]
