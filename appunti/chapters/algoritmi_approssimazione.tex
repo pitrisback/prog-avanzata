@@ -3755,8 +3755,338 @@ $ a fronte di una soluzione ottima che somma a 6, per cui
 \subsection{Soluzione approssimata per Independent Set}
 % pag 81
 
+Il problema dell'Independent Set richiede di trovare l'insieme di taglia massima di nodi non connessi tra loro.
+L'approccio greedy intuitivo è quello di selezionare un nodo nell'$IS$ e rimuovere da una lista di nodi liberi tutti i suoi vicini.
+\begin{algorithm}[H]
+\caption{Approssimatore per Independent Set}\label{alg:is_approx}
+\begin{algorithmic}[1]
+    \Procedure{Approx\_IS}{$G=(V,E)$}
+        \State $V' \gets \emptyset$
+        \Comment{vertici selezionati}
+        \State $W \gets V$
+        \Comment{vertici residui}
+        \While{$W \ne \emptyset$}
+            \State * sia $v \in W$ arbitrario *
+            \State $V' \gets V' \cup \left\{ v \right\}$
+            \State $W \gets W - \left\{ v \right\}
+            - \left\{ u \in W : \left\{ u,v \right\} \in E \right\}
+            $
+        \EndWhile
+        \State return $s$
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+L'algortimo è corretto e ritorna un independent set: perché non lo sia devono essere selezionati due nodi connessi da un arco: $
+\exists u, v \in V' :
+\left\{ u, v \right\} \in E
+$, ma questo non può accadere, se uno dei due nodi viene selezionato, il vicino viene rimosso nel clean up.
+
+L'algoritmo ritorna un independent set massimale, ovvero non si può aggiungere un nodo a $V'$ facendolo restare un $IS$.
+Per ogni $u \notin V'$, se non è stato selezionato deve essere stato eliminato a una qualche iterazione. Ma non è in $V'$ quindi viene rimosso nel clean up, per cui deve avere un vicino $v \in V'$.
+
+Per quanto riguarda il fattore di approssimazione,
+si cerca di capire quanti più nodi abbia l'insieme ottimo rispetto al ritornato.
+Si considerino l'insieme
+che viene ritornato
+$V'$,
+l'insieme ottimo 
+$V^*$,
+la loro differenza $
+V^* - V'
+$
+e la loro intersezione
+$X = V^* \cap V'$.
+
+L'idea è che $V^*$ non possa avere troppi più nodi rispetto a $V'$, e sono i nodi nella differenza $
+V^* - V'
+$.
+
+Considerando un vertice $v \in V^*$ ci sono due casi:
+$v \in V'$ in cui il vertice è individuato correttamente, e 
+$v \notin V'$.
+In questo secondo caso, $v \in V^* - V'$, e per la massimalità di $V'$ ogni nodo nella differenza deve avere un vicino in $V'$, ovvero $
+\exists u \in V' :
+\left\{ u, v \right\} \in E
+$.
+
+Per ciascuno di questi nodi $v$ di $
+V^* - X
+=
+V^* -
+\left( 
+    V^* \cap V'
+\right)
+$, ovvero nodi in $V^*$ ma non in $V'$,
+% possono essere selezionati in $V'$ ???
+???
+
+\begin{align*}
+    |V^*|
+    &= 
+    |X|
+    +
+    |V^* - X|
+    \\
+    &
+    \leq
+    |X| + 
+    \Delta_G \left( 
+        |V'| - |X|
+    \right)
+    \\
+    &
+    \leq
+    \Delta_G \left( 
+        |V'| -
+        |X| + 
+        |X|
+    \right)
+    =
+    \Delta_G |V'|
+\end{align*}
+
+% TODO info min 23 su come migliorare l'approx
+
 \section{Problema del Bilanciamento del Carico}
 % pag 82.5
+
+In un problema di \emph{load balancing}, vanno eseguiti $n$ job (indicati con numeri naturali $\left\{ 1, \cdots, n \right\}$,
+ciascuno con running time noto $t_1, \cdots, t_n$, su $m$ macchine, con $m < n$ perché non sia triviale.
+
+Le soluzioni ammissibili sono partizioni degli indici dei job: 
+\begin{equation*}
+    \mathcal{P} = 
+    \left\{ 
+        M_1, \cdots, M_m
+    \right\}
+    \quad
+    M_i \subseteq \left\{ 1, \cdots, n \right\}
+    , \;
+    M_i \cap M_j = \emptyset
+    , \;
+    \bigcup_{i = 1}^{m} M_i
+    = \left\{ 1, \cdots, n \right\}
+\end{equation*}
+Il tempo per ogni macchina è
+\begin{equation*}
+    T_i = 
+    \sum_{j \in M_i} t_j
+\end{equation*}
+La funzione obiettivo è il cosiddetto \emph{makespan}, ovvero il tempo impiegato dalla macchina più carica:
+\begin{equation*}
+    % \max_{i=1, \ldots, m} T_i
+    \max
+    \left\{ 
+        T_i : i=1, \ldots, m
+    \right\}
+\end{equation*}
+che deve essere minimizzato.
+
+Per ESERCIZIO si può provare che anche per due sole macchine, questo problema è NP-hard, con una riduzione non banale da subset sum, seguendo l'idea che partizionando l'insieme in due metà le somme devono essere simili.
+
+Un immediato algoritmo greedy di approssimazione assegna man mano i job alla macchina più scarica.
+\begin{algorithm}[H]
+\caption{Approssimatore per load balancing}\label{alg:lb_approx}
+\begin{algorithmic}[1]
+    \Procedure{Approx\_LB}{$\vec{t}, m$}
+        \State $n \gets \vec{t}.len$
+        \For{$i \gets 1 $ to $ m $ }
+            \State $T_i \gets 0$
+            \State $M_i \gets \emptyset$
+        \EndFor
+        \For{$j \gets 1 $ to $ n $ }
+            \State $k \gets \argmin \left\{ T_i : 1 \leq i \leq m \right\}$
+            \State $T_k \gets T_k + t_j$
+            \State $M_k \gets M_k \cup \left\{ j \right\}$
+        \EndFor
+        \State return $\max ( \vec{T} ), \vec{M}$
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+La soluzione ritornata è di sicuro ammissibile, perché ogni job viene assegnato una e una sola volta. Con un implementazione astuta delle strutture dati si ottiene complessità lineare (bisogna avere sempre disponibile l'indice della macchina più scarica).
+
+Per poter dimostrare il fattore di approssimazione, bisogna prima mostrare una proprietà del makespan $T^*$ della soluzione ottima:
+\begin{equation*}
+    T^* \geq
+    \max
+    \left\{ 
+        \frac{1}{m}
+        \sum_{j=1}^{n} t_j
+        ,
+        \max_{1 \leq j \leq n} t_j
+    \right\}
+\end{equation*}
+Ovvero il massimo tra il lavoro medio per macchina, e il costo del lavoro più pesante.
+\\
+La prima proprietà si prova per assurdo: se 
+\begin{equation*}
+    T^* <
+    \frac{1}{m}
+    \sum_{j=1}^{n} t_j
+\end{equation*}
+tutti i tempi devono essere minori di questo ($T^*$ è il massimo)
+\begin{equation*}
+    \forall i \quad
+    T_{i}^{*} \leq
+    T^* <
+    \frac{1}{m}
+    \sum_{j=1}^{n} t_j
+\end{equation*}
+che per pigeon hole è assurdo: sommando tutti gli $m$ contributi, si ottiene
+\begin{equation*}
+    \sum_{i=1}^{m}
+    T_{i}^{*}
+    <
+    m
+    \frac{1}{m}
+    \sum_{j=1}^{n} t_j
+\end{equation*}
+E il primo membro si può riscrivere come il secondo per l'associativa
+\begin{equation*}
+    \sum_{j=1}^{n} t_j
+    =
+    \sum_{i=1}^{m} T_i
+\end{equation*}
+Quindi si è ottenuto che una quantità deve essere minore di sé stessa, che è impossibile.
+\\
+Per la seconda proprietà, sia
+$
+\bar{j} = \argmax \left\{ t_j : 1 \leq j \leq m \right\}
+$
+l'indice del job più lungo. Deve essere eseguito da una macchina
+$
+\exists i : \bar{j} \in M_{i}^{*}
+$, e il tempo complessivo della macchina sarà di sicuro maggiore o uguale al singolo job
+$
+T_{i}^{*}
+\geq
+t_{\bar{j}}
+$, e il makespan è il massimo dei tempi delle macchine
+$
+T^* \geq
+T_{i}^{*}
+$
+
+Per il fattore di approssimazione, si analizza la macchina critica $\bar{i}$, con makespan:
+\begin{equation*}
+    T^G = 
+    \max_{1 \leq j \leq n} \left\{ T_i^G \right\}
+    =
+    T_{\bar{i}}^{G}
+\end{equation*}
+e ne si studia la storia delle allocazioni, in particolare l'ultima: si indica con $\bar{j}$ l'ultimo job assegnato a $\bar{i}$.
+A questa iterazione, le altre macchine erano più cariche:
+\begin{equation*}
+    \forall i
+    ,
+    1 \leq i \leq m
+    \quad
+    T_{i}^{G}
+    \geq
+    \left( 
+        T_{\bar{i}}^{G}
+        -
+        t_{\bar{j}}
+    \right)
+    =
+    \left( 
+        T^{G}
+        -
+        t_{\bar{j}}
+    \right)
+    % \geq
+    % \left( 
+        % T^*
+        % -
+        % t_{\bar{j}}
+    % \right)
+\end{equation*}
+Sfruttando quanto mostrato prima
+($
+    m \, T^*
+    \geq
+    \sum_{j=1}^{n} t_j
+$), e sommando per tutte le macchine
+\begin{align*}
+    &
+    \sum_{i=1}^{m}
+    T_{i}^{G}
+    =
+    \sum_{j=1}^{n} t_j
+    \leq
+    m \, T^*
+    \\
+    m \left( 
+        T^{G}
+        -
+        t_{\bar{j}}
+    \right)
+    \leq
+    &
+\end{align*}
+Da cui
+\begin{align*}
+    T^G
+    &
+    \leq
+    T^* -
+    t_{\bar{j}}
+    \\
+    & \leq
+    T^* +
+    \max_{1 \leq j \leq n}
+    \left\{ 
+        t_j
+    \right\}
+    \\
+    & \leq
+    T^* +
+    T^*
+    = 2 
+    T^*
+\end{align*}
+E il fattore di approssimazione è
+\begin{equation*}
+    \rho = \frac{
+        T^G
+    }{
+        T^*
+    }
+    \leq 2
+\end{equation*}
+
+\subsubsection{Considerazioni}
+
+La qualità dell'analisi è buona per grandi valori di $m$:
+se si considerano $
+m(m-1)
+$ job con costo 1, e l'ultimo job con costo $
+t_n = m
+$, con $
+n = 
+m(m-1) + 1
+$, i primi $n-1$ job vengono allocati in ordine uno per macchina, e all'ultima iterazione hanno tutte lo stesso carico pari a $m-1$.
+L'ultimo job viene assegnato a una macchina qualsiasi, che porta a un makespan pari a $
+T_G = (m-1)+m = 2m -1
+$, mentre $T^* = m$, assegnando ad una macchina solamente il job lungo, e alle restanti $m-1$ tutti gli altri job.
+\begin{equation*}
+    \rho = \frac{
+        T^G
+    }{
+        T^*
+    }
+    = \frac{2m-1}{m}
+    = 2- \frac{1}{m}
+\end{equation*}
+Seguendo l'euristica \emph{longest processing time first}, si ottiene un fattore di approssimazione pari a 
+\begin{equation*}
+    \rho_{LPFT} = \frac{3}{2}
+\end{equation*}
+Si dimostra soffermandosi sul costo del $m+1$-esimo job assegnato, che si dimostra essere
+\begin{equation*}
+    T^* \geq 2 t_{m+1}
+\end{equation*}
+Intuitivamente, se ci sono più di $m$ job, una macchina deve farne due.
 
 \section{Pezzi utili di \LaTeX{}}
 \begin{algorithm}[H]
