@@ -431,7 +431,7 @@ Per l'analisi della complessità, vanno introdotti i numeri di Fibonacci.
     \begin{align*}
         F_1 &= 1
         \\
-        F_2 &= 2
+        F_2 &= 1
         \\
         F_{k+1}
         &=  
@@ -466,7 +466,7 @@ Per l'analisi della complessità, vanno introdotti i numeri di Fibonacci.
         &
         \geq
         \frac{1}{
-            \sqrt{5}
+            2 \sqrt{5}
         }
         \left( 
             \frac{1 + 
@@ -476,15 +476,230 @@ Per l'analisi della complessità, vanno introdotti i numeri di Fibonacci.
     \end{align*}
     I numeri di Fibonacci crescono come un esponenziale.
 \end{definition}
-Supponendo di conoscere il numero di chiamate $k$ eseguite dall'algoritmo di Euclide, allora si dimostra che i parametri iniziali erano grandi rispetto al numero di chiamate.
+Supponendo di conoscere il numero di chiamate $k$ eseguite dall'algoritmo di Euclide,
+si trovano dei limiti inferiori per la grandezza dei parametri iniziali, dimostrando la velocità di convergenza dell'algoritmo.
+% allora si dimostra che i parametri iniziali erano grandi rispetto al numero di chiamate.
 \begin{lemma}
     \label{lem:euclide_iterazioni}
-    Se $
+    Sia $k$ il numero di chiamate eseguite dall'algoritmo di Euclide, e siano $
     a > b > 0
     $, allora $
-    a 
+    a \geq F_{k+2}
+    $ e $
+    b \geq F_{k+1}
     $
+    \begin{proof}
+        La restrizione sugli input non è restrittiva:
+        \begin{itemize}[noitemsep,parsep=0pt,partopsep=0pt,topsep=0pt]
+            \item nel caso $a<b$ i valori vengono scambiati alla prima iterazione
+            \item nel caso $a=b$ l'algortimo termina in due chiamate
+            \item nel caso $b=0$ l'algortimo termina in una chiamata
+        \end{itemize}
+        I limiti si provano per induzione su $k$:
+        \\
+        Per $k=1$, vale 
+        \begin{align*}
+            a > b > 0
+            \quad
+            &
+            \rightarrow
+            b \geq 1 = F_2
+            \\
+            &
+            \rightarrow
+            a \geq 2 = F_3
+        \end{align*}
+        \\
+        Sia vera l'ipotesi induttiva per $k-1$.
+        \\
+        Si analizza $\text{\textsc{Euclid}}(a,b)$ per $k>1$.
+        $\text{\textsc{Euclid}}(b, a \bmod b)$ farà allora $k-1$ chiamate, e vale l'ipotesi induttiva:
+        \begin{equation*}
+            b \geq F_{(k-1)+2} = F_{k+1}
+            \quad
+            \text{e}
+            \quad
+            a \bmod b \geq F_{(k-1)+1} = F_{k}
+        \end{equation*}
+        Vale $a>b$ quindi per il teorema di divisione
+        \begin{align*}
+            a &= qb + a \bmod b
+            \\
+            \left( 
+                q = \left\lfloor 
+                    \frac{a}{b}
+                \right\rfloor \geq 1
+            \right)
+            \quad 
+            \quad 
+            \quad 
+            &
+            \geq
+            b + a \bmod b
+            \\
+            &
+            \geq
+            F_{k+1}
+            +
+            F_{k}
+            \\
+            &= 
+            F_{k+2}
+        \end{align*}
+    \end{proof}
 \end{lemma}
+Avendo provato questo lemma, sia $
+\bar{k}
+$ il primo valore (minimo) per cui $
+b < F_{
+    \bar{k} + 1
+}
+$, allora $
+b \geq F_{
+    \bar{k}
+}
+$ e l'algoritmo non può fare più di $
+\bar{k}
+$ chiamate.
+\begin{align*}
+    b
+    &
+    \geq F_{
+        \bar{k}
+    }
+    \geq
+    \frac{1}{
+        2 \sqrt{5}
+    }
+    \left( 
+        \frac{1 + \sqrt{5} }{2}
+    \right)^{k}
+    \\
+    \log_{ \frac{1 + \sqrt{5} }{2} }
+    b
+    &
+    \geq
+    \bar{k}
+    +
+    \log_{ \frac{1 + \sqrt{5} }{2} }
+    \frac{1}{ 2 \sqrt{5} }
+    \\
+    \bar{k}
+    &
+    \leq
+    \log_{ \frac{1 + \sqrt{5} }{2} }
+    b
+    -
+    \log_{ \frac{1 + \sqrt{5} }{2} }
+    \frac{1}{ 2 \sqrt{5} }
+\end{align*}
+Quindi a meno di costanti vale
+\begin{equation*}
+    \bar{k}
+    =
+    T_{euclid} \left( a, b \right)
+    =
+    O \left( \log b \right)
+    =
+    O \left( |
+        \langle
+            a, b
+        \rangle 
+    | \right)
+\end{equation*}
+Note:
+\\
+Il valore di $a$ è irrilevante, alla prima iterazione viene abbattuto da $b$.
+\\
+L'algoritmo è veloce ma non troppo, infatti ad ogni iterazione va effettuata un'operazione di modulo, che è quadratica nella taglia dei numeri considerati.
+La complessità risulta
+$
+O
+% \left( \left( \log b \right)^3 \right)
+( ( \log b )^3 )
+$, e considerando che si utilizzano in genere numeri a migliaia di bit, non è trascurabile nelle applicazioni pratiche.
+
+\subsubsection{Calcolo del valore del GCD}
+
+Il massimo comun divisore è una precisa combinazione lineare dei due valori di ingresso.
+\begin{equation*}
+    gcd(a, b) = a \bar{x} + b \bar{y}
+\end{equation*}
+Si può modificare l'algoritmo di Euclide in modo da ricavare i valori di $
+\bar{x}
+$ e $
+\bar{y}
+$.
+Per il caso base $b=0$:
+\begin{equation*}
+    gcd(a, 0) = a = a \cdot 1 + b \cdot 0
+\end{equation*}
+L'algoritmo modificato ritorna una \texttt{struct} formata da $
+\left\{ a, \left( 1, 0 \right) \right\}
+$.
+\\
+Per il caso generico:
+dal teorema della divisione 
+\begin{equation*}
+    a = 
+    \left\lfloor \frac{a}{b} \right\rfloor
+    b
+    +
+    a \bmod b
+    \quad
+    \rightarrow
+    \quad
+    a \bmod b
+    =
+    a -
+    \left\lfloor \frac{a}{b} \right\rfloor
+    b
+\end{equation*}
+E quindi sostituendo
+\begin{align*}
+    gcd(a,b)
+    &= 
+    gcd(b,
+        a \bmod b
+    )
+    \\
+    &= 
+    b x' + \left( 
+        a \bmod b
+    \right) y'
+    \\
+    &= 
+    b x' + \left( 
+        a -
+        \left\lfloor \frac{a}{b} \right\rfloor
+        b
+    \right) y'
+    \\
+    &= 
+    a y' +
+    \left( 
+        x' +
+        \left\lfloor \frac{a}{b} \right\rfloor
+        y'
+    \right) b
+    \\
+    &= a \bar{x} + b \bar{y}
+\end{align*}
+Si estende facilmente l'algoritmo di Euclide in modo da costruire i valori man mano:
+\begin{algorithm}[H]
+\caption{Algoritmo di Euclide esteso}\label{alg:euclide_extended}
+\begin{algorithmic}[1]
+    \Procedure{EE}{$a, b$}
+        \If{$b = 0$}
+            \State return $ \left\{ a, \left( 1, 0 \right) \right\} $
+        \EndIf
+        \State $ \left\{ d, \left( x', y' \right) \right\} 
+        \gets
+        $ \Call{EE}{$b, a \bmod b$}
+        \State return $ \left\{ d, \left( y', x' - a \divv b \cdot y' \right) \right\} $
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
 
 \section{Pezzi utili di \LaTeX{}}
 \begin{algorithm}[H]
