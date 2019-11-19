@@ -21,7 +21,7 @@
     Se $d$ divide $a$ e $d>0$ si dice che è divisore di $a$.
     Per esempio $-2$ divide $8$, mentre $2$ è divisore di $8$.
 \end{definition}
-Valgono le seguenti proposizioni:
+Valgono le seguenti proposizioni riguardo alla divisibilità:
 \begin{proposizione}
     $\forall d \in \mathbb{Z} - \left\{ 0 \right\}
     \Rightarrow
@@ -157,7 +157,7 @@ Valgono le seguenti proposizioni:
         gcd(0,0) = 0
     \end{equation*}
 \end{definition}
-Valgono le seguenti proposizioni:
+Valgono le seguenti proposizioni riguardo al GCD:
 \begin{proposizione}
     \label{prop:gcd_bound}
     $ 
@@ -168,6 +168,7 @@ Valgono le seguenti proposizioni:
     $
 \end{proposizione}
 \begin{proposizione}
+    \label{prop:gcd_zero}
     $ 
     \forall a \in \mathbb{Z}
     \Rightarrow 
@@ -293,6 +294,197 @@ Valgono le seguenti proposizioni:
         $.
     \end{proof}
 \end{theorem}
+
+\subsection{Teorema di Euclide}
+
+Per il calcolo efficace del GCD si utilizza l'algoritmo di Euclide, considerato il primo esempio di algoritmo efficiente della storia.
+
+\begin{theorem} [Euclide]
+    \label{teo:euclide}
+    Siano $a,b \geq 0$ (il GCD è invariante per segno, non si perde di generalità), allora
+    \begin{align*}
+        b=0
+        &
+        \Rightarrow
+        gcd(a,b) =
+        gcd(a,0) = a
+        \\
+        b>0
+        &
+        \Rightarrow
+        gcd(a,b) =
+        gcd(b,
+            a \bmod b
+        )
+    \end{align*}
+    \begin{proof}
+        La prima implicazione è corrispondente alla proposizione \ref{prop:gcd_zero}.
+        \\
+        La seconda si prova in due parti:
+        \\
+        ``$ gcd(a,b) \leq gcd(b, a \bmod b) $'':
+        Si applica il teorema di divisione ad $a$ e $b$:
+        \begin{equation*}
+            a = qb + r = qb + a \bmod b
+            \quad
+            \rightarrow
+            \quad
+            a \bmod b = a - qb
+        \end{equation*}
+        E si riscrive quindi
+        \begin{align*}
+            gcd(b, a \bmod b)
+            &= 
+            gcd(b, a - qb)
+            % \intertext{a cui si applica il teorema di Bézout:
+            % $ \exists x', y' \in \mathbb{Z} : $
+            % }
+            \\
+            \text{per Bézout:
+            $ \exists x', y' \in \mathbb{Z} : $
+            }
+            \quad
+            &
+            =
+            b x' + 
+            \left( 
+                a - qb
+            \right) y'
+            \\
+            &= 
+            a y'
+            +
+            b
+            \left( 
+                x' - qy'
+            \right)
+        \end{align*}
+        Per cui il $
+        gcd(b, a \bmod b)
+        $ è combinazione lineare intera positiva di $a$ e $b$ e sempre per Bézout, deve essere maggiore o uguale del $
+        gcd(a, b)
+        $, che è la minima combinazione lineare intera positiva:
+        $ gcd(a,b) \leq gcd(b, a \bmod b) $.
+        \\
+        ``$ gcd(a,b) \geq gcd(b, a \bmod b) $'':
+        Sia $
+        d' = gcd(b, a \bmod b)
+        $, allora valgono
+        \begin{align*}
+            d' | b 
+            \Rightarrow
+            \exists k' 
+            &
+            : b = k' d'
+            \\
+            d' | a \bmod b
+            \Rightarrow
+            \exists k'' 
+            &
+            : a \bmod b = k'' d'
+        \end{align*}
+        E si riscrive dal teorema di divisione
+        \begin{align*}
+            a
+            &= 
+            qb + a \bmod b
+            \\
+            &= 
+            q k' d' 
+            +
+            k'' d'
+            \\
+            &= 
+            \left( 
+                q k' + k''
+            \right) d'
+        \end{align*}
+        Quindi $
+        \left( d' | a \right)
+        $ e chiaramente $
+        \left( d' | b \right)
+        $, per cui $d'$ è divisore comune di $a$ e $b$, e deve essere minore del \emph{massimo} comun divisore.
+    \end{proof}
+\end{theorem}
+Questo teorema mostra una chiara proprietà di sottostruttura, che riscrive la soluzione in funzione di istanze più piccole del problema.
+\begin{algorithm}[H]
+\caption{Algoritmo di Euclide}\label{alg:euclide}
+\begin{algorithmic}[1]
+    \Procedure{Euclid}{$a, b$}
+        \If{$b = 0$}
+            \State return $a$
+        \EndIf
+        \State return \Call{Euclid}{$b, a \bmod b$}
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+Se $a < b$ la prima iterazione scambia i valori ($
+    a \bmod b = a
+$), e alle successive iterazioni vale $b < a$ e quindi $a \bmod b < b$, essendo un minore stretto l'algortimo termina.
+La correttezza dell'algoritmo è assicurata dal teorema precedente.
+
+Per l'analisi della complessità, vanno introdotti i numeri di Fibonacci.
+\begin{definition}
+    [Numeri di Fibonacci]
+    \label{def:numerifibonacci}
+    I numeri di Fibonacci sono definiti come
+    \begin{align*}
+        F_1 &= 1
+        \\
+        F_2 &= 2
+        \\
+        F_{k+1}
+        &=  
+        F_{k} +
+        F_{k-1}
+        \quad
+        \text{per}
+        \quad
+        k \geq 2
+    \end{align*}
+    Il cui valore è calcolabile in formula chiusa:
+    \begin{align*}
+        F_k &= 
+        \frac{1}{
+            \sqrt{5}
+        }
+        \left( 
+            \frac{1 + 
+                \sqrt{5}
+            }{2}
+        \right)^{k}
+        -
+        \frac{1}{
+            \sqrt{5}
+        }
+        \left( 
+            \frac{1 -
+                \sqrt{5}
+            }{2}
+        \right)^{k}
+        \\
+        &
+        \geq
+        \frac{1}{
+            \sqrt{5}
+        }
+        \left( 
+            \frac{1 + 
+                \sqrt{5}
+            }{2}
+        \right)^{k}
+    \end{align*}
+    I numeri di Fibonacci crescono come un esponenziale.
+\end{definition}
+Supponendo di conoscere il numero di chiamate $k$ eseguite dall'algoritmo di Euclide, allora si dimostra che i parametri iniziali erano grandi rispetto al numero di chiamate.
+\begin{lemma}
+    \label{lem:euclide_iterazioni}
+    Se $
+    a > b > 0
+    $, allora $
+    a 
+    $
+\end{lemma}
 
 \section{Pezzi utili di \LaTeX{}}
 \begin{algorithm}[H]
