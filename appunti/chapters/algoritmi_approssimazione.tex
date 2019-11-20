@@ -3777,10 +3777,11 @@ L'approccio greedy intuitivo è quello di selezionare un nodo nell'$IS$ e rimuov
 L'algortimo è corretto e ritorna un independent set: perché non lo sia devono essere selezionati due nodi connessi da un arco: $
 \exists u, v \in V' :
 \left\{ u, v \right\} \in E
-$, ma questo non può accadere, se uno dei due nodi viene selezionato, il vicino viene rimosso nel clean up.
+$, ma questo non può accadere, 
+senza perdita di generalità, sia $u$ il primo nodo selezionato, allora nel clean up vengono rimossi da $W$ sia $v$ sia $u$, quindi si arriva all'assurdo: $v$ non può essere selezionato insieme a $u$.
 
 L'algoritmo ritorna un independent set massimale, ovvero non si può aggiungere un nodo a $V'$ facendolo restare un $IS$.
-Per ogni $u \notin V'$, se non è stato selezionato deve essere stato eliminato a una qualche iterazione. Ma non è in $V'$ quindi viene rimosso nel clean up, per cui deve avere un vicino $v \in V'$.
+Per ogni $u \notin V'$, se non è stato selezionato deve essere stato eliminato a una qualche iterazione. Ma non è in $V'$ quindi viene rimosso nel clean up, per cui deve avere un vicino $v \in V'$, e $u$ viene eliminato all'iterazione a cui viene selezioanto $v$.
 
 Per quanto riguarda il fattore di approssimazione,
 si cerca di capire quanti più nodi abbia l'insieme ottimo rispetto al ritornato.
@@ -3795,11 +3796,22 @@ $
 e la loro intersezione
 $X = V^* \cap V'$.
 
-L'idea è che $V^*$ non possa avere troppi più nodi rispetto a $V'$, e sono i nodi nella differenza $
+L'idea è che $V^*$ non possa avere troppi più nodi rispetto a $V'$,
+e sono i nodi nella differenza $
 V^* - V'
 $.
 
-Considerando un vertice $v \in V^*$ ci sono due casi:
+---------
+
+I nodi che sono in $V^*$ ma non sono in $V'$, devono essere adiacenti a nodi di $V'$ grazie alla massimalità.
+
+Ogni nodo di $V'$ può coprire al più $\Delta_G$ adiacenze, e il suo grado è minore di $\Delta_G$.
+
+Quindi non c'è troppo spazio per ingrandire $V^*$, al più circa $\Delta_G |V'|$ 
+
+---------
+
+Considerando un vertice generico $v \in V^*$ ci sono due casi:
 $v \in V'$ in cui il vertice è individuato correttamente, e 
 $v \notin V'$.
 In questo secondo caso, $v \in V^* - V'$, e per la massimalità di $V'$ ogni nodo nella differenza deve avere un vicino in $V'$, ovvero $
@@ -3807,16 +3819,44 @@ In questo secondo caso, $v \in V^* - V'$, e per la massimalità di $V'$ ogni nod
 \left\{ u, v \right\} \in E
 $.
 
-Per ciascuno di questi nodi $v$ di $
-V^* - X
+Allora vale $
+|V^*| = |X| + |V^* - V'|
+$, infatti $V^*$ ha nodi che sono o in $X$ o nella differenza.
+
+$X$ partiziona $V^*$.
+
+Ogni nodo in $V^* - X$ deve essere adiacente a un nodo nell'insieme $
+V' - X
+$, perché non può essere adiacente a un nodo in $X$, che sono anche nodi in $V'$,
+e si trovano nello stesso independent set $V^*$ e non ci sono archi tra quei nodi.
+
+Tutti i nodi che non sono in $V'$, per massimalità, devono essere adiacenti a un nodo in $V'$ che non è in $X$, e quindi $V' - X$.
+
+Quanti nodi si possono accomodare? Al più $\Delta_G $ per ognuno di quei nodi, e quindi vale la diseguaglianza
+\begin{equation*}
+    | V^* - X |
+    \leq
+    \Delta_G \left( |V'| - |X| \right)
+\end{equation*}
+E $
+| V^* - X |
 =
-V^* -
-\left( 
-    V^* \cap V'
-\right)
-$, ovvero nodi in $V^*$ ma non in $V'$,
+| V^* | - | X |
+$ essendo la differenza simmetrica, ho tolto da $V^*$ proprio i nodi che sono in $V'$.
+
+Perché si toglie $X$ da questa quantità? Perché ogni nodo non in $V'$, deve essere adiacente a un nodo di $V'$, ma non possono essere tutti i nodi di $V'$ ad accomodare nodi di $X$, perché $X$ è un insieme di nodi che si trova anche in $V'$. Quindi i nodi in $X$ non possono servire per avere un vicino in $V'$.
+I nodi in $X$ sono in $V^*$ e due nodi in $V^*$ non sono uniti da un arco.
+Ho solo $|V'|-|X|$ nodi da utilizzare per ottenere queste adiacenze.
+
+% Per ciascuno di questi nodi $v$ di $
+% V^* - X
+% =
+% V^* -
+% \left( 
+    % V^* \cap V'
+% \right)
+% $, ovvero nodi in $V^*$ ma non in $V'$,
 % possono essere selezionati in $V'$ ???
-???
 
 \begin{align*}
     |V^*|
@@ -3831,7 +3871,8 @@ $, ovvero nodi in $V^*$ ma non in $V'$,
     \Delta_G \left( 
         |V'| - |X|
     \right)
-    \\
+    % \\
+    \intertext{supponendo che il grado massimo sia almeno 1 (grafo non isolato)}
     &
     \leq
     \Delta_G \left( 
@@ -3843,7 +3884,21 @@ $, ovvero nodi in $V^*$ ma non in $V'$,
     \Delta_G |V'|
 \end{align*}
 
+Ragionamento di corrispondenza, si prendono i nodi della soluzione ottima, e li si fanno corrispondere a nodi della soluzione approssimata, sapendo che i nodi della soluzione ottima che non sono nella soluzione approssimata, ad al più gruppi di $\Delta_G$ possono corrispondere allo stesso nodo nella soluzione approssimata che non si trovi anche nella soluzione ottima.
+
 % TODO info min 23 su come migliorare l'approx
+
+In pratica l'independent set che si ottiene sono molto dipendenti dall'ordine di selezione dei nodi (esempio stella).
+% In generale, sotto una permutazione casuale dei nodi, il centro verrebbe selezionato  
+Permutando gli ingressi si ottengono qualità diverse della soluzione finale: non si riesce a migliorare il caso peggiore, ma provando più permutazione di nodi si possono ottenere a volte buone soluzioni.
+
+Tipicamente si usa un algoritmo di approssimazione per ottenere una prima soluzione con qualità garantita.
+Poi si provano tutti i modi per migliorarlo:
+\begin{itemize}[noitemsep,parsep=0pt,partopsep=0pt,topsep=0pt]
+    \item con tecniche di ricerca operativa (branch and bound)
+    \item con diverse run randomizzate
+    \item con local search, si ottiene buona soluzione iniziale, e poi si effettuano piccole perturbazioni alla soluzione ottenuta, per cercare di migliorare la soluzione fino a trovare un ottimo locale.
+\end{itemize}
 
 \section{Problema del Bilanciamento del Carico}
 % pag 82.5
