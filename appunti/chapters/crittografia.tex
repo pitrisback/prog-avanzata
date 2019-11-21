@@ -988,31 +988,33 @@ Per convenzione, si indicano le classi con i loro rappresentanti principali
 
 Vengono definite due operazioni tra classi di equivalenza:
 \begin{align*}
-    \oplus : 
-    \zz{n}
-    \times
-    \zz{n}
-    \to
-    \zz{n}
-    &
+    % \oplus : 
+    % \zz{n}
+    % \times
+    % \zz{n}
+    % \to
+    % \zz{n}
+    % \ni
     \quad
     \cln{a} 
     \oplus
     \cln{b} 
+    &
     =
     \cln{a + b}
     \\
-    \odot : 
-    \zz{n}
-    \times
-    \zz{n}
-    \to
-    \zz{n}
-    &
+    % \odot : 
+    % \zz{n}
+    % \times
+    % \zz{n}
+    % \to
+    % \zz{n}
+    % &
     \quad
     \cln{a} 
     \odot
     \cln{b} 
+    &
     =
     \cln{a \cdot b}
 \end{align*}
@@ -1044,6 +1046,7 @@ $).
 \\
 Quando si usa la notazione compatta, va ricordato che le operazioni sono tra classi, mentre i rappresentanti sono interi:
 \begin{equation*}
+    \zz{n} \times \zz{n} \ni
     a \oplus b = ( a + b ) \bmod n 
 \end{equation*}
 Va quindi tenuto conto del fatto che gli insiemi $\cln{a} $ sono sempre insiemi infiniti,
@@ -1071,8 +1074,318 @@ Scrivendo il rappresentante generico della somma si mostra la sua invarianza ris
 
 \subsection{Proprietà di gruppo di $\zz{n}$}
 
+\subsubsection{Gruppo additivo}
+
+L'insieme
+delle classi di equivalenza è un gruppo additivo (abeliano)
+rispetto alla somma
+$
+\left( 
+    \zz{n}, \oplus
+\right)
+$.
+
+\begin{itemize}
+    \item esiste l'elemento neutro $
+        \cln{0}
+        $, infatti
+        $
+        \forall \cln{a} \in \zz{n} 
+        $
+        vale
+        $
+        \cln{a} \oplus \cln{0} = \cln{a} 
+        $
+    \item l'associatività si eredita dalla somma tra interi
+    \item per la chiusura, l'operazione $\oplus$ ha sempre come risultato una classe in $\zz{n} $
+    \item esiste l'inverso additivo (opposto):
+        l'inverso di $
+        \cln{a}
+        $
+        è
+        $
+        \cln{-a} 
+        $,
+        il cui rappresentante principale è $
+        ( -a ) \bmod n = ( n - a ) \bmod n 
+        $ e vale $
+        \cln{-a} 
+        \oplus 
+        \cln{a} 
+        =
+        \cln{0} 
+        $
+\end{itemize}
+
+\subsubsection{Gruppo moltiplicativo}
+
+L'elemento neutro per $\odot $ è chiaramente $
+\cln{1} 
+$.
+
+Di sicuro
+$
+\left( 
+    \zz{n}, \odot
+\right)
+$
+non è un gruppo, perché $
+\cln{0} 
+$ non ha inverso.
+
+Anche
+$
+\left( 
+    \zz{n} - \left\{ 
+        \cln{0} 
+    \right\}
+    , \odot
+\right)
+$ non è un gruppo moltiplicativo, perché di nuovo alcuni elementi non hanno l'inverso:
+si consideri $
+\zz{4}
+$, qual è l'inverso di $
+\cleq{4}{2}
+$? Lo si cerca per enumerazione:
+\begin{align*}
+    \cleq{4}{2}
+    \odot
+    \cleq{4}{0}
+    &= 
+    \cleq{4}{0}
+    &
+    \cleq{4}{2}
+    \odot
+    \cleq{4}{1}
+    &= 
+    \cleq{4}{2}
+    \\
+    \cleq{4}{2}
+    \odot
+    \cleq{4}{2}
+    &= 
+    \cleq{4}{0}
+    &
+    \cleq{4}{2}
+    \odot
+    \cleq{4}{3}
+    &= 
+    \cleq{4}{2}
+\end{align*}
+Nessuno di questi risulta $
+    \cleq{4}{1}
+$ quindi $
+    \cleq{4}{2}
+$ non ha inverso in $
+\zz{4}
+$.
+
+Si considerano allora solo le classi i cui rappresentanti principali sono primi con $n$.
+\begin{equation*}
+    \zs{n}
+    =
+    \left\{ 
+        \cln{a} 
+        \in \zz{n} 
+        :
+        gcd(a, n) = 1
+    \right\}
+\end{equation*}
+Per prima cosa va verificato se $
+\zs{n} 
+$ sia ben definito, ovvero se sia invariante rispetto al rappresentante principale.
+Lo si dimostra usando Bézout:
+\begin{align*}
+    1 = 
+    gcd(a, n)
+    &
+    = 
+    ax + ny
+    \\
+    &
+    = 
+    ax + ny + qnx - qnx
+    \\
+    &
+    = 
+    \left( a + qn \right) x
+    +
+    n \left( y - qx \right)
+    % \\
+    % &
+    % =
+    % gcd(a + qn, n)
+\end{align*}
+Quindi si è scritto $1$ come combinazione lineare tra $
+a + qn
+$ e $n$. Di nuovo per Bézout, la minima combinazione lineare è il GCD, e non può essercene una minore, per cui $
+    gcd(a + qn, n) = 1
+$. $
+a + qn
+$ è il generico rappresentante, e si conclude.
+
+Le proprietà di un gruppo sono verificate:
+\begin{itemize}
+    \item esiste l'elemento neutro $
+        \cln{1}
+        $
+    \item l'associatività si eredita dal prodotto tra interi
+    \item per la chiusura deve valere
+        \begin{align*}
+            \left( 
+                gcd(a, n) = 1
+            \right)
+            &
+            \wedge
+            \left( 
+                gcd(b, n) = 1
+            \right)
+            \quad
+            \Rightarrow
+            \quad
+            gcd(ab, n) = 1
+            \shortintertext{che si dimostra con Bézout:}
+            1 &= a x_a + n y_a
+            \\
+            1 &= b x_b + n y_b
+            \shortintertext{e moltiplicando membro a membro}
+            1 \cdot 1 &= a b x_a x_b
+            + n (\ldots)
+            + n (\ldots)
+            + n^2 (\ldots)
+            \shortintertext{raccogliendo $n$ si ottiene una combinazione lineare di $ab$ e $n$, e si riapplica Bézout}
+            &= a b \bar{x} + n \bar{y}
+        \end{align*}
+    \item riguardo all'esistenza e unicità dell'inverso moltiplicativo $
+        \left( 
+            \cln{a} 
+        \right)^{-1}
+        $ di $
+        \cln{a} 
+        $, da Bézout si ricava
+        \begin{align*}
+            1 = ax + ny
+            \quad
+            \rightarrow
+            \quad
+            ax
+            &
+            = 1 - ny
+            \shortintertext{prendendo il modulo}
+            \left( 
+                ax
+            \right)
+            \bmod n 
+            &
+            =
+            \left( 
+                1 - ny
+            \right)
+            \bmod n 
+            \shortintertext{applicando la distributiva}
+            \left( 
+                \left( 
+                    a \bmod n
+                \right)
+                \left( 
+                    x \bmod n 
+                \right)
+            \right)
+            \bmod n 
+            &= 
+            \left( 
+                \left( 
+                    1 \bmod n
+                \right)
+                +
+                \left( 
+                    \left( -ny \right)
+                    \bmod n 
+                \right)
+            \right)
+            \bmod n 
+            \shortintertext{
+                al secondo membro valgono
+                $
+                1 \bmod n = 1 
+                $
+                e 
+                $
+                \left( -ny \right) \bmod n = 0 
+                $
+            }
+            \left( 
+                \left( 
+                    a \bmod n
+                \right)
+                \left( 
+                    x \bmod n 
+                \right)
+            \right)
+            \bmod n 
+            &= 1
+            % \shortintertext{per cui la classe il cui rappresentante principale è $x \bmod n $ è l'inverso moltiplicativo della classe di $a$, il cui rappresentante principale è $a \bmod n $ }
+        \end{align*}
+        per cui la classe il cui rappresentante principale è $x \bmod n $
+        è l'inverso moltiplicativo della classe di $a$, il cui rappresentante principale è $a \bmod n $,
+        ovvero $
+        x \bmod n
+        $ è il rappresentante principale della classe $
+        \left( \cln{a} \right)^{-1}
+        $.
+        \\
+        Va ora verificato che $
+        \cln{x} \in \zs{n} 
+        $: sempre per Bézout vale
+        \begin{align*}
+            gcd(a, n) = 1
+            \rightarrow
+            1 &=  ax + ny
+            \\
+            1 &=  xa + ny
+            \rightarrow
+            gcd(x, n) = 1
+        \end{align*}
+        La prova dell'unicità è lasciata per ESERCIZIO, si mostra che se
+        $ \cln{a} \odot \cln{x} = \cln{1} $
+        e
+        $ \cln{a} \odot \cln{y} = \cln{1} $
+        allora 
+        $\cln{x} = \cln{y}$.
+        Una proprietà utile, che pure va dimostrata, è la seguente $
+        \left( ab | n \right)
+        \wedge
+        \left( gcd(a, n) = 1 \right)
+        \Rightarrow
+        \left( b | n \right)
+        $ (intuitivamente, se $ab$ divide $n$ ma $a$ e $n$ non hanno divisori in comune, deve essere $b$ che moltiplica $a$ per ottenere $n$).
+\end{itemize}
+Il coefficiente della combinazione lineare si ottiene con l'algoritmo esteso di Euclide:
+\begin{algorithm}[H]
+\caption{Inverso moltiplicativo}\label{alg:inverse}
+\begin{algorithmic}[1]
+    \Procedure{Inverse}{$a, n$}
+        \State $\left\{ d, \left( x, y \right) \right\} \gets $ \Call{EE}{$a, n$}
+        \State return $x \bmod n$
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+
+
+
+
+\subsection{Teorema di Eulero}
+
+\subsection{Teorema cinese dei resti}
+
+\section{Criptosistema a chiave pubblica RSA}
+
 
 \section{Pezzi utili di \LaTeX{}}
+
+\subsection{Template vari}
+
 \begin{algorithm}[H]
 \caption{Divide and Conquer}\label{alg:dnc}
 \begin{algorithmic}[1]
@@ -1134,7 +1447,7 @@ Una lista
     \item[--] $T_A(|x|) = O(|x|^k)$ per qualche costante $k \geq 0$
 \end{itemize}
 
-Teoremi e varie
+\subsection{ Teoremi e vari ambienti }
 
 \begin{theorem}
     Un teorema senza nome
