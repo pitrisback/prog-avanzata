@@ -1,5 +1,7 @@
 \section{Elementi di teoria dei numeri}
 
+\subsection{Divisibilità e massimo comun divisore}
+
 \begin{definition}[Divisibilità]
     \label{def:divisibilita}
     Si dice che $d$ divide $a$, e $a$ è multiplo di $d$ se,
@@ -186,6 +188,9 @@ Valgono le seguenti proposizioni riguardo al GCD:
     \end{equation*}
     Questo permette di limitarsi allo studio dei naturali senza perdita di generalità.
 \end{proposizione}
+
+\subsection{Teorema di Bézout}
+
 \begin{theorem} [Identità di Bézout]
     \label{teo:bezout}
     Sotto l'ipotesi $|a| + |b| > 0$, il GCD
@@ -595,9 +600,9 @@ $ chiamate.
 \end{align*}
 Quindi a meno di costanti vale
 \begin{equation*}
-    \bar{k}
-    =
     T_{euclid} \left( a, b \right)
+    =
+    \bar{k}
     =
     O \left( \log b \right)
     =
@@ -701,6 +706,372 @@ Si estende facilmente l'algoritmo di Euclide in modo da costruire i valori man m
 \end{algorithmic}
 \end{algorithm}
 
+\section{Aritmetica modulare}
+
+% Valgono le seguenti proprietà del modulo:
+\subsection{Proprietà del modulo}
+
+\begin{proposizione}
+    \label{prop:distri_mod_add}
+    Proprietà distributiva rispetto all'addizione:
+    \begin{equation*}
+        \left( a+b \right)
+        \bmod n 
+        =
+        \left( 
+            \left( 
+                a \bmod n
+            \right)
+            +
+            \left( 
+                b \bmod n 
+            \right)
+        \right)
+        \bmod n 
+    \end{equation*}
+\end{proposizione}
+
+\begin{proposizione}
+    Proprietà distributiva rispetto alla moltiplicazione:
+    \begin{equation*}
+        \left( a \cdot b \right)
+        \bmod n 
+        =
+        \left( 
+            \left( 
+                a \bmod n
+            \right)
+            \cdot
+            \left( 
+                b \bmod n 
+            \right)
+        \right)
+        \bmod n 
+    \end{equation*}
+\end{proposizione}
+
+\begin{proposizione}
+    \label{prop:mod_differenza}
+    \begin{equation*}
+        a \bmod n = b \bmod n 
+        \quad
+        \Leftrightarrow
+        \quad
+        ( a - b ) \bmod n = 0
+        \quad
+        \Leftrightarrow
+        \quad
+        \exists k \in \zz{}
+        :
+        a - b = kn
+    \end{equation*}
+\end{proposizione}
+
+\begin{proposizione}
+    \label{prop:mod_elimina_interno}
+    Se $m | n$ e $m, n > 0$:
+    \begin{equation*}
+        \exists x \in \zz{}
+        :
+        \left( 
+            x \bmod n 
+        \right)
+        \bmod m
+        =
+        x \bmod m
+    \end{equation*}
+\end{proposizione}
+
+Si dimostra la proposizione \ref{prop:distri_mod_add}, le altre sono lasciate per ESERCIZIO.
+\begin{proof}
+    Applicando il teorema di divisione
+    \begin{align*}
+        a + b
+        = 
+        q_1 \, n + r_1
+        &
+        &
+        r_1  
+        &
+        =
+        ( a + b )
+        \bmod n 
+        \\
+        a
+        = 
+        q_a \, n + r_a
+        &
+        &
+        r_a  
+        &
+        =
+        a
+        \bmod n 
+        \\
+        b
+        = 
+        q_b \, n + r_b
+        &
+        &
+        r_b  
+        &
+        =
+        b
+        \bmod n 
+        \\
+        r_a + r_b
+        = 
+        q_{ab} \, n + r_2
+        &
+        &
+        r_2  
+        &
+        =
+        ( r_a + r_b )
+        \bmod n 
+        \\
+        &
+        &
+        &
+        =
+        ( ( a \bmod n ) + ( b \bmod n ) ) \bmod n 
+    \end{align*}
+    Quindi per provare la proprietà deve valere $
+    r_1 = r_2
+    $
+    \begin{align*}
+        a + b
+        &
+        =
+        \left( 
+            q_a n + r_a
+        \right)
+        +
+        \left( 
+            q_b n + r_b
+        \right)
+        \\
+        &
+        =
+        \left( 
+            q_a + q_b + q_{ab}
+        \right) n +
+        r_2
+    \end{align*}
+    Il teorema di divisione assicura l'esistenza e l'\emph{unicità} di $q$ e $r$, per cui
+    \begin{equation*}
+        q_a + q_b + q_{ab} = q_1
+        \quad
+        r_1 = r_2
+    \end{equation*}
+\end{proof}
+
+\subsection{Strutture quozienti}
+
+\begin{definition}
+    [Congruo]
+    \label{def:congruo}
+    Se $a, b \in \zz{}$, si dice che $a$ è congruo a
+    % $b \bmod n $ se
+    $b$ modulo $ n $ se
+    \begin{equation*}
+        a \equiv b \bmod n 
+        \quad
+        \Leftrightarrow
+        \quad
+        a \equiv_n b
+        \quad
+        \Leftrightarrow
+        \quad
+        a \bmod n + b \bmod n 
+    \end{equation*}
+\end{definition}
+La relazione $
+    \equiv_n
+$ è riflessiva ($
+    a \equiv_n a
+$), è simmetrica ($
+    a \equiv_n b
+    \Leftrightarrow
+    b \equiv_n a
+$) ed è transitiva ($
+    ( a \equiv_n b )
+    \wedge
+    ( b \equiv_n c )
+    \Rightarrow
+    ( a \equiv_n c )
+$), quindi è una relazione d'equivalenza, che induce una partizione di $
+    \zz{}
+$ in classi di equivalenza.
+\begin{definition}
+    [Classe di equivalenza]
+    La classe di equivalenza $
+    \cln{a} 
+    $ è formata dagli interi congrui ad $a$.
+    \begin{equation*}
+        \cln{a}
+        =
+        \left\{ 
+            x \in \zz{}
+            :
+            x \equiv_n a
+        \right\}
+    \end{equation*}
+\end{definition}
+Fissata $
+\cln{a} 
+$, per gli elementi della classe vale
+\begin{align*}
+    x \equiv_n a
+    &
+    \Leftrightarrow
+    x \bmod n + a \bmod n 
+    \\
+    \text{(prop \ref{prop:mod_differenza})}
+    \quad
+    &
+    \Leftrightarrow
+    ( x - a ) \bmod n = 0
+    \intertext{ Per cui il resto della divisione intera tra $x-a$ e $n$ è nullo, e vale }
+    x - a = q n
+    \quad
+    &
+    \Rightarrow
+    \quad
+    x = a + q n
+\end{align*}
+La classe si riscrive come la progressione aritmetica
+\begin{equation*}
+    \cln{a}
+    =
+    \left\{ 
+        a + qn : q \in \zz{}
+    \right\}
+\end{equation*}
+Ed è invariante per il rappresentante:
+% se $
+$ \forall x \in \zz{} : 
+    x \equiv_n a
+$ vale
+\begin{equation*}
+    \cln{a}
+    =
+    \left\{ 
+        x + qn : q \in \zz{}
+    \right\}
+\end{equation*}
+
+\begin{definition}
+    [Insieme delle classi di equivalenza]
+    L'insieme delle classi di equivalenza è l'insieme degli insiemi
+    \label{def:insieme_classi_equiv}
+    \begin{equation*}
+        \zz{n} =
+        \left\{ 
+            \cln{i}
+            : 0 \leq i \leq n-1
+        \right\}
+    \end{equation*}
+\end{definition}
+Dato $n$, ci sono chiaramente $n$ classi di equivalenza.
+I valori $0, 1, \dots, n-1$ sono detti rappresentanti principali delle classi.
+I rappresentanti principali sono elementi di $\zz{}$.  
+\\
+Per convenzione, si indicano le classi con i loro rappresentanti principali 
+\begin{equation*}
+    a \in \zz{n}
+    \quad
+    \leftrightarrow
+    \quad
+    \cln{a} \in \zz{n}
+\end{equation*}
+
+Vengono definite due operazioni tra classi di equivalenza:
+\begin{align*}
+    \oplus : 
+    \zz{n}
+    \times
+    \zz{n}
+    \to
+    \zz{n}
+    &
+    \quad
+    \cln{a} 
+    \oplus
+    \cln{b} 
+    =
+    \cln{a + b}
+    \\
+    \odot : 
+    \zz{n}
+    \times
+    \zz{n}
+    \to
+    \zz{n}
+    &
+    \quad
+    \cln{a} 
+    \odot
+    \cln{b} 
+    =
+    \cln{a \cdot b}
+\end{align*}
+Per esempio
+$
+7 \in \cleq{5}{2}
+$ ($
+    7 \bmod 5 = 2
+$) e
+$
+9 \in \cleq{5}{4}
+$ ($
+    9 \bmod 5 = 4
+$).
+La somma tra classi risulta
+$
+\cleq{5}{2}
+\oplus
+\cleq{5}{4}
+=
+\cleq{5}{1}
+$
+e infatti
+$
+7 + 9 = 16 \in \cleq{5}{1}
+$ ($
+    16 \bmod 5 = 1
+$).
+\\
+Quando si usa la notazione compatta, va ricordato che le operazioni sono tra classi, mentre i rappresentanti sono interi:
+\begin{equation*}
+    a \oplus b = ( a + b ) \bmod n 
+\end{equation*}
+Va quindi tenuto conto del fatto che gli insiemi $\cln{a} $ sono sempre insiemi infiniti,
+e le operazioni che si compiono devono quindi essere coerenti con l'invarianza del rappresentante.
+\\
+Scrivendo il rappresentante generico della somma si mostra la sua invarianza rispetto al rappresentante.
+\begin{align*}
+    \cln{a} 
+    \oplus
+    \cln{b} 
+    &
+    =
+    \cln{a + q_1 n} 
+    \oplus
+    \cln{b + q_2 n} 
+    \\
+    &
+    =
+    \cln{ ( a + b ) + ( q_1 + q_2 ) n} 
+    \\
+    &
+    =
+    \cln{a + b}
+\end{align*}
+
+\subsection{Proprietà di gruppo di $\zz{n}$}
+
+
 \section{Pezzi utili di \LaTeX{}}
 \begin{algorithm}[H]
 \caption{Divide and Conquer}\label{alg:dnc}
@@ -734,6 +1105,18 @@ Guarda che so fare
     \setzo{m}
     \quad
     \setzo{}
+    \quad
+    \odot
+    \quad
+    \oplus
+    \quad
+    \zz{n}
+    \quad
+    \zs
+    \quad
+    \zs{\rho(n)}
+    \quad
+    \equiv_n
 \end{equation*}
 
 Un problema
