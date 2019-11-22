@@ -1371,16 +1371,469 @@ Il coefficiente della combinazione lineare si ottiene con l'algoritmo esteso di 
 \end{algorithmic}
 \end{algorithm}
 
+Per esempio,
+l'algoritmo per $
+\cleq{15}{4}
+\in
+\zs{15} 
+$
+esegue le seguenti chiamate,
+ricordando che l'algoritmo esteso di Euclide 
+EE($a, b$)
+ritorna
+\begin{align*}
+    &
+    \left\{ d, \left( y', x' - a \divv b \cdot y' \right) \right\}
+    \quad
+    \text{se}
+    \quad
+    \left\{ d, \left( x', y' \right) \right\} \gets \text{EE} (b, a \bmod b)
+    \\
+    &
+    \text{EE} ( 15, 4)
+    \\
+    &
+    \quad
+    \text{EE} (4,  15 \bmod 4 = 3)
+    \\
+    &
+    \quad
+    \quad
+    \text{EE} (3,  4 \bmod 3 = 1)
+    \\
+    &
+    \quad
+    \quad
+    \quad
+    \text{EE} (1,  3 \bmod 1 = 0)
+    \\
+    &
+    \quad
+    \quad
+    \quad
+    \quad
+    \text{return} \left\{ 1, \left( 
+            1, 0
+    \right) \right\}
+    \quad
+    \text{(caso base)}
+    \\
+    &
+    \quad
+    \quad
+    \quad
+    \text{return}
+    \left\{ 1, \left( 
+            0, 1 - \left\lfloor 3/1 \right\rfloor \cdot 0
+    \right) \right\}
+    =
+    \left\{ 1, \left( 
+            0, 1
+    \right) \right\}
+    \\
+    &
+    \quad
+    \quad
+    \text{return}
+    \left\{ 1, \left( 
+            1, 0 - \left\lfloor 4/3 \right\rfloor \cdot 1
+    \right) \right\}
+    =
+    \left\{ 1, \left( 
+            1, -1
+    \right) \right\}
+    \\
+    &
+    \quad
+    \text{return}
+    \left\{ 1, \left( 
+            -1, 1 - \left\lfloor 15/4 \right\rfloor \cdot -1
+    \right) \right\}
+    =
+    \left\{ 1, \left( 
+            -1, 4
+    \right) \right\}
+    \\
+    &
+    \text{return}
+    % \left\{ 1, \left( 
+            % -1, 1 - \left\lfloor 15/4 \right\rfloor \cdot -1
+    % \right) \right\}
+    % =
+    \left\{ 1, \left( 
+            4, \_
+    \right) \right\}
+    \shortintertext{
+        Quindi $
+        \left( 
+            \cleq{15}{4}
+        \right)^{-1}
+        = \cleq{15}{4}
+        $ e infatti 
+    }
+    &
+    \left( 
+    4 \cdot 4
+    \right) \bmod 15
+    = 16 \bmod 15 =
+    \cleq{15}{1}
+\end{align*}
 
 
 
 
 \subsection{Teorema di Eulero}
 
+\subsubsection{Funzione di Eulero}
+
+\begin{definition}
+    [Funzione di Eulero]
+    \label{def:euler_function}
+    La funzione di Eulero o toziente, è definita, per ogni intero positivo $n$, come il numero degli interi tra $1$ e $n$ che sono coprimi con $n$. 
+    \begin{equation*}
+        \varphi (n)
+        =
+        | \zs{n} |
+        = |
+        \left\{ 
+            a \in \zz{n} : gcd(a, n) = 1
+        \right\}
+        |
+    \end{equation*}
+    Ed ha valori compresi in $
+    0 < \varphi (n) \leq n -1
+    $.
+\end{definition}
+
+Se $p$ è primo, tutti i valori $a$ hanno massimo comun divisore con $p$ pari a 1, per cui
+\begin{equation*}
+    \varphi (p)
+    =
+    | \zs{p} |
+    = p - 1
+\end{equation*}
+
+Se invece $p$ è composto, vale
+\begin{equation*}
+    \varphi (n) 
+    =
+    n
+    \prod_{p|n} 
+    \left( 
+        1 - \frac{1}{p}
+    \right)
+\end{equation*}
+I primi che dividono $n$ devono quindi essere noti.
+
+%% TODO min 57 58 note sulla riduzione
+
+\subsubsection{Teorema di Eulero}
+
+% Il Teorema di Eulero permette
+
+L'esponenziazione di una classe vale 
+\begin{equation*}
+    a^{\varphi (n)}
+    =
+    % \cln{
+    [
+        % \overset{
+        \underset{
+            \varphi (n) \text{ volte}
+        }{
+            a \cdot a \cdot \ldots \cdot a
+        }
+    ]_n
+    % }
+\end{equation*}
+
+\begin{theorem}
+    [Teorema di Eulero]
+    \label{teo:eulero}
+    $
+    \forall n > 1,
+    \forall a \in \zs{n} 
+    $
+    vale
+    \begin{equation*}
+        a^{\varphi (n)}
+        \equiv 1 \bmod n
+    \end{equation*}
+\end{theorem}
+Il teorema permette di calcolare facilmente l'inverso moltiplicativo
+\begin{equation*}
+    a^{-1}
+    =
+    a^{\varphi (n) - 1} \bmod n
+\end{equation*}
+
+\begin{corollario}
+    [Piccolo teorema di Fermat]
+    \label{cor:piccolo_fermat}
+    Se $p$ è primo, vale $
+    \varphi (p) = p-1
+    $ e $
+    \forall a \geq 1
+    $ vale
+    \begin{equation*}
+        a^{p-1} = 1 \bmod n 
+    \end{equation*}
+\end{corollario}
+
 \subsection{Teorema cinese dei resti}
 
-\section{Criptosistema a chiave pubblica RSA}
+\begin{theorem}
+    [Teorema cinese dei resti]
+    \label{teo:cinese_resti}
+    Dato $n = 
+        n_1 \cdot
+        n_2 \cdot
+        \ldots
+        \cdot
+        n_k
+    $ con $
+        n_i, n_j
+    $ primi tra loro per $i \ne j$ ($
+        gcd(
+            n_i, n_j
+        ) = 1
+    $).
+    Si considera la funzione
+    \begin{align*}
+        f
+        :
+        \zz{n} 
+        &
+        \to
+        \zz{n_1} \times
+        \zz{n_2} \times
+        \cdots
+        \times
+        \zz{n_k}
+        \\
+        f
+        :
+        a
+        &
+        \mapsto
+        \left( 
+            a \bmod n_1,
+            a \bmod n_2,
+            \cdots,
+            a \bmod n_k
+        \right)
+    \end{align*}
+    Allora $f$ ha le seguenti caratteristiche:
+    \begin{enumerate}
+        \item $f$ è biunivoca, ovvero un isomorfismo
+        \item $f
+            \left( 
+                \left( a+b \right) \bmod n 
+            \right)
+            =
+            \left( 
+                \left( a+b \right) \bmod n_1,
+                \left( a+b \right) \bmod n_2,
+                \cdots,
+                \left( a+b \right) \bmod n_k
+            \right)
+            $
+        \item $f
+            \left( 
+                \left( a \cdot b \right) \bmod n 
+            \right)
+            =
+            \left( 
+                \left( a \cdot b \right) \bmod n_1,
+                \left( a \cdot b \right) \bmod n_2,
+                \cdots,
+                \left( a \cdot b \right) \bmod n_k
+            \right)
+            $
+    \end{enumerate}
+    % TODO note 1h07m
+\end{theorem}
+\begin{proof}
+    [Dimostrazione punto 1]
+    La cardinalità di dominio e codominio è la stessa
+    % TODO note 1h16m sul perché
+    \begin{equation*}
+        |
+        \zz{n} 
+        | = |
+        \zz{n_1} \times
+        \zz{n_2} \times
+        \cdots
+        \times
+        \zz{n_k}
+        |
+    \end{equation*}
+    quindi è sufficiente dimostrare la suriettività per provare la biiettività.
+    Ovvero
+    \begin{equation*}
+        \forall
+        \left( 
+            a_1, \cdots, a_k
+        \right) 
+        \in 
+        \zz{n_1} \times
+        \cdots
+        \times
+        \zz{n_k}
+        \quad
+        \exists x \in \zz{n} 
+        :
+        f(x) =
+        \left( 
+            a_1, \cdots, a_k
+        \right) 
+    \end{equation*}
+    La dimostrazione è costruttiva, e indica come calcolare $
+    f^{-1}
+    (a)
+    $.
+    \\
+    Si può riscrivere la funzione come sistema di equazioni modulari
+    \begin{equation*}
+        \begin{cases}
+            a \bmod n_1 = a_1
+            \\
+            \quad
+            \;
+            \vdots
+            \\
+            a \bmod n_k = a_k
+        \end{cases}
+    \end{equation*}
+    Si definiscono
+    \begin{itemize}
+        \item i moltiplicatori $
+            m_i
+            $ per $
+            1 \leq i \leq k
+            $, come
+            \begin{equation*}
+                m_i = 
+                \prod_{
+                    \substack{
+                        j=1
+                        \\
+                        j \ne i
+                    }
+                }^{k} n_j
+                =
+                \frac{n}{n_i}
+            \end{equation*}
+            Note:
+            \begin{itemize}[noitemsep,parsep=0pt,partopsep=0pt,topsep=0pt]
+                \item $
+                    gcd(m_i, n_i) = 1
+                    $ dalla chiusura di $\zs{} $
+                    % TODO ascolta il perché 4m
+                \item $
+                    \exists
+                    m_i^{-1}
+                    \bmod n_i
+                    \in
+                    \zs{n_i} 
+                    $, perché $m_i$ è prodotto di quantità prime con $n_i$
+            \end{itemize}
+        \item i coefficienti $
+            c_i
+            $ per $
+            1 \leq i \leq k
+            $, come
+            \begin{equation*}
+                c_i =
+                m_i \left( 
+                    m_i^{-1}
+                    \bmod n_i
+                \right)
+            \end{equation*}
+            Note:
+            \begin{itemize}
+                \item il prodotto è in $
+                    \zz{n} 
+                    $, farebbe 1 prendendo il modulo
+                \item per $i \ne j$ vale
+                    $
+                        c_i \bmod n_j = 0
+                    $, infatti si riscrive $c_i$ con la definizione
+                    \begin{align*}
+                        \left( 
+                            m_i \left( 
+                                m_i^{-1}
+                                \bmod n_i
+                            \right)
+                        \right)
+                        \bmod n_j
+                        &= 0
+                    \end{align*}
+                    e $m_i$ ha come fattore $n_j$, quindi il modulo è nullo.
+            \end{itemize}
+    \end{itemize}
+    Allora $a$ vale
+    \begin{equation*}
+        a = 
+        \left( 
+            \sum_{i=1}^{k} a_i c_i
+        \right) \bmod n 
+    \end{equation*}
+    Per mostrare la correttezza, si prova che ogni equazione del sistema è verificata.
+    \begin{align*}
+        \forall 1 \leq i \leq k
+        \quad
+        a_i
+        &=
+        a \bmod n_i
+        \\
+        &=
+        \left( 
+            \left( 
+                \sum_{i=1}^{k} a_i c_i
+            \right) \bmod n 
+        \right)
+        \bmod n_i
+        \intertext{vale $n_i | n$, e per la proprietà \ref{prop:mod_elimina_interno}}
+        &=
+        \left( 
+            \sum_{i=1}^{k} a_i c_i
+        \right)
+        \bmod n_i
+    \end{align*}
+\end{proof}
+\begin{proof}
+    [Dimostrazione punti 2, 3]
+    Si dimostra per entrambe le operazioni allo stesso modo
+    \begin{align*}
+        f
+        \left( 
+            \left( a \circ b \right) \bmod n 
+        \right)
+        &= 
+        \left( 
+            \left( 
+                \left( a \circ b \right) \bmod n
+            \right) \bmod n_1,
+            \cdots,
+            \left( 
+                \left( a \circ b \right) \bmod n
+            \right) \bmod n_k
+        \right)
+        \intertext{vale $n_i | n$, e per la proprietà \ref{prop:mod_elimina_interno}}
+        &= 
+        \left( 
+            \left( a \circ b \right) \bmod n_1,
+            \cdots,
+            \left( a \circ b \right) \bmod n_k
+        \right)
+    \end{align*}
+    come desiderato.
+\end{proof}
 
+% TODO paragone frasrofmata pag 94.2
+
+\section{Criptosistema a chiave pubblica RSA}
 
 \section{Pezzi utili di \LaTeX{}}
 
