@@ -2007,6 +2007,193 @@ $.
 
 \section{Criptosistema a chiave pubblica RSA}
 
+\subsection{Introduzione ai criptosistemi}
+% pag 100.8
+
+Un mittente e un destinatario desiderano scambiare informazioni attraverso un canale di comunicazione non sicuro,
+in cui il messaggio trasmesso può venire intercettato.
+
+Un criptosistema è una classe di funzioni di codifica che permette di offuscare l'informazione originale all'interno del messaggio, in modo che non sia possibile risalire dall'informazione intecettata a quella originale senza avere a disposizione informazioni aggiuntive.
+
+Considerando $\bd$ il dominio dei messaggi, la funzione di codifica è 
+\begin{equation*}
+    e_k : \bd \to \bd
+\end{equation*}
+La funzione deve
+\begin{enumerate}
+    \item 
+        essere invertibile
+    \item 
+        essere (ragionevolmente) efficiente, per cui applicare la codifica è veloce
+    \item 
+        per tutti i messaggi $
+        M \in \bd
+        $, data $
+        y = e_k(M)
+        $, è computazionalmente difficile calcolare $M$ in assenza di informazione aggiuntiva.
+\end{enumerate}
+
+\subsection{Difficoltà di primalità e fattorizzazione}
+% pag 102.5
+
+Il criptosistema RSA si basa su due problemi computazionali:
+\begin{align*}
+    PRIMALITY: & \\
+    \texttt{istanza:} \quad &
+    \langle
+        n
+    \rangle
+    \\
+    \text{dove} \quad &
+    n \in \mathbb{N}^+
+    \\
+    \texttt{domanda:} \quad &
+    n \text{ è primo?}
+    \\
+    FACTORING: & \\
+    \texttt{istanza:} \quad &
+    \langle
+    n, m
+    \rangle
+    \\
+    \text{dove} \quad &
+    n \in \mathbb{N}^+
+    \\
+    & m < n
+    \\
+    \texttt{domanda:} \quad &
+    \text{$n$ è fattorizzabile come $pq$ con $1 \leq p \leq m$?}
+\end{align*}
+Il problema della primalità è in $\bp$, esiste un algoritmo deterministico di complessità polinomiale $
+\tilde{O}
+\left( 
+    \left( 
+        \log n
+    \right)^{6}
+\right)
+$ che lo risolve.
+Prima di avere a disposizione la soluzione esatta, provare che fosse in $\bnp$ richiedeva molta algebra, per specificare un certificato di primalità.
+
+Il problema della fattorizzazione è chiaramente in $\bnp$, il certificato è la lista di fattori.
+Non è provato che sia anche $\bnph$, e anzi lo si dubita fortemente.
+Il problema $FACTORING$ diventa infatti polinomiale se eseguito con un calcolatore quantistico, come mostrato da Shor nel 1994 \cite{365700}, mentre gli altri problemi NP-Hard lo restano anche su computer quantum.
+% TODO aggiungi note su complessità Rho di Pollard 103.1
+Esiste un algoritmo pseudoefficiente, l'algoritmo rho di Pollard, con complessità $
+O \left( 
+    e^{
+        \sqrt[3]{
+            \log n
+            \left( 
+                \log \log n
+            \right)^{2}
+        }
+    }
+\right)
+$, i cui casi peggiori sono quelli per cui i fattori sono grandi.
+
+\subsection{Criptosistema a chiave pubblica RSA}
+
+\subsubsection{Idea}
+% pag 101.3
+
+Il criptosistema proposto da Rivest, Shamir e Adleman considera una popolazione di partecipanti, in generale identificati con
+Alice come mittente, Bob come destinatario e Charlie come malintenzionato, a ciascuno dei quali vengono associate due chiavi, una pubblica e una segreta (privata).
+Per un generico utente $U$, le chiavi si indicano con
+$
+P_U
+$ (pubblica) e $
+S_U
+$
+(segreta).
+
+RSA associa a ogni chiave una funzione di codifica, che per non appesantire la notazione si indica con
+\begin{equation*}
+    e_{P_U} (M) = P_U (M)
+    \quad
+    e_{S_U} (M) = S_U (M)
+\end{equation*}
+Entrambe le funzioni hanno lo stesso dominio e codominio:
+\begin{equation*}
+    P_U(\cdot),
+    S_U(\cdot) 
+    : \bd \to \bd
+\end{equation*}
+E le funzioni $ P_U, S_U $ hanno le seguenti proprietà:
+\begin{enumerate}
+    \item 
+        $ \forall M,
+        P_U(M)
+        $ e $
+        S_U(M)
+        $ si calcolano efficientemente
+    \item 
+        $
+        P_U(M)
+        =
+        S_U^{-1}(M)
+        $
+        ovvero
+        $
+        M = 
+        P_U \left( S_U \left( M \right) \right)
+        =
+        S_U \left( P_U \left( M \right) \right)
+        $
+    \item
+        nota la definizione analitica di $
+        P_U(M)
+        $, è computazionalmente difficile ottenere la specifica di $
+        S_U(M)
+        $
+\end{enumerate}
+È il terzo punto a richiedere un'implementazione attenta:
+dato $\bd = \zz{n} $, una codifica triviale è $
+P_A(M) = (M+c) \bmod n = y
+$, ma è molto facile risalire alla funzione inversa $
+S_A(M) = (y-c) \bmod n
+$.
+
+\subsubsection{Protocolli}
+% pag 102.1
+
+Per il protocollo di comunicazione, se Alice deve mandare un messaggio $M$ a Bob,
+lo codifica utilizzando la chiave pubblica $P_B$ di Bob, ottenendo $
+y = P_B(M)
+$, che invia lungo il canale non sicuro.
+Bob riceve $y$ ed utilizza la sua chiave privata $S_B$ per estrarre il messaggio $
+S_B(y) = 
+S_B \left( P_B \left( M \right) \right) = M
+$.
+Per la costruzione del sistema, quando Charlie intercetta $y$ non riesce ad estrarre $M$, conoscere $P_B$ non gli è di aiuto.
+
+Per il protocollo di autenticazione, Alice vuole firmare il suo messaggio per assicurare a Bob la provenienza affidabile della comunicazione. Allora utilizza la sua chiave privata $S_A$ ed invia a Bob il messaggio e la firma $
+\langle x, y \rangle
+=
+\langle M, S_A(M) \rangle
+$. Quando Bob riceve la comunicazione, confronta se effettivamente $
+x = P_A(y)
+$.
+Charlie non riesce a generare una firma contraffatta, perché non riesce a ricavare $S_A$.
+
+In generale non è una buona idea da parte di Alice di condividere informazioni sulla sua chiave segreta, perché Charlie può iniziare a tabulare valori e potenzialmente interpolare la funzione.
+I due protocolli allora vengono composti, e Alice manda il messaggio firmato solo dopo averlo codificato con la chiave pubblica di Bob: $
+P_B \left( 
+\langle M, S_A(M) \rangle
+\right)
+$. Bob applica la sua chiave segreta e ottiene $x$ e $y$ da verificare.
+
+\subsubsection{Dettagli}
+pag 103.2
+
+\subsubsection{Correttezza}
+pag 104.1
+
+\subsection{Attacchi a RSA}
+pag 105
+
+\section{Generazione di grandi primi}
+pag 110
+
 \section{Pezzi utili di \LaTeX{}}
 
 \subsection{Template vari}
@@ -2060,10 +2247,18 @@ Guarda che so fare
 Un problema
 \begin{align*}
     SS: & \\
-    \texttt{istanza:} \quad & \langle S,t \rangle \\
-    \text{dove} \quad & S \subseteq \mathbb{N} - \left\{ 0 \right\} \text{ finito} \\
-    & t \subseteq \mathbb{N} - \left\{ 0 \right\} \\
-    \texttt{domanda:} \quad & \exists \, S' \subseteq S : \sum_{s \in S'}^{} s = t \, ?
+    \texttt{istanza:} \quad &
+    \langle
+        S,t
+    \rangle
+    \\
+    \text{dove} \quad &
+    S \subseteq \mathbb{N} - \left\{ 0 \right\} \text{ finito}
+    \\
+    &
+    t \subseteq \mathbb{N} - \left\{ 0 \right\} \\
+    \texttt{domanda:} \quad &
+    \exists \, S' \subseteq S : \sum_{s \in S'}^{} s = t \, ?
 \end{align*}
 
 Una lista
