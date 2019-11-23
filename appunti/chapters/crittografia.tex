@@ -1582,6 +1582,8 @@ Il teorema permette di calcolare facilmente l'inverso moltiplicativo
 
 \subsection{Teorema cinese dei resti}
 
+\subsubsection{Enunciato del teorema}
+
 \begin{theorem}
     [Teorema cinese dei resti]
     \label{teo:cinese_resti}
@@ -1653,6 +1655,9 @@ Il teorema permette di calcolare facilmente l'inverso moltiplicativo
     \end{enumerate}
     % TODO note 1h07m
 \end{theorem}
+
+\subsubsection{Dimostrazione del teorema}
+
 \begin{proof}
     [Dimostrazione punto 1]
     La cardinalità di dominio e codominio è la stessa
@@ -1790,16 +1795,51 @@ Il teorema permette di calcolare facilmente l'inverso moltiplicativo
         &=
         \left( 
             \left( 
-                \sum_{i=1}^{k} a_i c_i
+                \sum_{j=1}^{k} a_j c_j
             \right) \bmod n 
         \right)
         \bmod n_i
         \intertext{vale $n_i | n$, e per la proprietà \ref{prop:mod_elimina_interno}}
         &=
         \left( 
-            \sum_{i=1}^{k} a_i c_i
+            \sum_{j=1}^{k} a_j c_j
         \right)
         \bmod n_i
+        \\
+        &=
+        \sum_{j=1}^{k}
+        \left( 
+            a_j c_j
+            \bmod n_i
+        \right)
+        \intertext{ per $i \ne j$ vale $ c_j \bmod n_i = 0 $ }
+        &= 
+        a_i c_i \bmod n_i
+        \\
+        &= 
+        a_i 
+        \left( 
+            m_i \left( 
+                m_i^{-1}
+                \bmod n_i
+            \right)
+        \right)
+        \bmod n_i
+        \intertext{applicando la proprietà distributiva del modulo rispetto al prodotto}
+        &= 
+        \left( 
+            a_i \bmod n_i
+        \right)
+        \left( 
+            m_i \left( 
+                m_i^{-1}
+                \bmod n_i
+            \right)
+        \right)
+        \intertext{il primo fattore è proprio $a_i$, mentre il secondo è 1}
+        % TODO note 12m sul perché
+        &= 
+        a_i
     \end{align*}
 \end{proof}
 \begin{proof}
@@ -1831,7 +1871,139 @@ Il teorema permette di calcolare facilmente l'inverso moltiplicativo
     come desiderato.
 \end{proof}
 
-% TODO paragone frasrofmata pag 94.2
+\subsubsection{Corollari e considerazioni}
+
+\begin{corollario}
+    Dati $
+    n_i, \,
+    1 \leq i \leq k
+    $ con $
+    gcd(n_r, n_s) = 1
+    $ per $
+    r \ne s
+    $, il sistema $
+    \left\{ 
+        a \equiv a_i \bmod n_i
+        , \,
+        1 \leq i \leq k
+    \right\}
+    $ ha una e una sola soluzione in $
+    \zz{n} 
+    $.
+\end{corollario}
+\begin{corollario}
+    Dati $
+    n_i, \,
+    1 \leq i \leq k
+    $ con $
+    gcd(n_r, n_s) = 1
+    $ per $
+    r \ne s
+    $, sono equivalenti
+    \begin{equation*}
+        x \equiv a \bmod n
+        \quad
+        \Leftrightarrow
+        \quad
+        x \equiv a \bmod n_i
+        , \,
+        1 \leq i \leq k
+    \end{equation*}
+    \begin{proof}
+        $\Rightarrow$ si prova con la proposizione \ref{prop:mod_elimina_interno},
+        $\Leftarrow$ si prova con il teorema cinese dei resti.
+    \end{proof}
+\end{corollario}
+
+Il teorema cinese dei resti è un teorema di rappresentazione, e 
+permette di fare operazioni modulari, che sono operazioni costose, 
+eseguendo un numero maggiore di operazioni, ma su istanze di taglia minore.
+Nel caso peggiore, $n$ ha solo due fattori molto simili tra loro: $n=pq$, e $
+p \approx \sqrt{n}
+$.
+I due fattori si rappresentano quindi con $
+n/2
+$ bit, e vengono eseguite due operazioni di costo $
+n^2 /4
+$, per una complessità totale di $
+n^2 /2
+$, che rappresenta un miglioramento considerevole rispetto al costo $
+n^2
+$ originale.
+Nel caso in cui $n$ sia composto da tanti primi piccoli, il miglioramento è ancora più marcato.
+
+\subsubsection{Esempio di applicazione}
+
+Si vuole risolvere il seguente sistema:
+\begin{equation*}
+    \begin{cases}
+        a \equiv 2 \bmod 5
+        \\
+        a \equiv 3 \bmod 13
+    \end{cases}
+\end{equation*}
+Per cui $
+n_1 = 5
+,
+n_2 = 13
+$ e $
+n = n_1 \cdot n_2 = 65
+$ per cui $
+a \in \zz{65} 
+$.
+I moltiplicatori risultano semplicemente $
+m_1 = 13
+,
+m_2 = 5
+$ di cui si calcolano gli inversi moltiplicativi 
+\begin{align*}
+    m_1^{-1} \in \zs{5} 
+    \rightarrow
+    13^{-1} \equiv 2 \bmod 5
+    \quad
+    \left( 
+        13 \cdot 2 = 26 \equiv 1 \bmod 5
+    \right)
+    \\
+    m_2^{-1} \in \zs{13} 
+    \rightarrow
+    5^{-1} \equiv 8 \bmod 13
+    \quad
+    \left( 
+        5 \cdot 8 = 40 \equiv 1 \bmod 13
+    \right)
+\end{align*}
+E si può applicare la formula fornita dalla dimostrazione costruttiva:
+\begin{align*}
+    a &= 
+    \left( 
+        a_1 \cdot
+        m_1 \cdot
+        m_1^{-1} +
+        a_2 \cdot
+        m_2 \cdot
+        m_2^{-1}
+    \right)
+    \bmod n
+    \\
+    &= 
+    \left( 
+        2 \cdot
+        13 \cdot
+        2^{-1} +
+        3 \cdot
+        5 \cdot
+        8^{-1}
+    \right)
+    \bmod 65
+    \\
+    &= 172 \bmod 65 = 42
+\end{align*}
+Ed è corretto: $
+42 \bmod 5 = 2
+$ e $
+42 \bmod 13 = 3
+$.
 
 \section{Criptosistema a chiave pubblica RSA}
 
