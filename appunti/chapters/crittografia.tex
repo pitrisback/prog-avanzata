@@ -2204,11 +2204,149 @@ Per ogni partecipante, vanno quindi generate le due chiavi da utilizzare:
     \item Si selezionano due grandi numeri primi $p,q$, (dell'ordine di $10^3$ bit).
         I numeri primi sono densi negli interi, se ne trova uno ogni circa $\log n$ numeri, quindi è sufficiente generare numeri casuali e testarne la primalità.
     \item Si calcola il \emph{modulo} del sistema $n = pq$. Il dominio dei messaggi è $\bd =  \zz{n} $.
-    \item Si calcola la funzione di Eulero $\rho(n) = \left( 1-p \right) \left( 1-q \right) $
+    \item Si calcola la funzione di Eulero $\rho(n) = \left( 1-p \right) \left( 1-q \right) $, e si seleziona un intero piccolo $e$ (dell'ordine di $10^2$ bit) tale che 
+        $
+        gcd(e, \rho(n)) = 1
+        $.
+        % Anche $\rho(n)$ è difficile da fattorizzare, quindi trovare $e$ è facile.
+        % TODO spiega perché 103.5
+        Essendo $
+        e \in \zs{\rho(n)} 
+        $ ha un inverso moltiplicativo: $
+        \exists d \in \zs{\rho(n)} 
+        : d = e^{-1} \bmod \rho(n)
+        $. Allora vengono definite le due chiavi come
+        \begin{align*}
+            P_U(M) &= M^e \bmod n 
+            &
+            S_U(M) &= M^d \bmod n 
+        \end{align*}
+        Che si indicano sinteticamente con $
+        P_U = \left( e, n \right)
+        $ e $
+        S_U = \left( d, n \right)
+        $.
 \end{enumerate}
 
+\subsubsection{Complessità}
+% pag 103.8
+
+Riguardo alla complessità di esecuzione della codifica e decodifica, il modulo è un'operazione quadratica nella taglia, e anche l'esponenziazione è polinomiale:
+\begin{algorithm}[H]
+\caption{Elevamento a potenza}\label{alg:power}
+\begin{algorithmic}[1]
+    \Procedure{Power}{$x, k, n$}
+        \If{$k=0$}
+            \State return 1
+        \EndIf
+        \If{$k=1$}
+            \State return $x$
+        \EndIf
+        \If{\Call{Even}{$k$} }
+            \State $y \gets$ \Call{Power}{$x, k/2, n$}
+            \State return $y y \bmod n $
+        \Else
+            \State $y \gets$ \Call{Power}{$x, (k-1)/2, n$}
+            \State return $x y y \bmod n $
+        \EndIf
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+La complessità dell'elevamento è $
+O \left( 
+    \log k
+    \cdot
+    T_{mod}(n)
+\right)
+$. Se l'esponente è $k=e$, si può considerare costante $e = O(1)$, perché è stato scelto un intero piccolo,
+allora per la chiave pubblica il tempo è quadratico nella taglia.
+Per la decodifica, se $e$ è piccolo, $d$ deve essere circa di taglia $\log n$, quindi ha una complessità cubica.
+
 \subsubsection{Correttezza}
-pag 104.1
+% pag 104.1
+
+Per provare la correttezza, si deve mostrare che il messaggio viene decodificato correttamente.
+\begin{align*}
+    M
+    &= 
+    P_U \left( S_U \left( M \right) \right)
+    =
+    S_U \left( P_U \left( M \right) \right)
+    \\
+    M
+    &= 
+    \left( 
+        \left( 
+            M^e \bmod n 
+        \right)^d \bmod n 
+    \right) \bmod n 
+    \\ 
+    &= 
+    M^{ed} \bmod n 
+    \shortintertext{ovvero}
+    M^{ed}
+    &
+    \equiv
+    M \bmod n 
+\end{align*}
+E si può applicare il teorema cinese dei resti per $n=pq$
+\begin{equation*}
+    \begin{cases}
+        M^{ed} \equiv M \bmod p
+        \\
+        M^{ed} \equiv M \bmod q
+    \end{cases}
+\end{equation*}
+Per la prima equazione (e analogamente per la seconda) possono capitare due casi:
+\begin{enumerate}
+    \item $M \bmod p = 0
+        \Rightarrow
+        M^{ed} \bmod p = 0
+        $
+    \item $M \bmod p \ne 0$
+        vale
+        \begin{align*}
+            ed &= 1 \bmod \rho(n)
+            \\
+            &= 1 + h  \rho(n)
+            \\
+            &= 1 + h (p-1)(q-1)
+            \\
+            M^{ed}
+            &=
+            M^{
+                1 + h (p-1)(q-1)
+            }
+            \\
+            &= 
+            M
+            \left( 
+                M^{(p-1)}
+            \right)^{h(q-1)}
+            \intertext{passando ai moduli e usando la distributiva}
+            M^{ed} \bmod p
+            &=
+            \left( 
+                \left( 
+                    M \bmod p
+                \right)
+                \left( 
+                    M^{(p-i)}
+                    \bmod p
+                \right)^{h(q-1)}
+            \right) \bmod p
+            \intertext{per il piccolo teorema di Fermat (\ref{cor:piccolo_fermat}) vale
+                $
+                    M^{(p-i)} = 1 \bmod p
+                $
+                e successive applicazioni del modulo e elevamento a potenza restano congrue a 1
+            }
+            M^{ed} \bmod p
+            &=
+            M \bmod p
+            % TODO note 1h26m
+        \end{align*}
+\end{enumerate}
 
 \subsection{Attacchi a RSA}
 pag 105
