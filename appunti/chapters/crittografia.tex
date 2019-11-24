@@ -1504,7 +1504,6 @@ ritorna
     0 < \varphi (n) \leq n -1
     $.
 \end{definition}
-
 Se $p$ è primo, tutti i valori $a$ hanno massimo comun divisore con $p$ pari a 1, per cui
 \begin{equation*}
     \varphi (p)
@@ -1512,8 +1511,7 @@ Se $p$ è primo, tutti i valori $a$ hanno massimo comun divisore con $p$ pari a 
     | \zs{p} |
     = p - 1
 \end{equation*}
-
-Se invece $p$ è composto, vale
+Se invece $n$ è composto, vale
 \begin{equation*}
     \varphi (n) 
     =
@@ -1524,6 +1522,22 @@ Se invece $p$ è composto, vale
     \right)
 \end{equation*}
 I primi che dividono $n$ devono quindi essere noti.
+\\
+Nel caso particolare $n=pq$, la funzione si riduce a
+\begin{equation*}
+    \varphi (n) 
+    =
+    n
+    \left( 
+        1 - \frac{1}{p}
+    \right)
+    \left( 
+        1 - \frac{1}{q}
+    \right)
+    =
+    \left( 1-p \right)
+    \left( 1-q \right)
+\end{equation*}
 
 %% TODO min 57 58 note sulla riduzione
 
@@ -2183,7 +2197,15 @@ P_B \left(
 $. Bob applica la sua chiave segreta e ottiene $x$ e $y$ da verificare.
 
 \subsubsection{Dettagli}
-pag 103.2
+% pag 103.2
+
+Per ogni partecipante, vanno quindi generate le due chiavi da utilizzare:
+\begin{enumerate}
+    \item Si selezionano due grandi numeri primi $p,q$, (dell'ordine di $10^3$ bit).
+        I numeri primi sono densi negli interi, se ne trova uno ogni circa $\log n$ numeri, quindi è sufficiente generare numeri casuali e testarne la primalità.
+    \item Si calcola il \emph{modulo} del sistema $n = pq$. Il dominio dei messaggi è $\bd =  \zz{n} $.
+    \item Si calcola la funzione di Eulero $\rho(n) = \left( 1-p \right) \left( 1-q \right) $
+\end{enumerate}
 
 \subsubsection{Correttezza}
 pag 104.1
