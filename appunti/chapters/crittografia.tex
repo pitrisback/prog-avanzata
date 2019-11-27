@@ -2337,19 +2337,202 @@ Per la prima equazione (e analogamente per la seconda) possono capitare due casi
             \right) \bmod p
             \intertext{per il piccolo teorema di Fermat (\ref{cor:piccolo_fermat}) vale
                 $
-                    M^{(p-i)} = 1 \bmod p
+                    M^{(p-i)} \equiv 1 \bmod p
                 $
                 e successive applicazioni del modulo e elevamento a potenza restano congrue a 1
             }
             M^{ed} \bmod p
             &=
             M \bmod p
-            % TODO note 1h26m
         \end{align*}
 \end{enumerate}
 
 \subsection{Attacchi a RSA}
-pag 105
+% pag 105
+
+La criptoanalisi è l'insieme di tecniche utilizzate per cercare di craccare un sistema crittografico.
+Con craccare si intende esplicitare la chiave privata.
+
+RSA (e un qualsiasi sistema crittografico) non ha un solo punto debole, ovvero la fattorizzazione, ma è anche vulnerabile ad attacchi meno potenti, che decodificano magari un solo messaggio, senza ricavare la funzione segreta.
+
+Riguardo alla fattorizzazione, per ora il problema è difficile, ma non lo sarà utilizzando processori quantistici, quindi c'è un limite temporale all'uso di questo criptosistema.
+
+\subsubsection{Fattorizzare la formula di Eulero}
+
+Anche senza fattorizzare $n$, magari si riesce a ricavare $\varphi(n)$.
+
+\begin{lemma}
+    \label{lem:calcolaphi}
+    Se $n$ è nella forma $n=pq$, calcolare $\varphi(n)$ è computazionalmente equivalente a calcolare $p$ e $q$.
+\end{lemma}
+Se sono noti $(n, p, q)$ si calcola subito $\varphi(n)$.
+\\
+Se invece sono noti $(n, \varphi(n))$, come si calcolano $p,q$?
+Vale 
+\begin{align*}
+    \varphi(n) 
+    &= 
+    (p-1)(q-1)
+    \\
+    &= 
+    pq - p - q +1
+    \\
+    &= 
+    n - (p+q) +1
+    \\
+    \circola{1}
+    \quad
+    p+q &=
+    n - \varphi(n) + 1
+\end{align*}
+E anche
+\begin{align*}
+    \left( p-q \right)^2
+    &= 
+    p^2 + q^2 - 2pq
+    \\
+    &= 
+    p^2 + q^2 - 2pq
+    + \left( 
+        4pq-4pq
+    \right)
+    \\
+    &= 
+    p^2 + q^2 + 2pq
+    -4n
+    \\
+    &= 
+    \left( p+q \right)^2
+    -4n
+    \intertext{di cui si estrae la radice (positiva)}
+    p-q 
+    &= 
+    \sqrt{
+        \left( p+q \right)^2
+        -4n
+    }
+    \intertext{e usando $\circola{1}$ per riscrivere $p+q = 
+            n - \varphi(n) + 1
+            = k
+    $}
+    &= 
+    \sqrt{
+        % \left( 
+            k
+        % \right)
+        ^2
+        -4n
+    }
+    \\
+    \circola{2}
+    \quad
+    p-q
+    &= 
+    \sqrt{ k^2 -4n }
+\end{align*}
+Quindi combinando $
+\circola{1}
+$ e $
+\circola{2}
+$ si ottiene un sistema a 2 equazioni e 2 incognite ($\varphi(n)$ e quindi $k$ è nota)
+\begin{align*}
+    &
+    \begin{cases}
+        p+q = k
+        \\
+        p-q = \sqrt{ k^2 -4n }
+    \end{cases}
+    \\
+    &
+    \begin{cases}
+        p = 
+        \frac{
+            \left( 
+                k + \sqrt{k^2 + 4n}
+            \right)
+        }{
+            2
+        }
+        \\
+        q =
+        \left( 
+            k - \sqrt{k^2 + 4n}
+        \right)
+        / 2
+    \end{cases}
+\end{align*}
+Il calcolo richiede solo l'estrazione di una radice quadrata (e per ESERCIZIO si può dimostrare che il calcolo della radice $r$-esima di $n$ è polinomiale).
+Quindi conoscere la fattorizzazione di $n$ o sapere calcolare $\varphi(n)$ è del tutto equivalente.
+Allora RSA è sicuro da questo attacco.
+
+\subsubsection{Estrazione del logaritmo modulare}
+
+Esiste una versione discreta del logaritmo, che si potrebbe usare per invertire l'esponenziazione.
+
+\begin{definition}
+    [Logaritmo discreto]
+    \label{def:logaritmo_discreto}
+    Dati, $a,b \in zsn$, il logaritmo discreto è $k$ tale che
+    \begin{equation*}
+        a^k \equiv b mon n
+    \end{equation*}
+\end{definition}
+
+Questo problema sembra avere lo stesso status della fattorizzazione, è NP ma non è NP-Hard.
+
+Si utilizza come attacco perché la chiave pubblica è
+\begin{equation*}
+    M^e mon
+\end{equation*}
+e si potrebbe cercare $k$ tale che
+\begin{equation*}
+    \left( 
+        M^e
+    \right)^k
+    \equiv 
+    M mon 
+\end{equation*}
+e il valore $k$ trovato sarebbe proprio l'esponente della chiave segreta.
+
+\subsubsection{Messaggi non in zetastar???}
+
+Un qualsiasi messaggio non in zetastar cracca il sistema.
+Infatti, se
+$M \notin \zs{n}$
+allora deve valere $
+gcd(M, n) > 1
+$. Ma siccome $n=pq$, $M$ deve essere multiplo di $p$ o di $q$, ovvero $
+gcd(M, n) = p
+$ o $
+gcd(M, n) = q
+$. 
+Questo valore si può ricavare con Euclid, ed è stato fattorizzato $n$.
+
+Generare messaggi a caso fino a trovarne uno con qualche divisore in comune con $n$ non è una via che si può seguire in pratica.
+Quando $n=pq$, i messaggi per cui $
+gcd(M, n) > 1
+$ sono nella forma $
+M = kp
+$ o $
+M = hq
+$, quindi ci sono $p+q$ messaggi di questo tipo.
+% 20m ma non si capisce comunque
+I messaggi possibili sono $pq$, quindi vale
+\begin{align*}
+    Prob \, (traditore) 
+    &= 
+    \frac{p+q}{pq}
+    \\
+    \text{se $p>q$}
+    \quad
+    \leq
+    \frac{2p}{pq}
+    =
+    \frac{1}{q}
+\end{align*}
+
+
+
 
 \section{Generazione di grandi primi}
 pag 110
