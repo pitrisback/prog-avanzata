@@ -2472,31 +2472,29 @@ Esiste una versione discreta del logaritmo, che si potrebbe usare per invertire 
 \begin{definition}
     [Logaritmo discreto]
     \label{def:logaritmo_discreto}
-    Dati, $a,b \in zsn$, il logaritmo discreto è $k$ tale che
+    Dati, $a,b \in \zs{n} $, il logaritmo discreto è $k$ tale che
     \begin{equation*}
-        a^k \equiv b mon n
+        a^k \equiv b \bmod n 
     \end{equation*}
 \end{definition}
 
-Questo problema sembra avere lo stesso status della fattorizzazione, è NP ma non è NP-Hard.
-
-Si utilizza come attacco perché la chiave pubblica è
-\begin{equation*}
-    M^e mon
-\end{equation*}
-e si potrebbe cercare $k$ tale che
+Si utilizza come attacco perché la chiave pubblica è $
+M^e \bmod n 
+$, e si potrebbe cercare $k$ tale che
 \begin{equation*}
     \left( 
         M^e
     \right)^k
     \equiv 
-    M mon 
+    M \bmod n  
 \end{equation*}
 e il valore $k$ trovato sarebbe proprio l'esponente della chiave segreta.
 
-\subsubsection{Messaggi non in zetastar???}
+Questo problema non ha ancora status ben definito, è NP ma non è NP-Hard, e sembra appartenere alla stessa classe della fattorizzazione. Anche questo è quindi un problema difficile ma che viene calcolato in modo efficiente con una macchina quantistica.
 
-Un qualsiasi messaggio non in zetastar cracca il sistema.
+\subsubsection{Messaggi non in $\zs{n} $}
+
+Un qualsiasi messaggio non in $\zs{n} $ cracca il sistema.
 Infatti, se
 $M \notin \zs{n}$
 allora deve valere $
@@ -2506,7 +2504,7 @@ gcd(M, n) = p
 $ o $
 gcd(M, n) = q
 $. 
-Questo valore si può ricavare con Euclid, ed è stato fattorizzato $n$.
+Questo valore si può ricavare con Extended Euclid, e in questo modo si riesce a fattorizzare $n$.
 
 Generare messaggi a caso fino a trovarne uno con qualche divisore in comune con $n$ non è una via che si può seguire in pratica.
 Quando $n=pq$, i messaggi per cui $
@@ -2523,15 +2521,116 @@ I messaggi possibili sono $pq$, quindi vale
     &= 
     \frac{p+q}{pq}
     \\
-    \text{se $p>q$}
+    \text{(se $p>q$)}
     \quad
+    \quad
+    &
     \leq
     \frac{2p}{pq}
     =
     \frac{1}{q}
 \end{align*}
 
+\subsubsection{Difficoltà nella generazione di numeri casuali}
 
+Generare numeri realmente casuali è molto difficile, e richiede le osservazioni di fenomeni fisici (legati per esempio alle radiazioni) che permettono di generare bit davvero indipendenti.
+
+I computer usano invece i \emph{random number generator} (RNG), che sono algoritmi deterministici che prendono in input un parametro $s$ detto seme (seed) e producono un numero in output. La sequenza prodotta immettendo l'output come seme all'iterazione successiva deve soddisfare dei test statistici che garantiscano un certo grado di randomicità nella sequenza.
+
+\subsubsection{Utilizzo dello stesso numero primo per più partecipanti}
+
+Se il seme del RNG viene scelto malamente e viene utilizzato più volte, porta a generare per più partecipanti gli stessi numeri primi. Allora siano $
+n_1 = p q_1
+$ e $
+n_2 = p q_2
+$, con associate le due chiavi pubbliche $
+\left( e_1, n_1 \right)
+$ e $
+\left( e_2, n_2 \right)
+$. È chiaro che $
+gcd(n_1, n_2) = p
+$.
+Allora è sufficiente raccogliere quante più chiavi pubbliche possibile e testare il massimo comun divisore per roiscirne a fattorizzare un numero non irrilevante. Su $10^6$ chiavi raccolte dall'NSA (che comportano $10^{12}$ test da eseguire, ciascuno di complessità notevole), circa l'$1.2\%$ è stato craccato.
+
+\subsubsection{Scelta di due primi vicini tra loro}
+
+Se $p$ e $q$ vengono scelti molto vicini tra loro, vale $
+p,q \sim \sqrt{n}
+$ e per $
+p > q
+$ si scrive $
+q = p - k
+$, con $
+k = O \left( 1 \right)
+$ (piccolo).
+Allora
+\begin{align*}
+    &
+    n
+    =
+    pq
+    =
+    p \left( p-k \right)
+    \\
+    \Rightarrow
+    \quad
+    &
+    p^2 - kp - n = 0
+\end{align*}
+Dove $n$ è noto e $k$ è un parametro.
+È sufficiente risolvere l'equazione per valori crescenti di $k$ e la prima soluzione intera trovata è il primo $p$ cercato.
+Se RSA viene implementato correttamente però, i due numeri generati casualmente differiranno nel primo bit in posizione alta con grandissima probabilità. Se il primo bit differente è sopra la posizione 512, sono richieste $2^{512}$ iterazioni per craccare il sistema in questo modo.
+
+\subsubsection{Scelta di una chiave pubblica con $e$ condiviso}
+
+Questo attacco non porta a craccare l'intero sistema, ma riesce a decodificare un singolo messaggio.
+
+La procedura per creare le chiavi richiede di trovare un primo $e$ piccolo, coprimo con $\varphi(n)$.
+Per esempio, $3$ è un primo valido, come molti dei primi piccoli.
+
+In generale, se lo stesso valore $e$ viene assegnato come chiave pubblica a $e$ utenti, a cui viene mandato lo stesso messaggio $M$, si riesce a decodificare il messaggio.
+Vengono intercettati le seguenti $e$ comunicazioni (per questo $e$ deve essere piccolo):
+\begin{equation*}
+    \begin{cases}
+        M^e \bmod n_1
+        \\
+        \quad
+        \quad
+        \vdots
+        \\
+        M^e \bmod n_e
+    \end{cases}
+\end{equation*}
+E vale $
+gcd(n_i, n_j) = 1
+$ per ogni $i \ne j$.
+Se questo non fosse verificato, si potrebbe fattorizzare $n$ direttamente.
+Allora valgono le ipotesi del teorema cinese dei resti, e detto
+\begin{equation*}
+    n = \prod_{j=1}^{e} n_j
+\end{equation*}
+vale 
+\begin{equation*}
+    f^{-1} \left( 
+    M^e \bmod n_1
+    , \cdots ,
+    M^e \bmod n_e
+    \right)
+    =
+    M^e \bmod n 
+\end{equation*}
+In generale il messaggio deve essere nel dominio $
+M \in \zz{n_i} 
+$ per ogni $i$, quindi deve valere $
+M < \min \left\{ n_1, \cdots, n_e \right\}
+$, per cui $
+M^e < n_1 \cdot \cdots \cdot n_e = n
+$ e allora $M^e$ è il rappresentante principale di $
+M^e \bmod n 
+$, quindi non ne è stato fatto il modulo.
+L'estrazione della radice è quindi polinomiale, non serve il logaritmo modulare: $
+M = \sqrt[e]{M^e}
+$
 
 
 \section{Generazione di grandi primi}
