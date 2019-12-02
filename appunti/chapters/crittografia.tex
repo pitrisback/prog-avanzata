@@ -2550,7 +2550,7 @@ $ e $
 $. È chiaro che $
 gcd(n_1, n_2) = p
 $.
-Allora è sufficiente raccogliere quante più chiavi pubbliche possibile e testare il massimo comun divisore per roiscirne a fattorizzare un numero non irrilevante. Su $10^6$ chiavi raccolte dall'NSA (che comportano $10^{12}$ test da eseguire, ciascuno di complessità notevole), circa l'$1.2\%$ è stato craccato.
+Allora è sufficiente raccogliere quante più chiavi pubbliche possibile e testare il massimo comun divisore per riuscirne a fattorizzare un numero non irrilevante. Su $10^6$ chiavi raccolte dall'NSA (che comportano $10^{12}$ test da eseguire, ciascuno di complessità notevole), circa l'$1.2\%$ è stato craccato.
 
 \subsubsection{Scelta di due primi vicini tra loro}
 
@@ -2562,7 +2562,7 @@ $ si scrive $
 q = p - k
 $, con $
 k = O \left( 1 \right)
-$ (piccolo).
+$, (piccolo).
 Allora
 \begin{align*}
     &
@@ -2578,7 +2578,7 @@ Allora
     p^2 - kp - n = 0
 \end{align*}
 Dove $n$ è noto e $k$ è un parametro.
-È sufficiente risolvere l'equazione per valori crescenti di $k$ e la prima soluzione intera trovata è il primo $p$ cercato.
+È sufficiente risolvere l'equazione per valori crescenti di $k$ e la prima soluzione intera trovata è il numero $p$ cercato.
 Se RSA viene implementato correttamente però, i due numeri generati casualmente differiranno nel primo bit in posizione alta con grandissima probabilità. Se il primo bit differente è sopra la posizione 512, sono richieste $2^{512}$ iterazioni per craccare il sistema in questo modo.
 
 \subsubsection{Scelta di una chiave pubblica con $e$ condiviso}
@@ -2632,9 +2632,186 @@ L'estrazione della radice è quindi polinomiale, non serve il logaritmo modulare
 M = \sqrt[e]{M^e}
 $
 
+\subsubsection{Scelta di una chiave pubblica con $n$ condiviso}
+
+La generazione di grandi numeri primi è molto costosa, e si potrebbe avere la cattiva idea di assegnare lo stesso $n$ a più partecipanti.
+In questo caso, si riesce a decrittare il messaggio anche senza fattorizzare $n$.
+Si considerino due utenti con chiavi $
+\left( e_1, n \right)
+$ e $
+\left( e_2, n \right)
+$, per cui vale $
+gcd(e_1, e_2) = 1
+$, e quindi per Bézout esistono $
+r,s \in \mathbb{Z}
+$ tali che $
+1 = e_1 r + e_2 s
+$.
+Ad entrambi i partecipanti arriva lo stesso messaggio $M$, codificato come
+\begin{equation*}
+    C_1 = M^{e_1} \bmod n
+    \quad
+    \quad
+    C_2 = M^{e_2} \bmod n
+\end{equation*}
+Allora vale 
+\begin{align*}
+    M 
+    &= 
+    M^{
+        e_1 r + e_2 s
+    }
+    \\
+    &= 
+    \left( 
+        \left( 
+            C_1
+        \right)^r
+        \cdot
+        \left( 
+            C_2
+        \right)^s
+    \right) \bmod n 
+    \intertext{La combinazione lineare di Bézout deve fare 1, quindi uno dei due coefficienti deve essere minore di zero, senza perdita di generalità sia $r<0$}
+    &= 
+    \left( 
+        \left( 
+            \left( 
+                C_1
+            \right)^{-r}
+        \right)^{-1}
+        \cdot
+        \left( 
+            C_2
+        \right)^s
+    \right) \bmod n 
+\end{align*}
+Se $C_1$ non ammette inverso moltiplicativo e non è in $\zs{n} $ il sistema viene craccato del tutto, ma questo è estremamente improbabile.
+Se ammette inverso, si è scritto un modo per ricavare il messaggio originale, perché ogni elemento della formula è noto e sono operazioni polinomiali.
+
+\subsubsection{Autenticazione di un messaggio contraffatto}
+
+Se Charlie vuole decodificare un messaggio $
+C = M^e \bmod n 
+$ mandato da Alice a Bob, e Bob ha la maldestra tendenza a firmare i messaggi,
+% che gli arrivano? perché dovrebbe? bah
+allora può generare un valore $r$ con $
+gcd(r,n) = 1
+$ e spedire a Bob un messaggio creato appositamente
+\begin{equation*}
+    C' = \left( 
+        r^e \left( 
+            M^e \bmod n 
+        \right)
+    \right) \bmod n 
+    =
+    \left( 
+        r^e M^e
+    \right) \bmod n 
+\end{equation*}
+Quando Bob firma il messaggio, produce
+\begin{equation*}
+    \left( 
+        r^{ed} M^{ed}
+    \right) \bmod n 
+    =
+    \left( 
+        rM
+    \right)^{ed} \bmod n 
+    = rM
+\end{equation*}
+Charlie ha oscurato il fatto che questo messaggio era già stato firmato, avendo moltiplicato per $r$, e quando riceve $
+\left( rM \right) \bmod n 
+$ gli basta calcolare l'inverso di $r$ per estrarre $M$ in chiaro
+\begin{equation*}
+    \left( r^{-1} \left( 
+            rM \bmod n 
+        \right)
+    \right) \bmod n = M
+\end{equation*}
+Questa via d'attacco espone il fatto che l'autenticazione utilizza la chiave privata. Per rendere il protocollo sicuro, e tra l'altro rendendo possibile la firma di messaggi lunghi, non si autentica l'intero messaggio ma solo un suo \emph{digital digest}, calcolato con una funzione di \emph{hashing} $h(M)$.
+La funzione di \emph{hashing} è difficile da invertire, quindi non si riesce a generare un messaggio fittizio con un \emph{digest} preciso.
 
 \section{Generazione di grandi primi}
-pag 110
+% pag 110
+
+\subsection{Alcune proprietà dei numeri primi}
+% pag 110
+
+\begin{theorem}
+    \label{teo:primi}
+    I numeri primi sono densi negli interi
+    \begin{equation*}
+        \Pi(n) 
+        =
+        |
+        \left\{ 
+            p :
+            \left( 
+                p \leq n
+            \right)
+            \wedge
+            \left( 
+                p \text{ è primo}
+            \right)
+        \right\}
+        |
+        = 
+        \frac{n}{\ln n}
+        + o \left( 
+            \frac{n}{\ln n}
+        \right)
+    \end{equation*}
+    E in particolare, per $
+    n \geq 599
+    $, vale la disuguaglianza stretta
+    \begin{equation*}
+        \Pi(n) <
+        \frac{n}{\ln n}
+    \end{equation*}
+\end{theorem}
+\begin{corollario}
+    La probabilità che un numero casuale sia primo, per $
+    n \geq 599
+    $, è
+    \begin{equation*}
+        Prob\left( n \text{ casuale sia primo} \right)
+        >
+        \frac{1}{\ln n}
+    \end{equation*}
+\end{corollario}
+
+\begin{theorem}
+    Se $n$ è primo, allora, $
+    \forall a \ne 0
+    $, $
+    a \in \zs{n} 
+    $
+    \begin{equation*}
+        a^{n-1} \equiv 1 \bmod n 
+    \end{equation*}
+    \label{teo:charmichel}
+\end{theorem}
+% this is so bad
+\vspace{-25pt}
+Nota:
+Questa è una condizione necessaria, ma non sufficiente per la primalità. Ogni numero primo verifica questa proprietà, ma esistono numeri composti per cui vale, detti numeri di \emph{Carmichael}.
+% MAYBE this is the Carmichael definition
+\begin{definition}
+    [Pseudoprimo]
+    \label{def:pseudoprimo}
+    Dato $n$ composto e $
+    a \in \zs{n} 
+    $, si dice che $n$ è pseudoprimo in base $a$ se
+    \begin{equation*}
+        a^{n-1} \equiv 1 \bmod n 
+    \end{equation*}
+\end{definition}
+
+\subsection{Test di primalità per numeri casuali}
+
+\subsection{Test di Miller-Rabin}
+pag 114
 
 \section{Pezzi utili di \LaTeX{}}
 
@@ -2709,7 +2886,7 @@ Una lista
     \item[--] $T_A(|x|) = O(|x|^k)$ per qualche costante $k \geq 0$
 \end{itemize}
 
-\subsection{ Teoremi e vari ambienti }
+\subsection{Teoremi e vari ambienti }
 
 \begin{theorem}
     Un teorema senza nome
