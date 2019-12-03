@@ -107,6 +107,7 @@
 \newcommand{\E}[1]{\mathbb{E}\left[#1\right]}
 \newcommand{\zz}[1]{\mathbb{Z}_{#1}}
 \newcommand{\zs}[1]{\mathbb{Z}_{#1}^{*}}
+\newcommand{\zp}[1]{\mathbb{Z}_{#1}^{+}}
 \newcommand{\cleq}[2]{\left[\,#2\,\right]_{#1}}
 % \newcommand{\cln}[1]{\left[\,#1\,\right]_{n}}
 \newcommand{\cln}[1]{\cleq{n}{#1}}
@@ -120,6 +121,10 @@
 
 % numerazione sana degli algoritmi
 \renewcommand{\thealgorithm}{\arabic{chapter}.\arabic{algorithm}} 
+
+% loop to repeat n times https://tex.stackexchange.com/a/115509
+% \algdef{SE}{RepLoop}{EndRepLoop}[1]{\textbf{repeat} \(\mbox{#1}\) \textbf{times}}{\textbf{end}}%
+\algdef{SN}{RepLoop}{EndRepLoop}[1]{\textbf{repeat} \(\mbox{#1}\) \textbf{times}}%
 
 %% MATH OPERATORS %%
 \DeclareMathOperator*{\argmin}{arg\,min}

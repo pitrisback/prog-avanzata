@@ -1353,11 +1353,11 @@ Le proprietà di un gruppo sono verificate:
         allora 
         $\cln{x} = \cln{y}$.
         Una proprietà utile, che pure va dimostrata, è la seguente $
-        \left( ab | n \right)
+        \left( n | ab \right)
         \wedge
         \left( gcd(a, n) = 1 \right)
         \Rightarrow
-        \left( b | n \right)
+        \left( n | b \right)
         $ (intuitivamente, se $ab$ divide $n$ ma $a$ e $n$ non hanno divisori in comune, deve essere $b$ che moltiplica $a$ per ottenere $n$).
 \end{itemize}
 Il coefficiente della combinazione lineare si ottiene con l'algoritmo esteso di Euclide:
@@ -2735,7 +2735,9 @@ La funzione di \emph{hashing} è difficile da invertire, quindi non si riesce a 
 \section{Generazione di grandi primi}
 % pag 110
 
-\subsection{Alcune proprietà dei numeri primi}
+% \subsection{Alcune proprietà dei numeri primi}
+\subsection{Test di primalità per numeri casuali}
+
 % pag 110
 
 \begin{theorem}
@@ -2766,7 +2768,7 @@ La funzione di \emph{hashing} è difficile da invertire, quindi non si riesce a 
     n \geq 599
     $, vale la disuguaglianza stretta
     \begin{equation*}
-        \Pi(n) <
+        \Pi(n) >
         \frac{n}{\ln n}
     \end{equation*}
 \end{theorem}
@@ -2784,8 +2786,6 @@ La funzione di \emph{hashing} è difficile da invertire, quindi non si riesce a 
 \begin{theorem}
     Se $n$ è primo, allora, $
     \forall a \ne 0
-    $, $
-    a \in \zs{n} 
     $
     \begin{equation*}
         a^{n-1} \equiv 1 \bmod n 
@@ -2794,8 +2794,14 @@ La funzione di \emph{hashing} è difficile da invertire, quindi non si riesce a 
 \end{theorem}
 % this is so bad
 \vspace{-25pt}
-Nota:
-Questa è una condizione necessaria, ma non sufficiente per la primalità. Ogni numero primo verifica questa proprietà, ma esistono numeri composti per cui vale, detti numeri di \emph{Carmichael}.
+Note:
+\\
+Questa è una condizione necessaria, ma non sufficiente per la primalità.
+Ogni numero primo verifica questa proprietà, ma esistono numeri composti per cui vale, detti numeri di \emph{Carmichael}.
+\\
+Dal teorema discende anche la condizione $
+a \in \zs{n} 
+$, infatti il teorema implica che $a$ ha un inverso, che è $a^{n-2}$.
 % MAYBE this is the Carmichael definition
 \begin{definition}
     [Pseudoprimo]
@@ -2807,8 +2813,205 @@ Questa è una condizione necessaria, ma non sufficiente per la primalità. Ogni 
         a^{n-1} \equiv 1 \bmod n 
     \end{equation*}
 \end{definition}
+E quindi $a$ è un truffatore, e si comporta per $n$ come il teorema di Fermat.
+\\
+Allora si è individuato un certificato di \emph{non} primalità:
+se si determina $
+b \in \zp{n} 
+$ tale che $
+b^{n-1} \not\equiv 1 \bmod n 
+$, si certifica che $n$ è composto. Si ricorda che per i numeri di \emph{Carmichael} questo certificato non esiste.
 
-\subsection{Test di primalità per numeri casuali}
+\begin{theorem}
+    [Pomerance]
+    \label{teo:pomerance}
+    Sia $ x $ estratto casualmente in $
+    \left\{ 1, \cdots, n \right\}
+    $, allora
+    \begin{equation*}
+        Prob\left( 
+            \text{$x$ è pseudoprimo in base $2$}
+        \right) \leq
+        c \, 
+        e^{
+            -\frac{1}{2}
+            \ln n
+            \left( 
+                \frac{
+                    \ln \ln \ln n
+                }{
+                    \ln \ln n
+                }
+            \right)
+        }
+    \end{equation*}
+\end{theorem}
+Che scende circa come una radice: $
+\sim O \left( 
+    % \frac{1}{\sqrt{n}}
+    1 / \sqrt{n}
+\right)
+$ che per numeri di 1024 bit vale $
+% \frac{1}{2^{512}}
+1 / 2^{512}
+$.
+
+Un semplice test di primalità allora richiede solo di calcolare $
+2^{x-1} \bmod x = 1
+$. 
+
+\begin{algorithm}[H]
+\caption{Test di pseudoprimalità}\label{alg:pseudoprime}
+\begin{algorithmic}[1]
+    \Procedure{Pseudoprime}{$x$}
+        \If{
+            \Call{Mod\_Exp}{$2, x-1, x$}
+            $\ne$ 1
+        }
+            \State return \texttt{COMPOSITE}
+        \Else
+            \State return \texttt{PRIME}
+        \EndIf
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+\noindent
+Questo algoritmo si dice avere \emph{one-sided error}:
+\begin{itemize}[noitemsep,parsep=0pt,partopsep=0pt,topsep=0pt]
+    \item quando ritorna \texttt{COMPOSTO} non sbaglia mai: un numero primo verifica sempre l'equazione
+    \item quando ritorna \texttt{PRIMO} può sbagliare: non identifica i numeri composti che sono pseudoprimi con 2
+\end{itemize}
+L'esponenziazione modulare richiede di calcolare un numero di moduli pari al logaritmo di $x$, e ciascun modulo è quadratico nella taglia, quindi il test di pseudoprimalità ha complessità $
+O\left( |
+    \langle x \rangle
+|^3 \right)
+$.
+
+La randomizzazione è tutta nella scelta di $x$,
+quindi si possono combinare questi elementi per ottenere un algoritmo che selezioni un numero pseudoprimo in base due casuale:
+
+\begin{algorithm}[H]
+\caption{Selezione di un primo casuale}\label{alg:srp}
+\begin{algorithmic}[1]
+    \Procedure{Select\_Random\_Prime}{$s, n$}
+        \RepLoop{$s \ln n$}
+            \State $x \gets $
+            \Call{Random}{$\left\{ 1, \cdots, n \right\}$}
+            \If{
+                \Call{Pseudoprime}{$x$}
+            }
+                \State return $x$
+            \EndIf
+        \EndRepLoop
+        \State return \texttt{FAIL}
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+\noindent
+Se tutte le $s \ln n$ estrazioni falliscono, l'algoritmo non trova un primo.
+Il parametro $s$ viene utilizzato per controllare la probabilità di fallimento.
+\begin{align*}
+    &
+    Prob
+    \left( 
+        SRP \text{ is } \texttt{FAIL}
+    \right)
+    \leq 
+    \intertext{può essere minore perché a volte un composto potrebbe essere considerato primo}
+    &
+    \leq 
+    Prob \left( 
+        \text{tutti gli $s \ln n$ numeri estratti sono composti}
+    \right)
+    \\
+    &
+    \leq
+    \left( 
+        1 - \frac{
+            \Pi \left( n \right)
+        }{
+            n
+        }
+    \right)^{
+        s \ln n
+    }
+    \intertext{per $n>599$}
+    &
+    <
+    \left( 
+        1 - \frac{
+            1
+        }{
+            \ln n
+        }
+    \right)^{
+        s \ln n
+    }
+    \intertext{
+        per $x>1$ vale $
+        \left( 1 -
+        % \frac{ 1 }{ x }
+        1/x
+        \right)^{x} < e^{-1}
+        $
+    }
+    &
+    <
+    e^{-s}
+\end{align*}
+Quindi aumentando il numero di estrazioni si può abbassare arbitrariamente la probabilità di fallimento. Per $s=21$, è minore di $1/10^{9}$, che è comparabile alla probabilità di guasto hardware.
+\\
+La routine \textsc{Pseudoprime} viene chiamata circa $\log n$ volte, e $n$ è circa $x$, quindi la complessità è $
+O\left( |
+    \langle x \rangle
+|^4 \right)
+$.
+
+La probabilità che il numero ritornato sia in realtà un numero composto è trascurabile:
+\begin{align*}
+    &
+    Prob \left( 
+        \text{$SRP$ ritorna un numero composto}
+    \right)
+    \leq 
+    \\
+    &
+    \leq
+    Prob \left( 
+        \text{viene selezionato almeno uno pseudoprimo in base 2}
+    \right)
+    \intertext{per \emph{union bound} la probabilità dell'unione è minore uguale alla somma delle probabilità degli eventi}
+    &
+    \leq
+    s \ln n
+    \cdot
+    Prob \left( 
+        \text{un'iterazione fissata estrae uno pseudoprimo in base 2}
+    \right)
+    \intertext{per una singola iterazione fissata, vale Pomerance}
+    &
+    \leq
+    s \ln n
+    \cdot
+    c \, 
+    e^{
+        -\frac{1}{2}
+        \ln n
+        \left( 
+            \frac{
+                \ln \ln \ln n
+            }{
+                \ln \ln n
+            }
+        \right)
+    }
+    \xrightarrow[n \to \infty]{} 0
+\end{align*}
+E questo valore tende a 0 molto velocemente, per $
+n = 2^{1024}-1
+$ vale $
+10^{-35}
+$.
 
 \subsection{Test di Miller-Rabin}
 pag 114
