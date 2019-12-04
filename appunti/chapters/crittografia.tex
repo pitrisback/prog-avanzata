@@ -3014,7 +3014,269 @@ $ vale $
 $.
 
 \subsection{Test di Miller-Rabin}
-pag 114
+% pag 114
+
+Il metodo presentato nella sezione precedente sfrutta il fatto che i numeri per cui non esiste certificato di non primalità sono estremamente rari, evitando del tutto il caso peggiore.
+
+Il test di Miller-Rabin è invece valido per ogni $n$ arbitrario da analizzare.
+
+\subsubsection{Esponenziazione modulare iterativa}
+
+% Si può eseguire l'operazione di esponenziazione modulare in maniera iterativa.
+Per eseguire $
+M^e \bmod n 
+$, sia  $
+\vec{e}
+=
+\langle e_k, e_{k-1}, \cdots, e_0 \rangle
+$ la rappresentazione binaria di $e$, per cui $
+e =
+\sum_{i=0}^{k} e_i 2^i
+$, con $
+k = \left\lfloor 
+    \log_2 e
+\right\rfloor
+$.
+Si può allora riscrivere l'esponenziazione come 
+\begin{equation*}
+    M^e =
+    M^{
+        \sum_{i=0}^{k} e_i 2^i
+    }
+    =
+    \prod_{i=0}^{k} M^{
+        e_i 2^i
+    }
+\end{equation*}
+E in generale vale $
+M^{2^i}
+=
+M^{2^i-1}
+\cdot
+M^{2^i-1}
+$
+
+\begin{algorithm}[H]
+\caption{Esponenziazione modulare}\label{alg:exp_mod_iterativa}
+\begin{algorithmic}[1]
+    \Procedure{Mod\_Exp}{$M, \vec{e}, n$}
+        \State $k \gets \vec{e}.len -1$
+        \State $d \gets 1$
+        \Comment{Accumulatore}
+        \For{$i \gets k $ downto $ 0 $ }
+            \State $d \gets \left( d \cdot d \right) \bmod n $
+            \If{$e_i = 1$}
+                \State $d \gets \left( d \cdot M \right) \bmod n $
+            \EndIf
+        \EndFor
+        \State return $d$
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+La correttezza si prova per induzione su $i$, dimostrando che all'iterazione $i$ l'accumulatore vale $
+d = M^{
+    \langle e_k, \ldots, e_i \rangle
+} \bmod n 
+$.
+L'algoritmo fa $k+1$ iterazioni, e la complessità risulta cubica.
+
+\subsubsection{Certificato di non primalità per Miller-Rabin}
+
+La prima parte del test è la stessa usata nella sezione precedente: si verifica, per qualche $
+a \in \zp{n} 
+$, se vale $
+a^{n-1} \not\equiv 1 \bmod n 
+$.
+In questo caso però, i numeri $a$ sono scelti casualmente.
+
+Questo test non è sufficiente, infatti i numeri di Carmichael si comportano come primi su tutto il gruppo $
+\zs{n} 
+$.
+Gli unici numeri che riuscirebbero ad esporre un numero di Carmichael sarebbero quelli in $
+\zz{n} - \zs{n} 
+$, che non saranno mai congrui a $1 \bmod n $, perché non ammettono inverso moltiplicativo,
+ma questi numeri sono pochissimi (è proprio su questo che si basa la durezza della fattorizzazione).
+
+Nel test di Miller-Rabin l'operazione $
+a^{n-1} \bmod n 
+$ viene implementata con una variante di $
+$, e nelle iterazioni finali si controlla se viene generato un valore $
+d \in \zz{n} 
+$ per cui $
+d \not\equiv \pm 1 \bmod n 
+$ ma $
+d  \cdot d \equiv 1 \bmod n 
+$.
+
+\begin{definition}
+    [Radice quadrata non banale dell'unità]
+    \label{def:radicenonbanale}
+    Un valore $
+    d \in \zz{n} 
+    $ si dice radice quadrata non banale dell'unità se valgono
+    \begin{equation*}
+        d \not\equiv \pm 1 \bmod n 
+        \quad
+        \quad
+        d  \cdot d \equiv 1 \bmod n 
+    \end{equation*}
+    Ovvero $d^2$ è congruo a 1 ma $d$ non è congruo alle radici semplici $\pm 1 \bmod n $.
+\end{definition}
+
+\begin{theorem}
+    \label{teo:cond_composto_radice_unita}
+    Condizione sufficiente perché un numero sia composto è che ammetta una radice non banale dell'unità.
+    Se 
+    \begin{equation*}
+        \exists d \in \zs{n} 
+        :
+        \left( 
+            d \not\equiv \pm 1 \bmod n 
+        \right)
+        \wedge
+        \left( 
+            d  \cdot d \equiv 1 \bmod n 
+        \right)
+        \Rightarrow
+        \text{$n$ è composto}
+    \end{equation*}
+\end{theorem}
+\begin{corollario}
+    Se $n$ è primo, le uniche radici quadrate modulari dell'unità sono congrue a $\pm 1 \bmod n $.
+    \begin{proof}
+        Sia $
+        x \in \zz{n} 
+        $ una radice quadrata modulare.
+        \begin{align*}
+            x^2 &\equiv 1 \bmod n 
+            \intertext{valgono anche per le equazioni modulari le manipolazioni standard, per cui }
+            x^2 - 1 &\equiv 0 \bmod n 
+            \\
+            \left( x+1 \right)\left( x-1 \right)
+            &\equiv 0 \bmod n 
+            \\
+            \left( x+1 \right)\left( x-1 \right)
+            & = kn
+            \intertext{ovvero $n$ divide il prodotto}
+            n & \; |
+            \left( x+1 \right)\left( x-1 \right)
+        \end{align*}
+        in più $n$ è primo, per cui deve dividere almeno uno dei due fattori
+        \begin{align*}
+            \left( n \; | \left( x+1 \right) \right)
+            &
+            \vee
+            \left( n \; | \left( x-1 \right) \right)
+            \intertext{per ESERCIZIO, mostra che se così non fosse, $n$ non divide nessuno dei due e il gcd è 1}
+            \left( \left( k+1 \right) = k_1 n \right)
+            &
+            \vee
+            \left( \left( k-1 \right) = k_2 n \right)
+            \\
+            \left( k  = - 1 + k_1 n \right)
+            &
+            \vee
+            \left(  k  = 1 + k_2 n \right)
+            \\
+            x \equiv -1 \bmod n 
+            &
+            \vee
+            x \equiv 1 \bmod n 
+        \end{align*}
+    \end{proof}
+\end{corollario}
+
+Allora si possono utilizzare queste proprietà per scrivere un certificato per i numeri composti
+
+\begin{algorithm}[H]
+\caption{Cerfiticato per numeri composti}\label{alg:certificato}
+\begin{algorithmic}[1]
+    \Procedure{Certificato}{$a, n$}
+    \Comment{$a \in \zp{n}, n$ dispari}
+        \State * sia $n-1 = 2^t \cdot u$ per $ t \geq 1$ *
+        \label{alg:certificato:rappresenta_numero}
+        \State $d \gets $
+        \Call{Mod\_Exp}{$a, u, n$}
+        \Comment{$d = a^u \bmod n $}
+        \For{$i \gets 1 $ to $ t $ }
+            \State $d' \gets
+            \left( d \cdot d \right) \bmod n 
+            $
+            \If{$d' \equiv 1 \bmod n $}
+                \If{$d' \not\equiv \pm 1 \bmod n $}
+                    \State return \texttt{COMPOSITE}
+                \Else
+                    \State return \texttt{NON\_WITNESS}
+                \EndIf
+            \EndIf
+            \State $d \gets d'$
+        \EndFor
+        \If{$d \not\equiv \pm 1 \bmod n $}
+            \State return \texttt{COMPOSITE}
+        \Else
+            \State return \texttt{NON\_WITNESS}
+        \EndIf
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+Alla riga \ref{alg:certificato:rappresenta_numero} si è sfruttato il fatto che un qualsiasi numero pari si può riscrivere come prodotto di un numero dispari $u$ e una potenza di 2
+\begin{equation*}
+    n
+    = 
+    u_k \ldots u_1
+    \,
+    \underbrace{
+        0 \ldots 0
+    }_{
+        \text{$t$ bit}
+    }
+\end{equation*}
+Dove $u_1$ è il primo bit non nullo di $n$. Per esempio per 29
+\begin{align*}
+    29
+    &= 
+    11101
+    \\
+    28
+    &= 
+    11100
+    \\
+    28
+    &= 
+    7 \cdot 2^2
+\end{align*}
+
+L'algoritmo di Miller-Rabin risulta allora
+\begin{algorithm}[H]
+\caption{Algoritmo di Miller-Rabin}\label{alg:miller_rabin}
+\begin{algorithmic}[1]
+    \Procedure{MR}{$s, n$}
+        \If{$n=2$}
+            \State return \texttt{PRIME}
+        \EndIf
+        \If{\Call{Even}{$n$}}
+            \State return \texttt{COMPOSITE}
+        \EndIf
+        \RepLoop{$s$}
+        \Comment{ripete $s$ volte l'estrazione}
+            \State $a \gets $
+            \Call{Random}{$\left\{ 1, \cdots, n-1 \right\}$}
+            \Comment{$a \in \zp{n} $}
+            \If{\Call{Certificato}{$a, n$}}
+                \Comment{ricerca la \emph{non} primalità}
+                \State return \texttt{COMPOSITE}
+            \EndIf
+        \EndRepLoop
+        \State return \texttt{PRIME}
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+\noindent
+Anche questo algoritmo è \emph{one-sided}, quando ritorna
+\texttt{COMPOSTO}
+non sbaglia mai, mentre a volte quando ritorna 
+\texttt{PRIMO}
+può commettere un errore.
 
 \section{Pezzi utili di \LaTeX{}}
 
@@ -3032,7 +3294,8 @@ pag 114
         \Comment{DIVIDE}
         \For{$j \gets 1 $ to $ k $ }
         \Comment{RECURSE}
-            \State $s_j \gets $ \Call{Divide\&Conquer}{$i_j$}
+            \State $s_j \gets $
+            \Call{Divide\&Conquer}{$i_j$}
         \EndFor
         \State $s \gets A_C(\langle s_1, s_2, \dots, s_k \rangle)$
         \Comment{CONQUER}
