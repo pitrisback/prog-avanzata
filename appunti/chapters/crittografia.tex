@@ -3100,6 +3100,7 @@ ma questi numeri sono pochissimi (è proprio su questo che si basa la durezza de
 Nel test di Miller-Rabin l'operazione $
 a^{n-1} \bmod n 
 $ viene implementata con una variante di $
+\Call{Mod\_Exp}{}
 $, e nelle iterazioni finali si controlla se viene generato un valore $
 d \in \zz{n} 
 $ per cui $
@@ -3107,6 +3108,7 @@ d \not\equiv \pm 1 \bmod n
 $ ma $
 d  \cdot d \equiv 1 \bmod n 
 $.
+% Questo valore è detto radice quadrata non banale dell'unità.
 
 \begin{definition}
     [Radice quadrata non banale dell'unità]
@@ -3246,7 +3248,20 @@ Dove $u_1$ è il primo bit non nullo di $n$. Per esempio per 29
     7 \cdot 2^2
 \end{align*}
 
+Quindi si è riscritto 
+\begin{equation*}
+    a^{n-1}
+    =
+    \left( 
+        a^{u}
+    \right)^{2^t}
+\end{equation*}
+e $2^t$ sono $t$ iterazioni di squaring $d' \gets dd \bmod n $.
+
+\subsubsection{Algoritmo di Miller-Rabin}
+
 L'algoritmo di Miller-Rabin risulta allora
+
 \begin{algorithm}[H]
 \caption{Algoritmo di Miller-Rabin}\label{alg:miller_rabin}
 \begin{algorithmic}[1]
@@ -3272,11 +3287,263 @@ L'algoritmo di Miller-Rabin risulta allora
 \end{algorithmic}
 \end{algorithm}
 \noindent
-Anche questo algoritmo è \emph{one-sided}, quando ritorna
-\texttt{COMPOSTO}
-non sbaglia mai, mentre a volte quando ritorna 
+Anche questo algoritmo è \emph{one-sided},
+a volte quando ritorna 
 \texttt{PRIMO}
-può commettere un errore.
+può commettere un errore, mentre
+quando ritorna
+\texttt{COMPOSTO}
+non sbaglia mai.
+Esibisce infatti una prova della compostezza del numero: o un numero $a$ per cui $n$ non è uno pseudoprimo in base $a$, oppure una radice quadrata non banale di $1$ in $\zz{n} $.
+Entrambe queste condizioni sono sufficienti per la compostezza di $n$.
+
+\subsubsection{Probabilità di errore di Miller-Rabin}
+
+Se tutte le $s$ iterazioni ritornano
+\texttt{NON\_WITNESS}
+allora Miller-Rabin restituisce
+\texttt{PRIMO}.
+
+Può esistere un numero composto che riesce a superare tutti i test di non primalità. Si dimostra che questi numeri non possono essere tanti.
+Si dimostra che di certificati di non primalità per un numero composto ce ne sono tanti, e selezionando a caso valori di $a \in \zp{n} $, con buona probabilità $a$ fa scoprire che $n$ è composto.
+
+\begin{definition}
+    [Sottogruppo]
+    \label{def:sottogruppo}
+    Dato il gruppo $
+    \left( 
+        G, \circ
+    \right)
+    $, $
+    S \subseteq G
+    $ è un sottogruppo se $
+    \left( 
+        S, \circ
+    \right)
+    $ è un gruppo.
+\end{definition}
+Va quindi mostrata la chiusura rispetto all'operazione $\circ$ e rispetto all'inversione.
+
+\begin{theorem}
+    [Lagrange]
+    \label{teo:lagrange}
+    Se $
+    \left( 
+        G, \circ
+    \right)
+    $ è un gruppo e $
+    S \subseteq G
+    $ è un suo sottogruppo allora la cardinalità (ordine) di $S$ divide la cardinalità di $G$:
+    $
+    |S|
+    % \mid
+    % \mathrel{\Big|}
+    % \mathrel{\big|}
+    \,
+    \big|
+    \,
+    |G|
+    $.
+\end{theorem}
+
+\begin{corollario}
+    Se $
+    \left( 
+        G, \circ
+    \right)
+    $ è un gruppo e $
+    S \subset G
+    $ è un suo sottogruppo proprio, allora
+    \begin{equation*}
+        |S|
+        \leq
+        \frac{|G|}{2}
+    \end{equation*}
+    \begin{proof}
+        Da Lagrange,
+        $
+        |S|
+        \,
+        \big|
+        \,
+        |G|
+        \Rightarrow
+        |G| = |S| \cdot k
+        $.
+        Il sottogruppo è proprio quindi $
+        k \geq 2
+        $, e si conclude.
+    \end{proof}
+\end{corollario}
+Si dimostra che tutti i valori di $a$ che imbrogliano Miller-Rabin devono essere un sottogruppo proprio dell'insieme di certificati $
+\zs{n} 
+$.
+Questo implica che non possono essere mai più della metà, e con probabilità $50\%$ si seleziona un valore che riesce a sgamare un numero composto.
+Per i numeri non di Carmichael la prova è semplice, mentre per i numeri di Carmichael vanno introdotte altre strutture, ma l'idea è la stessa.
+
+\begin{theorem}
+    \label{teo:cardinalita_certificati}
+    Se $n$ è un numero dispari composto, detto 
+    \begin{equation*}
+        NW = \left\{ 
+            a \in \zp{n} 
+            :
+            \Call{Certificato}{a, n} = 
+            \text{\textnormal{\texttt{NON\_WITNESS}}}
+        \right\}
+    \end{equation*}
+    (l'insieme $C$ nel teorema di Lagrange),
+    allora la cardinalità di $NW$ è limitata da
+    \begin{equation*}
+        |NW| \leq
+        \frac{n-1}{2}
+    \end{equation*}
+    \begin{proof}
+        Per i numeri \emph{non} di Carmichael, $
+        \exists a \in \zs{n} : 
+        a^{n-1} \not\equiv 1 \bmod n 
+        $, ovvero esiste un valore in $\zs{n} $ per cui $n$ non è pseudoprimo in base $a$.
+        Espandendo le condizioni per cui un numero è
+        \texttt{NON\_WITNESS},
+        \begin{align*}
+            NW = 
+            % \left\{ 
+            % \biggl\{ 
+            \bigl\{ 
+                a \in \zp{n} 
+                :
+                &
+                \left( 
+                    a^{n-1} \not\equiv 1 \bmod n 
+                \right)
+                \wedge
+                \\
+                &
+                \left( 
+                    \text{non si scopre radice quadrata non banale dell'unità}
+                \right)
+            % \right\}
+            % \biggr\} 
+            \bigr\} 
+        \end{align*}
+        Questo è un sottoinsieme dell'insieme composto dagli elementi per cui vale solo la prima delle due condizioni.
+        \begin{equation*}
+            NW \subseteq 
+            \left\{ 
+                a \in \zp{n} 
+                :
+                a^{n-1} \not\equiv 1 \bmod n 
+            \right\}
+            = H
+        \end{equation*}
+        E $
+        H \subset \zs{n} 
+        $ contenuto strettamente.
+        Si mostra che $H$ è sottogruppo proprio di $\zs{n} $, mostrando la chiusura rispetto a:
+        \begin{itemize}
+            \item prodotto
+                ($
+                    a,b \in H \Rightarrow a \odot b \in H
+                $):
+                \begin{equation*}
+                    \left( 
+                        a^{n-1} \equiv 1 \bmod n 
+                    \right)
+                    \wedge
+                    \left( 
+                        b^{n-1} \equiv 1 \bmod n 
+                    \right)
+                    \Rightarrow
+                    \left( ab \right)^{n-1} \equiv
+                    a^{n-1} b^{n-1} \equiv
+                    1 \bmod n 
+                \end{equation*}
+                perché se si fa il prodotto di due quantità congrue a $1 \bmod n $ si ottiene una quantità che è ancora congrua a $1 \bmod n $
+            \item inversione:
+                l'inverso di $a$ è $a^{n-2}$
+                \begin{equation*}
+                    a^{n-1} \equiv 1 \bmod n 
+                    \Rightarrow
+                    a a^{n-2} \equiv 1 \bmod n 
+                    \Rightarrow
+                    a^{n-2} \equiv 
+                    a^{-1} \bmod n 
+                \end{equation*}
+                e $a^{n-2} \in H$ 
+                \begin{equation*}
+                    \left( 
+                        a^{n-2}
+                    \right)^{n-1}
+                    \equiv
+                    \left( 
+                        a^{n-1}
+                    \right)^{n-2}
+                    \equiv 1 \bmod n 
+                \end{equation*}
+        \end{itemize}
+        Allora per Lagrange
+        \begin{equation*}
+            |H|
+            \leq
+            \frac{
+                |\zs{n}|
+            }{2}
+            =
+            \frac{
+                \varphi(n)
+            }{2}
+            \leq
+            \frac{n-1}{2}
+        \end{equation*}
+        $NW$ è sottoinsieme di $H$, quindi è ancora più piccolo.
+    \end{proof}
+\end{theorem}
+
+Allora Miller-Rabin con alta probabilità è corretto:
+\begin{align*}
+    &
+    Prob\left( 
+        \text{MR non ritorna una risposta corretta}
+    \right)
+    \\
+    &
+    = 
+    Prob\left( 
+        \text{MR su $n$ composto risponde \texttt{PRIMO}}
+    \right)
+    \\
+    &
+    = 
+    Prob\left( 
+        \text{estrarre $s$ elementi da $NW$}
+    \right)
+    \intertext{tutte le estrazioni sono indipendenti}
+    &
+    \leq
+    \left( 
+        \frac{
+            |NW|
+        }{
+            |\zs{n}|
+        }
+    \right)^s
+    =
+    \left( 
+        \frac{
+            \left( n-1 \right) / 2
+        }{
+            \left( n-1 \right)
+        }
+    \right)^s
+    \\
+    &
+    =
+    \frac{1}{2^s}
+    \intertext{si possono fare $s = \log_2 n$ iterazioni, che sono lineari nella taglia d'ingresso}
+    &
+    =
+    \frac{1}{n}
+\end{align*}
 
 \section{Pezzi utili di \LaTeX{}}
 
