@@ -3709,7 +3709,118 @@ O \left(
 $.
 
 \subsection{Algoritmo per minimo comune multiplo}
-pag 120
+% pag 120
+
+\begin{definition}
+    [Minimo comune multiplo]
+    \label{def:lcm}
+    Dati $
+    a,b > 0
+    $, il loro minimo comune multiplo (\emph{least common multiple}) è
+    \begin{equation*}
+        lcm(a,b)
+        =
+        \min
+        \left\{ 
+            c > 0 :
+            \left( a \mid c \right)
+            \wedge
+            \left( b \mid c \right)
+        \right\}
+    \end{equation*}
+\end{definition}
+
+\begin{proposizione}
+    \label{lem:lcmxgcd}
+    Vale
+    $
+        lcm(a,b)
+        \cdot
+        gcd(a,b)
+        =
+        ab
+    $
+\end{proposizione}
+\begin{proof}
+    Siano $
+    m = lcm(a,b)
+    $ e $
+    d = gcd(a,b)
+    $.
+    So che $
+    d \mid a
+    $ e quindi $d$ divide anche ogni suo multiplo $
+    d \mid ab
+    $. Allora per la definizione di multiplo $
+    \exists n : ab = nd
+    $. Si dimostra che $
+    m = n
+    $.
+    \\
+    ``$m \leq n$''
+    Dal GCD vale 
+    \begin{equation*}
+        d \mid a \rightarrow a = kd
+        \quad
+        d \mid b \rightarrow b = hd
+    \end{equation*}
+    In generale si è mostrato che $
+    ab = dn
+    $, e sostituendo ad $a$ e $b$ valgono
+    \begin{equation*}
+        dn = ab = (kd)b
+        \quad
+        dn = ab = a(hd)
+    \end{equation*}
+    Per cui 
+    \begin{equation*}
+        n = kb
+        \quad
+        n = ha
+    \end{equation*}
+    Ovvero $n$ è multiplo di $a$ e $b$, ed è quindi un multiplo comune generico.
+    Il minimo comune multiplo sarà allora di certo minore o uguale
+    \begin{equation*}
+        m \leq n
+    \end{equation*}
+    \\
+    ``$m \geq n$''
+    Dal LCD vale
+    \begin{equation*}
+        \left( m = ar \right)
+        \wedge
+        \left( m = bs \right)
+    \end{equation*}
+    e per Bézout $
+    d = ax + by
+    $
+    \begin{align*}
+        md &= 
+        axm + bym
+        \\
+        &= 
+        ax(bs) + by(ar)
+        \\
+        &= 
+        ab \left( xs + yr \right)
+        % \shortintertext{In generale si è mostrato che $ ab = dn $}
+        \intertext{In generale si è mostrato che $ ab = dn $}
+        &= 
+        dn \left( xs + yr \right)
+        \\
+        m 
+        &= 
+        n \left( xs + yr \right)
+        \intertext{Per cui $m$ è multiplo di $n$ e $n$ divide $m$}
+        &
+        \Rightarrow
+        n \mid m
+        \\
+        &
+        \Rightarrow
+        n \leq m
+    \end{align*}
+\end{proof}
 
 \subsection{Unicità dell'inverso moltiplicativo}
 pag 121
