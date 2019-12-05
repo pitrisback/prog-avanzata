@@ -3544,6 +3544,176 @@ Allora Miller-Rabin con alta probabilità è corretto:
     =
     \frac{1}{n}
 \end{align*}
+Questo limite in alta probabilità non è strettissimo, e per numeri da $1024$ bit vale solo $1/2^{10}$, quindi in generale si fanno una trentina di iterazioni, che abbassano la probabilità di fallimento sotto $10^{-9}$.
+In ogni caso fa capire che l'algoritmo scala bene.
+
+La complessità di Miller-Rabin non è randomizzata: fa sempre $s$ iterazioni in cui calcola la modular exponentiation nel certificato:
+\begin{equation*}
+    T_{MR} \left( s, 
+        | \langle n \rangle |
+    \right)
+    =
+    \Theta \left( 
+        s \cdot
+        | \langle n \rangle |^3
+    \right)
+    =
+    \Theta \left( 
+        | \langle n \rangle |^4
+    \right)
+\end{equation*}
+% E infatti generare primi enormi non è banalissimo.
+
+Miller-Rabin si può usare insieme a Pomerance per migliorare l'affidabilità della selezione di primi casuali: si usa Pomerance per eliminare numeri che sono composti. Quando un numero è pseudoprimo in base 2, allora si usa Miller-Rabin per raffinare la probabilità di correttezza.
+
+\section{Esercitazioni}
+
+\subsection{Algoritmo Divide and Conquer per divisione intera e resto}
+% pag 118
+
+L'algoritmo che implementa la divisione intera 
+tra $a,b \in \mathbb{Z}^+ \cup \left\{ 0 \right\}$
+per cui $
+a = qb+r
+$
+\begin{equation*}
+    \Call{R\_QR}{a,b}
+    % ->
+    \to
+    % \left( q,r \right)
+    \left(
+        q = \left\lfloor 
+            \frac{a}{b}
+        \right\rfloor
+        ,
+        r = a \bmod b
+    \right)
+\end{equation*}
+si può scrivere in maniera ricorsiva, sfruttando la seguente proprietà di sottostruttura:
+per $m$ generico, vale
+\begin{equation*}
+    a - mb
+    =
+    qb - mb + r
+    =
+    \left( q-m \right)b + r
+\end{equation*}
+per cui
+\begin{equation*}
+    \Call{R\_QR}{a-mb,b}
+    \to
+    \left(
+        q' =
+        q-m
+        ,
+        r' = r
+    \right)
+\end{equation*}
+E si possono chiaramente ottenere i risultati originali con $
+q = q'+m
+$ e $
+r = r'
+$.
+\\
+Si determinano multipli di $b$ che sono semplici da calcolare e facili da usare, in generale la potenza della base, per numeri binari $
+m = 2^k
+$.
+Questi multipli si ottengono non in tempo quadratico, ma facendo lo shift verso posizioni più significative del divisore e aggiungendo zeri nelle posizioni meno significative.
+\\
+Si cerca qual è lo shift del divisore per cui il dividendo meno il divisore shiftato è maggiore di zero ma molto più piccolo.
+
+La base dell'algoritmo capita per $a < b$: $
+\left( q, r \right) = (0, a)
+$
+
+Quando invece $a > b$, la cosa più conveniente da fare è cercare il multiplo più alto possibile che renda più piccolo possibile il futuro divisore.
+Va trovato
+\begin{equation*}
+    k:
+    2^k b
+    \leq
+    a < 2^{k+1} b
+\end{equation*}
+e quindi 
+$
+a - 2^k b \geq 0 
+$
+e si può scrivere
+$
+\left( q - 2^k \right) b + r
+$.
+\\
+Passando da $a$ a $
+a - 2^k b
+$, il nuovo dividendo scende molto.
+Infatti
+\begin{equation*}
+    a < 2^{k+1} b
+    % \quad
+    \Rightarrow
+    % \quad
+    % a/2
+    \frac{a}{2}
+    < 2^{k} b
+    \quad
+    \Rightarrow
+    \quad
+    a - 2^k b < a -
+    \frac{a}{2}
+    = 
+    \frac{a}{2}
+\end{equation*}
+Quindi l'iterazione successiva viene eseguita su un dividendo che ha almeno un bit in meno rispetto all'originale.
+\begin{algorithm}[H]
+\caption{Divisione intera e resto}\label{alg:divisione_resto}
+\begin{algorithmic}[1]
+    \Procedure{R\_QR}{$a, b$}
+        \If{$a < b$}
+        \Comment{BASE}
+            \State return $0, a$
+        \EndIf
+        \State $k \gets a.len - b.len$
+        \Comment{DIVIDE}
+        \State $m \gets \Call{Shift}{b, k}$
+        \If{$m < a$}
+            \State $m \gets \Call{Shift}{m, -1}$
+            \State $k \gets k-1$
+        \EndIf
+        \State $\left( q', r' \right) \gets \Call{R\_QR}{a-m, b}$
+        \Comment{RECURSE}
+        \State return $
+        \left( 
+            q' + \Call{Shift}{1, k}, r'
+        \right)
+        $
+        \Comment{CONQUER}
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+\noindent
+Vengono eseguite meno di $
+| \langle a \rangle |
+$ chiamate ricorsive, al caso peggiore si accorcia il dividendo di un solo bit a iterazione.
+In ciascuna iterazione sono eseguite tre operazioni costose, le tre somme/sottrazioni tra numeri grandi sono operazioni su bit, non possono essere eseguite con operazioni macchina ma vanno emulate via software, risultando in complessità delle operazioni lineare.
+Allora la complessità vale $
+T_{RQR} = 
+| \langle a \rangle |
+\cdot
+O \left( 
+    | \langle a \rangle |
+\right)
+=
+O \left( 
+    | \langle a \rangle |^2
+\right)
+$.
+
+\subsection{Algoritmo per minimo comune multiplo}
+pag 120
+
+\subsection{Unicità dell'inverso moltiplicativo}
+pag 121
+
 
 \section{Pezzi utili di \LaTeX{}}
 
