@@ -25,7 +25,77 @@ Si studia l'algoritmo deterministico su una particolare distribuzione degli ingr
 Nel caso più semplice, la distribuzione è uniforme.
 
 % A questo punto diventa tutto una variabile aleatoria.
-Se si suppone di dover studiare l'algoritmo su un input estratto a caso, ci sono parecchie variabili aleatorie da studiare.
+Se si suppone di dover studiare l'algoritmo su un input estratto a caso, ci sono parecchie variabili aleatorie rilevanti.
+In particolare, la probabilità di errore viene studiata in base all'istanza d'ingresso:
+\begin{equation*}
+    Pr \left( 
+        \text{$A$ sia corretto su $
+            \bm{i}
+            , 
+            |
+            \bm{i}
+            | = n$}
+    \right)
+\end{equation*}
+E per esempio grazie a Pomerance, per il test di primalità vale 
+$
+\lim_{n \to \infty} p_n = 1
+$.
+
+Ci possono essere di casi in cui l'analisi probabilistica viene fatta sul tempo di esecuzione dell'algoritmo:
+la performance al caso peggiore cerca l'istanza critica per cui l'algoritmo impiega più tempo, 
+ma si può supporre che gli input siano estratti uniformemente dallo spazio delle istanze
+e si vuole studiare l'algoritmo deterministico e la sua performance media su un input estratto casualmente dallo spazio.
+\\
+Anche la complessità diventa allora una variabile aleatoria, e si studia il comportamento di $
+\bm{T}_A
+$ su una certa istanza (anch'essa aleatoria) $
+\bm{i}
+$:
+\begin{equation*}
+    Pr \left( 
+        \text{$
+            \bm{T}_A \left( 
+                \bm{i}
+            \right)
+            \leq f (n)
+            , \,
+            |
+            \bm{i}
+            | = n
+        $}
+    \right)
+\end{equation*}
+Che è una sorta di proprietà distribuzionale di $
+\bm{T}_A \left( 
+    \bm{i}
+\right)
+$.
+\\
+Per esempio, quicksort è un algoritmo deterministico, ma se lo si studia su sequenze scelte a caso, si dimostra che al caso medio ha complessità $
+O \left( n \log n \right)
+$ invece di $
+O \left( n^2 \right)
+$ che risulta avere al caso peggiore.
+
+L'analisi al caso medio è proprio l'analisi probabilistica di un algoritmo deterministico.
+Se $
+\bm{i}_n
+$ è un'istanza di taglia $n$ in $
+\bi{}_n
+$, la media del tempo di esecuzione su istanze $
+\bm{i}_n
+$ estratte a caso.
+\begin{equation*}
+    \E{
+        T_A \left( 
+            \bm{i}_n
+        \right)
+    }
+\end{equation*}
+Questa analisi fa un'assunzione molto forte, dovendo conoscere lo spazio di probabilità e la probabilità degli eventi elementari, che molto spesso si assume uniforme.
+Se si deve estrarre un numero primo casuale questo è ragionevole, ma se per esempio si devono ordinare dati, l'assunzione sul loro ordinamento casuale è molto forte, e in genere non accurata, dato che in pratica i dati sono spesso già ordinati a gruppi.
+La permutazione di ingressi quindi non è casuale, e in più quicksort (nella versione che sceglie il primo elemento come pivot) performa molto male su dati ordinati, rendendo l'analisi particolarmente inefficace.
 
 \subsection{Nell'algoritmo}
 pag 122.7
