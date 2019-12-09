@@ -266,14 +266,521 @@ $ delle scelte fatte dall'algoritmo.
 
 \subsubsection{Correttezza in alta probabilità}
 
+\begin{definition}
+    [Correttezza in alta probabilità]
+    \label{def:correttezza_alta_prob}
+    Dato $
+    \bpi{} \subseteq \bi{} \times \bs{}
+    $, un algoritmo randomizzato $
+    A_{\bpi{}}
+    $ è corretto in alta probabilità se $
+    \exists d > 0
+    $ costante, $
+    \exists n_0
+    $ tali che $
+    \forall n \geq n_0, 
+    \,
+    \forall i \in \bi{}_n
+    $ vale 
+    \begin{equation*}
+        Pr \left( 
+            A_{\bpi{}}
+            (i)
+            \,
+            \cancel{
+                \bpi{}
+            }
+            \,
+            i
+        \right)
+        \leq
+        \frac{1}{n^d}
+    \end{equation*}
+\end{definition}
+Note:
+\\
+È un'analisi di probabilità che mostra che l'algoritmo è corretto quasi sempre.
+\\
+È una caratterizzazione molto più forte della media: la massa di probabilità della coda della distribuzione ha misura che tende a 0.
+\\
+Il valore di $d$ può spesso essere aumentato molto con facilità: nel caso per esempio di Miller-Rabin, è sufficiente un valore delle iterazioni pari a 
+\begin{equation*}
+    s = \log_2 n
+    \rightarrow
+    Pr \left( errore \right)
+    =
+    \frac{1}{2^s}
+    =
+    \frac{1}{n}
+\end{equation*}
+per ottenere la correttezza in alta probabilità.
+Aumentando di un fattore costante il numero di iterazioni la probabilità scende però esponenzialmente 
+\begin{equation*}
+    s = k \log_2 n
+    \rightarrow
+    Pr \left( errore \right)
+    =
+    \frac{1}{2^s}
+    =
+    \frac{1}{n^{k}}
+\end{equation*}
+
 \section{Concentration bound per variabili aleatorie}
-pag 124.3
+% pag 124.3
 
 \subsection{Disuguaglianze di Markov}
-pag 124.5
+% pag 124.5
+Per ogni variabile aleatoria intera positiva $
+\bm{T}
+$ vale $
+\forall t
+$:
+\begin{equation*}
+    Pr \left( 
+        \bm{T} \geq t
+    \right)
+    \leq
+    \frac{
+        \E{
+            \bm{T}
+        }
+    }{
+        t
+    }
+\end{equation*}
+Se in più $
+\bm{T}
+$ è limitata superiormente da $b$ con probabilità 1: $
+Pr \left( \bm{T} > b \right) = 0
+$ vale
+\begin{equation*}
+    \E{\bm{T}}
+    \leq 
+    t + 
+    \left( 
+        b - t
+    \right)
+    Pr \left( 
+        \bm{T} \geq t
+    \right)
+\end{equation*}
+
+\subsubsection{Confronto tra analisi al caso medio e in alta probabilità}
+
+Se, come è ragionevole supporre in molti casi, l'algoritmo randomizzato ha limite superiore deterministico alla complessità al caso peggiore
+\begin{equation*}
+    Pr \left( 
+        T_A(n) \leq cn^{\alpha}
+    \right)
+    = 1
+\end{equation*}
+(per esempio per quicksort randomizzato, anche nel caso peggiore di scelte più sfortunate, la complessità è al massimo quadratica.
+Questa analisi lasca mette comunque un limite all'esecuzione, che non può diventare esponenziale).
+\\
+e si può scegliere $d = d_c$ come funzione crescente di $c$
+(si può aumentare il grado del polinomio aumentando la constante moltiplicativa davanti alla complessità),
+\begin{equation*}
+    Pr \left( 
+        T_A(n) \geq cf(n)
+    \right)
+    \leq
+    \frac{1}{n^d}
+\end{equation*}
+sotto queste condizioni si dimostra che l'analisi al caso medio è meno informativa dell'analisi in alta probabilità.
+
+Usando la seconda disuguaglianza di Markov con $
+b = n^{\alpha}
+$ e $
+t = cf(n)
+$, con $
+c : d \geq \alpha
+$:
+\begin{align*}
+    \E{
+        \bm{T}_A (n)
+    }
+    &
+    \leq
+    c f(n)
+    +
+    \left( 
+        n^{\alpha}
+        -
+        c f(n)
+    \right)
+    \frac{1}{n^d}
+    \\
+    &
+    \leq
+    c f(n)
+    +
+    \frac{n^{\alpha}}{n^d}
+    \\
+    &
+    \leq
+    c f(n)
+    +
+    1
+\end{align*}
 
 \subsection{Bound di Chernoff}
-pag 125.2
+% pag 125.2
+
+Data una generica famiglia di variabili indicatrici
+\begin{equation*}
+    X_i = 
+    \begin{cases}
+        1 & \text{con probabilità } p_i
+        \\
+        0 & \text{con probabilità } 1 - p_i
+    \end{cases}
+\end{equation*}
+Le variabili sono mutualmente indipendenti, e vale $
+\E{X_i} = p_i
+$.
+La variabile di interesse è la somma delle variabili indicatrici
+\begin{equation*}
+    X = 
+    \sum_{i=1}^{n} X_i
+\end{equation*}
+Per cui vale \begin{equation*}
+    \E{X}
+    =
+    \sum_{i=1}^{n} p_i
+    =
+    \mu
+\end{equation*}
+
+\begin{lemma}
+    [Chernoff]
+    \label{def:lemma_chernoff}
+    Siano $
+    X_1, \cdots, X_n
+    $ variabili indicatrici con $
+    p_i = Pr \left( X_i = 1 \right)
+    $. Data $
+    X = \sum_{i=1}^{n} X_i
+    $ e $
+    \mu
+    =
+    \E{X}
+    =
+    \sum_{i=1}^{n} p_i
+    $, $
+    \forall \delta > 0
+    $ vale
+    \begin{equation*}
+        Pr \left( 
+            X > \left( 1+ \delta \right) \mu
+        \right)
+        <
+        \left( 
+            \frac{
+                e^{\delta}
+            }{
+                \left( 
+                    1 + \delta
+                \right)^{
+                    \left( 
+                        1 + \delta
+                    \right)
+                }
+            }
+        \right)^{\mu}
+    \end{equation*}
+\end{lemma}
+Note:
+\\
+Questo lemma fornisce un bound molto più stretto di Markov, infatti 
+la frazione è un numero minore di 1 ($
+    \left( 
+        1 + \delta
+    \right)^{
+        \left( 
+            1 + \delta
+        \right)
+    }
+$ cresce molto più velocemente di $
+e^\delta
+$) e 
+$\mu$ è legato al numero di variabili indicatrici,
+quindi c'è un bound esponenziale,
+mentre la prima disuguaglianza di Markov risulta
+\begin{equation*}
+    Pr \left( 
+        X > \left( 1+ \delta \right) \mu
+    \right)
+    < 
+    \frac{\mu}{
+        \left( 
+            1 + \delta
+        \right)
+        \mu
+    }
+    =
+    \frac{1}{
+        1 + \delta
+    }
+\end{equation*}
+che non ha alcun legame con la taglia.
+% I bound di \emph{Chernoff} sono più stretti di quelli di Markov, ma valgono solo per variabili aleatorie particolari.
+
+\begin{proof}
+    Si considera la famiglia di variabili aleatorie
+    \begin{equation*}
+        Y_t = e^{tX}
+    \end{equation*}
+    e ne si studia la media per trovarne una correlazione con la media di $X$.
+    Per prima cosa si mostra che
+    \begin{align*}
+        \E{
+            e^{t X}
+        }
+        &= 
+        \E{
+            e^{
+                t
+                \sum_{i=1}^{n} X_i
+            }
+        }
+        \\
+        &= 
+        \E{
+            e^{
+                \sum_{i=1}^{n} t X_i
+            }
+        }
+        \\
+        &= 
+        \E{
+            \prod_{i=1}^{n}
+            e^{
+                t X_i
+            }
+        }
+        \intertext{le variabili $e^{t X_i} $ sono indipendenti, perché le $X_i$ sono indipendenti e la funzione è invertibile, per cui la media del prodotto è il prodotto delle medie}
+        &= 
+        \prod_{i=1}^{n}
+        \E{
+            e^{
+                t X_i
+            }
+        }
+        \intertext{vale per una singola variabile $
+            \E{
+                e^{t X_i}
+            }
+            = 
+            e^{t \cdot 0}
+            \left( 1 - p_i \right)
+            +
+            e^{t \cdot 1}
+            p_i
+            =
+            1 + p_i \left( e^t - 1 \right)
+            $
+        }
+        &= 
+        \prod_{i=1}^{n}
+        \left( 
+            1 + p_i \left( e^t - 1 \right)
+        \right)
+        \intertext{considerando la serie di Taylor troncata vale $
+            e^y > 1+y
+        $}
+        &<
+        \prod_{i=1}^{n}
+        e^{
+            p_i \left( e^t - 1 \right)
+        }
+        \\
+        &= 
+        e^{
+            \sum_{i=1}^{n}
+            p_i \left( e^t - 1 \right)
+        }
+        \\
+        &= 
+        e^{
+            \left( e^t - 1 \right)
+            \sum_{i=1}^{n}
+            p_i
+        }
+        \\
+        &= 
+        e^{
+            \left( e^t - 1 \right)
+            \mu
+        }
+    \end{align*}
+    Si sfrutta questo risultato per provare il lemma
+    \begin{align*}
+        Pr \left( 
+            X > \left( 1 + \delta \right) \mu
+        \right)
+        &= 
+        Pr \left( 
+            tX > t \left( 1 + \delta \right) \mu
+        \right)
+        \\
+        &= 
+        Pr \left( 
+            e^{
+                tX
+            }
+            >
+            e^{
+                t \left( 1 + \delta \right) \mu
+            }
+        \right)
+        \\
+        &= 
+        Pr \left( 
+            Y_t
+            >
+            e^{
+                t \left( 1 + \delta \right) \mu
+            }
+        \right)
+        \intertext{e per la prima disuguaglianza di Markov}
+        &< 
+        \frac{
+            \E{
+                Y_t
+            }
+        }{
+            e^{
+                t \left( 1 + \delta \right) \mu
+            }
+        }
+        \\
+        &= 
+        \frac{
+            \E{
+                e^{tX}
+            }
+        }{
+            e^{
+                t \left( 1 + \delta \right) \mu
+            }
+        }
+        \intertext{e per il risultato precedente}
+        &<
+        \frac{
+            e^{
+                \left( e^t - 1 \right)
+                \mu
+            }
+        }{
+            e^{
+                t \left( 1 + \delta \right) \mu
+            }
+        }
+        \intertext{questa è una famiglia di limiti superiori, valida $\forall t > 0$, di cui si seleziona il più stretto che risulta: $
+            t_{min} =
+            \ln \left( 1 + \delta \right)
+            $
+        }
+        &<
+        \frac{
+            e^{
+                \left(
+                    e^{
+                        \ln \left( 1 + \delta \right)
+                    }
+                - 1 \right)
+                \mu
+            }
+        }{
+            e^{
+                \ln \left( 1 + \delta \right)
+                \left( 1 + \delta \right) \mu
+            }
+        }
+        \intertext{chiaramente $
+            e^{
+                \ln \left( 1 + \delta \right)
+            }
+            =
+            \left( 1 + \delta \right)
+            $
+        }
+        &= 
+        \frac{
+            e^{
+                \left( 
+                    1 + \delta - 1
+                \right)
+                \mu
+            }
+        }{
+            \left( 1 + \delta \right)^{
+                \left( 1 + \delta \right) \mu
+            }
+        }
+        \intertext{numeratore e denominatore sono elevati alla $\mu$, e si conclude}
+        &= 
+        \left( 
+            \frac{
+                e^{\delta}
+            }{
+                \left( 
+                    1 + \delta
+                \right)^{
+                    \left( 
+                        1 + \delta
+                    \right)
+                }
+            }
+        \right)^{\mu}
+    \end{align*}
+\end{proof}
+
+\begin{corollario}
+    Per $
+    0 < \delta < 1
+    $ valgono i seguenti bound
+    \begin{align*}
+        Pr \left( 
+            X > \left( 1 + \delta \right) \mu
+        \right)
+        &
+        <
+        e^{
+            -\delta^2 \mu / 3
+        }
+        \\
+        Pr \left( 
+            X < \left( 1 - \delta \right) \mu
+        \right)
+        &
+        <
+        e^{
+            -\delta^2 \mu / 2
+        }
+    \end{align*}
+\end{corollario}
+Per cui i valori di $X$ sono estremamente concentrati intorno alla media.
+Se si ricava un valore di $d$ per cui $
+\delta^2 \mu / 2
+> 
+d \log n
+$ si ottiene l'alta probabilità
+\begin{equation*}
+    Pr \left( 
+        X < \left( 1 - \delta \right) \mu
+    \right)
+    <
+    e^{
+        -\delta^2 \mu / 2
+    }
+    <
+    \frac{1}{n^d}
+\end{equation*}
+
+% TODO note caso cattivo legato a taglia 8m 4/12
+
+
 
 \section{Analisi di Quicksort randomizzato}
 pag 128
