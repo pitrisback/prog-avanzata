@@ -98,19 +98,173 @@ Se si deve estrarre un numero primo casuale questo è ragionevole, ma se per ese
 La permutazione di ingressi quindi non è casuale, e in più quicksort (nella versione che sceglie il primo elemento come pivot) performa molto male su dati ordinati, rendendo l'analisi particolarmente inefficace.
 
 \subsection{Nell'algoritmo}
-pag 122.7
+% pag 122.7
+
+Lo spazio di probabilità viene creato dall'algoritmo stesso:
+l'insieme $
+\Omega_n
+$ è formato delle scelte casuali fatte dall'algoritmo.
+Lo spazio non è basato sugli ingressi, perché in un algoritmo randomizzato si considera un ingresso fissato.
+\begin{equation*}
+    Pr \left( 
+        \text{$A$ sia corretto su un input \emph{fissato}}
+    \right)
+\end{equation*}
+Scelto un input, si studia la probabilità della corettezza al caso peggiore dell'algoritmo.
+Si cerca quindi l'input su cui l'algoritmo sbaglia di più.
+
+Anche in questo caso la  complessità può diventare una variabile aleatoria.
+\begin{align*}
+    Pr \left( 
+        \bm{T}_A \left( 
+            n
+        \right)
+        \geq c \cdot f(n)
+    \right)
+    &
+    \leq d(n)
+    \\
+    Pr \left( 
+        \bm{T}_A \left( 
+            n
+        \right)
+        \leq c \cdot f(n)
+    \right)
+    &
+    \geq d'(n)
+\end{align*}
+Per cui si studia la distribuzione del tempo di esecuzione.
 
 \subsubsection{Algoritmi Las Vegas}
-pag 123
+% pag 123
+Gli algoritmi di tipo \emph{Las Vegas} sono algoritmi randomizzati \emph{sempre} corretti.
+Dato un algoritmo $
+A_{\bpi{}} \left( i \right) \to s
+$, questo ritorna sempre la soluzione esatta.
+\begin{equation*}
+    Pr \left( 
+        i
+        \,
+        \bpi{}
+        \,
+        s
+    \right)
+    = 1
+\end{equation*}
+La randomizzazione viene utilizzata per rendere aleatorio il tempo di esecuzione
+\begin{align*}
+    Pr \left( 
+        \bm{T}_A \left( 
+            n
+        \right)
+        \leq c \cdot f(n)
+    \right)
+    &
+    \geq d(n)
+\end{align*}
+Esempi di algoritmi di questo tipo sono il quicksort randomizzato o gli algoritmi di approssimazione. Quest'ultimi ritornano una soluzione che può non essere ottima, ma è sempre ammissibile.
 
 \subsubsection{Algoritmi Monte Carlo}
-pag 123.3
+% pag 123.3
+Gli algoritmi di tipo \emph{Monte Carlo} sono algoritmi randomizzati che \emph{possono} sbagliare.
+Dato un algoritmo $
+A_{\bpi{}} \left( i \right) \to s
+$, si studia la sua probabilità di correttezza $
+p_c(n)
+$:
+\begin{equation*}
+    Pr \left( 
+        i
+        \,
+        \bpi{}
+        \,
+        s
+    \right)
+    = p_c(n)
+\end{equation*}
+Anche per algoritmi di questo tipo si analizza il tempo di esecuzione
+\begin{align*}
+    Pr \left( 
+        \bm{T}_A \left( 
+            n
+        \right)
+        \leq c \cdot f(n)
+    \right)
+    &
+    \geq d(n)
+\end{align*}
+e ci sono casi in cui questo è deterministico, perché il numero di iterazioni non è legato alle scelte casuali effettuate e vale $
+d(n) = 1
+$.
 
 \subsubsection{Algoritmi Monte Carlo decisionali}
-pag 123.5
+% pag 123.5
+Gli algoritmi \emph{Monte Carlo} decisionali possono commettere errori di due tipi:
+\begin{itemize}
+    \item \emph{one-sided}: possono compiere errori solo su uno dei due \emph{outcome}
+    \item \emph{two-sided}: possono compiere errori su entrambi gli \emph{outcome}
+\end{itemize}
 
-\subsection{Correttezza in alta probabilità}
-pag 123.8
+\subsection{Bound in alta probabilità}
+% pag 123.8
+
+\subsubsection{Limite alla complessità in alta probabilità}
+
+\begin{definition}
+    [Complessità in alta probabilità]
+    \label{def:complessita_alta_prob}
+    Dato $
+    \bpi{} \subseteq \bi{} \times \bs{}
+    $, un algoritmo randomizzato $
+    A_{\bpi{}}
+    $ ha complessità $
+    O \left( f(n) \right)
+    $ con alta probabilità se $
+    \exists c, d > 0
+    $ costanti, $
+    \exists n_0
+    $ tali che $
+    \forall n \geq n_0, 
+    \,
+    \forall i \in \bi{}_n
+    $ vale 
+    \begin{equation*}
+        Pr \left( 
+            T \left( 
+                A_{\bpi{}}
+                (i)
+            \right)
+            \geq c f(n)
+        \right)
+        \leq
+        \frac{1}{n^d}
+    \end{equation*}
+    o alternativamente
+    \begin{equation*}
+        Pr \left( 
+            T \left( 
+                A_{\bpi{}}
+                (i)
+            \right)
+            \leq c f(n)
+        \right)
+        \geq
+        1-
+        \frac{1}{n^d}
+    \end{equation*}
+\end{definition}
+Note:
+\\
+$d$ può essere una costante qualsiasi, anche minore di 1, perché è comunque sufficiente a indicare che c'è una sostanziale diminuzione della probabilità all'aumentare della taglia.
+\\
+Entrambi i metodi per definire l'alta probabilità delimitano la massa della probabilità della coda dell'istanza
+\\
+L'analisi è al caso peggiore: l'istanza non è scelta casualmente ma è fissata.
+La probabilità invece è la probabilità sullo spazio $
+\Omega_n
+$ delle scelte fatte dall'algoritmo.
+
+\subsubsection{Correttezza in alta probabilità}
 
 \section{Concentration bound per variabili aleatorie}
 pag 124.3
