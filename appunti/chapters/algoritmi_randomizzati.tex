@@ -879,7 +879,7 @@ $
 $, e ogni livello non può eseguire più di $cn$ lavoro.
 Allora, se $h$ è l'altezza massima dell'albero delle chiamate, il tempo di esecuzione è limitato da
 \begin{equation*}
-    T_{QS} \leq cnh
+    T_{QS} (n) \leq cnh
 \end{equation*}
 L'altezza $h$ dipende dalla scelta del pivot eseguita.
 
@@ -931,7 +931,7 @@ $.
 \end{figure}
 Sommando tutti i work eseguiti nell'albero in \rfig{fig:qs_rec_tree_bad} si ottiene
 \begin{equation*}
-    T_{QSfirst} = c \frac{n(n-1)}{2}
+    T_{QSfirst} (n) = c \frac{n(n-1)}{2}
     =
     \Theta \left( cn^2 \right)
 \end{equation*}
@@ -955,7 +955,7 @@ Ci sono quindi $
 h = \log n
 $ livelli, per una complessità pari a 
 \begin{equation*}
-    T_{QSmedian} \leq cnh = O \left( n \log n \right)
+    T_{QSmedian} (n) \leq cnh = O \left( n \log n \right)
 \end{equation*}
 Selezionare la mediana però è molto costoso, esiste un algoritmo deterministico lineare per calcolarla, ma la costante è molto alta (circa $80n$), ed è quindi inutilizzabile in pratica.
 
@@ -1005,23 +1005,351 @@ La scelta casuale del pivot riesce a garantire questa proprietà delle taglie de
         \State return $\Call{Random}{S}$
     \EndProcedure
 \end{algorithmic}
-Si consideri l'insieme degli elementi
+Si consideri l'insieme degli elementi ``fortunati''
 \begin{equation*}
-    X_i
-    \quad 
-    \text{con}
-    \quad 
-    i \in
+    F = 
     \left\{ 
-        \left\lfloor 
-        \frac{n}{4} + 1
-        \right\rfloor
-        , \cdots , 
-        \left\lceil 
-        \frac{3}{4}n + 1
-        \right\rceil
+        X_i
+        % \quad 
+        % \text{con}
+        % \quad 
+        :
+        i \in
+        \left\{ 
+            \left\lfloor 
+            \frac{n}{4} + 1
+            \right\rfloor
+            , \cdots , 
+            \left\lceil 
+            \frac{3}{4}n + 1
+            \right\rceil
+        \right\}
     \right\}
 \end{equation*}
+Questo insieme contiene circa la metà degli elementi, per cui la probabilità di selezionare un elemento in questo insieme è circa un mezzo.
+\\
+Se viene scelto come pivot un elemento di questo insieme, entrambi i sottoinsiemi hanno taglia inferiore ai $3/4$ dell'insieme originale, infatti, il primo insieme deve contenere almeno il primo quarto degli elementi
+\begin{equation*}
+    |S_1| \geq
+    \left\lfloor 
+        \frac{n}{4} + 1
+    \right\rfloor
+    \quad
+    \rightarrow
+    \quad
+    |S_2| \leq
+    n - 1 -
+    \left\lfloor 
+        \frac{n}{4} + 1
+    \right\rfloor
+    \leq
+    \frac{3}{4} n
+\end{equation*}
+e analogamente, il secondo insieme deve contenere almeno l'ultimo quarto di elementi
+\begin{equation*}
+    |S_2| \geq
+    n -
+    \left\lceil 
+    \frac{3}{4}n
+    \right\rceil
+    \quad
+    \rightarrow
+    \quad
+    |S_1| \leq n - 1 - \left( 
+        n -
+        \left\lceil 
+        \frac{3}{4}n
+        \right\rceil
+    \right)
+    \leq
+    \frac{3}{4}n
+\end{equation*}
+Per cui nel corso delle scelte del pivot, circa una volta su due viene effettuata una scelta fortunata.
+L'intuizione è che in media, un cammino non potrà essere lungo più di due volte il cammino più corto possibile.
+Lungo un cammino da radice a foglia, un nodo su due garantisce una riduzione di $3/4$ della taglia dell'insieme.
+Questo garantisce un numero logaritmico di livelli, che corrisponde a un algoritmo $n \log n$ con alta probabilità, con una scelta del pivot che si può realizzare in tempo costante.
+
+\subsubsection{Analisi della profondità}
+
+Fissato $
+t = a \log_{4/3} n
+$ come target di altezza dell'albero,
+si vuole determinare la probabilità dell'evento negativo
+\emph{any bad path}
+\begin{equation*}
+    ABP = 
+    \text{un arbitrario cammino è lungo più di $a \log_{4/3} n$}
+\end{equation*}
+Riguardo al numero di cammini distinti,
+se nell'albero delle ricorsioni si eliminano gli insiemi vuoti,
+ne esiste uno per foglia dell'albero, ed è presente una foglia per ogni elemento.
+Ci sono allora $n$ cammini radice-foglia nell'albero, ciascuno individuato da un valore $x_i$.
+Si studia allora la probabilità dell'evento \emph{fixed bad path}, per un cammino fissato:
+\begin{align*}
+    FBP = 
+    &
+    \;
+    \text{un cammino \emph{fissato} da radice a foglia nell'albero}
+    \\
+    &
+    \;
+    \text{della ricorsione ha profondità maggiore di $a \log_{4/3} n$}
+\end{align*}
+Se si conosce la probabilità per un cammino fissato,
+si limita facilmente la probabilità che \emph{nessun} cammino sia più lungo di $t$ sfruttando l'\emph{union bound}.
+Infatti, una volta nota la probabilità su un singolo evento negativo, la probabilità che un \emph{qualche} cammino sia molto lungo è minore o uguale alla somma delle probabilità associate a ogni singolo cammino.
+Con lo \emph{union bound} si ricava quindi la probabilità che l'evento negativo \emph{Any Bad Path} accada.
+
+% Si vuole studiare la lunghezza di un cammino fissato, non un cammino casuale generico.
+Perché capiti l'evento ``cammino più lungo di $t$'', nei primi $
+a
+\log_{4/3} n
+$ nodi del cammino, devono verificarsi \emph{meno} di $
+\log_{4/3} n
+$ scelte fortunate del pivot.
+% Per assurdo
+Infatti, ogni scelta fortunata abbassa di $3/4$ gli elementi, per cui dopo $
+\log_{4/3} n
+$ si sarebbe arrivati alla foglia. Ma il cammino in considerazione \emph{non} era terminato, quindi devono essere capitate meno di $
+\log_{4/3} n
+$ scelte fortunate.
+\\
+Questo si formalizza utilizzando le variabili indicatrici
+\begin{equation*}
+    X_i = 
+    \begin{cases}
+        1 & \text{scelta fortunata al livello $i$}
+        \\
+        0 & \text{altrimenti}
+    \end{cases}
+\end{equation*}
+Le scelte ad ogni livello sono chiaramente indipendenti,
+e vale 
+\begin{equation*}
+    Pr \left( X_i = 1 \right) \geq \frac{1}{2}
+\end{equation*}
+Si può allora studiare la somma nei primi $t$ livelli dell'albero, che rappresenta il numero di scelte fortunate compiute
+\begin{equation*}
+    X = \sum_{i=1}^{a \log_{4/3} n} X_i
+    \quad
+    \rightarrow
+    \quad
+    \mu = \E{X} = \frac{1}{2} a \log_{4/3} n = \frac{t}{2}
+\end{equation*}
+Per applicare il bound di Chernoff, va riscritto il vincolo su $X$ in funzione di $\delta < 1$ e $\mu$
+\begin{equation*}
+    Pr \left( 
+        X < \log_{4/3} n
+    \right)
+    \quad
+    \leftrightarrow
+    \quad
+    Pr \left( 
+        X < \left( 1 - \delta \right) \mu
+    \right)
+\end{equation*}
+I valori corretti sono $a=8$ e $\delta=3/4$, ottenuti portando avanti l'analisi simbolica, e ricavando il valore necessario in modo che
+\begin{align*}
+    t = 8 \log_{4/3} n
+    \quad
+    &
+    \rightarrow
+    \quad
+    \mu = 4 \log_{4/3} n 
+    \\
+    \delta = \frac{3}{4}
+    \quad
+    &
+    \rightarrow
+    \quad
+    1 - \delta = \frac{1}{4}
+    \\
+    \left( 1 - \delta \right) \mu &= \log_{4/3} n
+\end{align*}
+Si può quindi procedere applicando il corollario del lemma di Chernoff
+\begin{align*}
+    Pr \left( 
+        X < \log_{4/3} n
+    \right)
+    &= 
+    Pr \left( 
+        X
+        <
+        \left( 1 - \frac{3}{4} \right) 4
+        \log_{4/3} n
+    \right)
+    \\
+    &
+    \leq
+    e^{
+        - \left( 
+            \frac{3}{4}
+        \right)^{2}
+        4
+        \log_{4/3} n
+        \big/ 2
+    }
+    \\
+    &= 
+    e^{
+        - \frac{9}{8}
+        \log_{4/3} n
+    }
+    \\
+    &
+    <
+    e^{
+        - \log_{4/3} n
+    }
+    \\
+    &= 
+    e^{
+        - \ln n / \ln (4/3)
+    }
+    \\
+    &= 
+    \frac{1}{
+        n^{
+            \frac{
+                1
+            }{
+                \ln (4/3)
+            }
+        }
+    }
+    \\
+    &
+    \approx
+    \frac{1}{
+        n^{
+            3,47
+        }
+    }
+    \\
+    &
+    <
+    \frac{1}{n^3}
+\end{align*}
+Riassumendo, l'evento ``cattivo'' per cui l'albero ha altezza maggiore di $a \log_{4/3} n$ accade con probabilità
+\begin{align*}
+    Pr
+    &
+    \left( 
+        \text{l'albero ha altezza $> 8 \log_{4/3} n$}
+    \right)
+    \leq
+    \\
+    &
+    =
+    Pr \left( 
+        % \text{\emph{Any Bad Path}}
+        \text{esiste \emph{un} cammino di lunghezza $> 8 \log_{4/3} n$}
+    \right)
+    \\
+    &
+    \leq
+    n
+    Pr \left( 
+        % \text{\emph{Fixed Bad Path}}
+        \text{un cammino \emph{fissato} ha lunghezza $> 8 \log_{4/3} n$}
+    \right)
+    \\
+    &
+    \leq
+    n
+    Pr
+    \left( 
+        \text{ci sono meno di $\log_{4/3} n$ scelte fortunate}
+    \right.
+    \\
+    &
+    \quad
+    \quad
+    \quad
+    \quad
+    \left.
+        \text{nei primi $a \log_{4/3} n$ nodi del cammino}
+    \right)
+    \\
+    &
+    \leq
+    n
+    \frac{1}{n^3}
+    =
+    \frac{1}{n^2}
+\end{align*}
+Per cui in alta probabilità l'albero della ricorsione di quicksort randomizzato ha un numero logaritmico di livelli,
+e ogni livello contribuisce al lavoro complessivo $
+O (n)
+$, per cui in alta probabilità quicksort esegue in tempo $
+O (n \log n)
+$.
+
+Per gli algoritmi randomizzati si scompone l'analisi in una serie di eventi che possono accadere o meno,
+e poi si studia l'evento buono (o cattivo) in funzione di questi singoli eventi elementari 
+che catturano le varie scelte fatte dall'algoritmo.
+L'analisi deterministica è simile, si scompone l'algoritmo in passi elementari e si trova qual è la sequenza peggiore.
+Piuttosto che il caso peggiore, qua si studia la probabilità che questo avvenga,
+scomponendo l'intera computasione in una serie di eventi da comporre tra di loro in maniera da poter usare i bound noti.
+
+\subsubsection{Analisi al caso medio}
+
+Utilizzando la disuguaglianza di Markov si passa facilmente dall'alta probabilità al caso medio.
+
+La variabile $
+T(n)
+$ che rappresenta il tempo di quicksort randomizzato è limitata
+\begin{equation*}
+    Pr \left( 
+        T(n) 
+        \leq
+        n^2
+    \right)
+    = 1
+\end{equation*}
+perché anche nel caso di scelte sempre sfortunate, termina in tempo quadratico. Il bound in alta probabilità è noto
+\begin{equation*}
+    Pr \left( 
+        T(n)
+        \geq
+        8 n \log_{4/3} n
+    \right)
+    <
+    \frac{1}{n^2}
+\end{equation*}
+per cui si può applicare la disuguaglianza di Markov per variabili limitate con $
+b = n^2
+$ e $
+t = 
+8 n \log_{4/3} n
+$
+\begin{align*}
+    \E{T}
+    &
+    <
+    t + \left( b-t \right) Pr \left( T > t \right)
+    \\
+    &= 
+    8 n \log_{4/3} n
+    +
+    \left( 
+        n^2
+        -
+        8 n \log_{4/3} n
+    \right)
+    \frac{1}{n^2}
+    \\
+    &<
+    8 n \log_{4/3} n
+    +1
+\end{align*}
+
+L'analisi randomizzata si può stringere molto, e risulta quasi lineare in $
+n \log n
+$.
+
+In pratica quicksort è uno degli algoritmi di sorting più efficienti: la scelta del pivot è molto semplice, e anche la partizione può essere effettuata in maniera veloce.
+Non si usa solo nei sistemi con cache molto profonde, dove \emph{k-way merge sort} riesce a sfruttare meglio la cache, generando meno miss.
 
 \section{Amplificazione della probabilità}
 pag 132.6
