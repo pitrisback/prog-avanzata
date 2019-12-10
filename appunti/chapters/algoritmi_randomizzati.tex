@@ -777,19 +777,251 @@ $ si ottiene l'alta probabilità
     <
     \frac{1}{n^d}
 \end{equation*}
-
-% TODO note caso cattivo legato a taglia 8m 4/12
-
-
+Se quello scostamento dalla media rappresenta l'evento ``cattivo'', in questo modo si riesce a limitare la probabilità della sua occorrenza con un inverso di un polinomio in $n$.
 
 \section{Analisi di Quicksort randomizzato}
-pag 128
+% pag 128
 
 \subsection{Implementazione}
-pag 128
+% pag 128
+
+L'algoritmo di quicksort viene definito su un insieme $S$ di elementi distinti. Questo non comporta perdita di generalità, perché eventuali chiavi ripetute si possono arricchire con la posizione iniziale nella lista per sciogliere i conflitti.
+
+Si definiscono gli elementi ordinati come \emph{order statistics}:
+\begin{equation*}
+    \Call{Sort}{S}
+    =
+    \langle x_1, \cdots, x_n \rangle
+\end{equation*}
+
+L'algoritmo è quello standard:
+\begin{algorithm}[H]
+\caption{Template per Quicksort}\label{alg:quicksort}
+\begin{algorithmic}[1]
+    \Procedure{Quicksort}{$S$}
+        \If{$|S| \leq 1$}
+        \Comment{BASE}
+            \State return $S$
+        \EndIf
+        \State $y \gets 
+            \Call{Choose\_Pivot}{S}
+        $
+        \label{alg:quicksort:choose}
+        \Comment{DIVIDE}
+        \State $S_1 \gets \left\{ 
+            s \in S : s < y
+        \right\}
+        $
+        \State $S_2 \gets \left\{ 
+            s \in S : s > y
+        \right\}
+        $
+        \State $X_1 \gets 
+            \Call{Quicksort}{S_1}
+        $
+        \Comment{RECURSE}
+        \State $X_2 \gets 
+            \Call{Quicksort}{S_2}
+        $
+        \State return $\langle X_1, y, X_2 \rangle$
+        \Comment{CONQUER}
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+\noindent
+Alla riga \ref{alg:quicksort:choose} si effettua la scelta del pivot, che comporta versioni diverse dell'algoritmo.
+Il costo del divide non è trascurabile, in particolare alcuni tipi di scelta sono molto costosi, ma in ogni caso lineari nella taglia. Anche la divisione in insiemi è lineare. Il conquer ha costo fisso.
+
+L'albero delle ricorsioni ha struttura simile a prescindere dalla scelta.
+\begin{figure}[h]
+    \centering
+    \caption{Albero delle ricorsioni di Quicksort}
+    \label{fig:qs_rec_tree}
+    \begin{tikzpicture} [
+            scale=1.2,
+            % nodo/.style={ellipse,fill=black!25,minimum size=20pt,inner sep=0pt},
+            nodo/.style={circle,fill=black!25,minimum size=25pt,inner sep=0pt},
+            arco/.style = {draw,thin,-},
+            % outbound edge/.style = {draw,line width=4pt,-,blue!30},
+            % selected edge/.style = {draw,line width=4pt,-,red!30},
+        ]
+        % First we draw the vertices
+        \foreach \pos/\name/\labin/\labout in {
+                {(0,5)/a/S/n=|S|},
+                {(-2,4)/b/S_1/c|S_1|},
+                {(2,4)/c/S_2/c|S_2|}}
+                % {(-3,3)/d/S_{11}/|S_{11}|},
+                % {(-1,3)/e/S_{12}/|S_{12}|},
+                % {(1,3)/f/S_{21}/|S_{21}|},
+                % {(3,3)/g/S_{22}/|S_{22}|}}
+            \node[nodo, label={$\labout$}] (\name) at \pos {$\labin$};
+        % \foreach \pos/\name/\labin in {
+                % {(0,5)/a/S},
+                % {(-2,4)/b/S_1},
+                % {(2,4)/c/S_2},
+                % {(-3,3)/d/S_{11}},
+                % {(-1,3)/e/S_{12}},
+                % {(1,3)/f/S_{21}},
+                % {(3,3)/g/S_{22}}}
+            % \node[nodo] (\name) at \pos {$\labin$};
+        \foreach \source/ \dest in {
+                % b/d,b/e,
+                % c/f,c/g,
+                a/b,a/c}
+            \path[arco] (\source) -- (\dest);
+        \begin{pgfonlayer}{background}
+        \end{pgfonlayer}
+    \end{tikzpicture}
+\end{figure}
+Ad ogni livello, $S_1$ e $S_2$ sono una \emph{sottopartizione} di $S$, quindi la somma delle taglie è minore di $n$ ad ogni livello:
+$
+\sum |S_j^l| \leq n
+$, e ogni livello non può eseguire più di $cn$ lavoro.
+Allora, se $h$ è l'altezza massima dell'albero delle chiamate, il tempo di esecuzione è limitato da
+\begin{equation*}
+    T_{QS} \leq cnh
+\end{equation*}
+L'altezza $h$ dipende dalla scelta del pivot eseguita.
+
+\subsubsection{Scelta del primo elemento come pivot}
+
+Se la scelta del pivot viene implementata come
+\begin{algorithmic}[1]
+    \Procedure{Choose\_Pivot}{$S$}
+        \State return $s_1$
+    \EndProcedure
+\end{algorithmic}
+il caso peggiore avviene quando l'insieme è già ordinato. In questa situazione, $
+S_1 = \emptyset
+$ e $
+S_2 = S - \left\{ s_1 \right\}
+$.
+\begin{figure}[h]
+    \centering
+    \caption{Albero delle ricorsioni nel caso peggiore}
+    \label{fig:qs_rec_tree_bad}
+    \begin{tikzpicture} [
+            scale=1.2,
+            nodo/.style={ellipse,fill=black!25,minimum size=20pt,inner sep=0pt},
+            % nodo/.style={circle,fill=black!25,minimum size=25pt,inner sep=0pt},
+            arco/.style = {draw,thin,-},
+            arco tratteggiato/.style = {draw,thin,dotted},
+            % outbound edge/.style = {draw,line width=4pt,-,blue!30},
+            % selected edge/.style = {draw,line width=4pt,-,red!30},
+        ]
+        % First we draw the vertices
+        \foreach \pos/\name/\labin/\labout in {
+                {(0,5)/a/n/cn},
+                {(-2,4)/b/\emptyset/0},
+                {(2,4)/c/n-1/c(n-1)},
+                {(1,3)/f/\emptyset/0},
+                {(4,2)/g/1/0}}
+            \node[nodo, label={$\labout$}] (\name) at \pos {$\labin$};
+            % \node[nodo, label={$\labout$}] (\name) at \pos {\name $\labin$};
+        \foreach \source/ \dest in {
+                c/f,
+                a/b,a/c}
+            \path[arco] (\source) -- (\dest);
+        \foreach \source/ \dest in {
+                c/g}
+            \path[arco tratteggiato] (\source) -- (\dest);
+        \begin{pgfonlayer}{background}
+        \end{pgfonlayer}
+    \end{tikzpicture}
+\end{figure}
+Sommando tutti i work eseguiti nell'albero in \rfig{fig:qs_rec_tree_bad} si ottiene
+\begin{equation*}
+    T_{QSfirst} = c \frac{n(n-1)}{2}
+    =
+    \Theta \left( cn^2 \right)
+\end{equation*}
+
+\subsubsection{Scelta della mediana come pivot}
+
+Se la scelta del pivot viene implementata come
+\begin{algorithmic}[1]
+    \Procedure{Choose\_Pivot}{$S$}
+        \State return $x_{
+            \left\lfloor 
+            n/2
+            \right\rfloor
+            +1
+        }$
+    \EndProcedure
+\end{algorithmic}
+Dove viene ritornata l'order statistic centrale,
+si ottiene l'albero più bilanciato possibile, dove la taglia dell'insieme dimezza ad ogni livello.
+Ci sono quindi $
+h = \log n
+$ livelli, per una complessità pari a 
+\begin{equation*}
+    T_{QSmedian} \leq cnh = O \left( n \log n \right)
+\end{equation*}
+Selezionare la mediana però è molto costoso, esiste un algoritmo deterministico lineare per calcolarla, ma la costante è molto alta (circa $80n$), ed è quindi inutilizzabile in pratica.
 
 \subsection{Scelta casuale del Pivot}
-pag 129.5
+% pag 129.5
+
+\subsubsection{Profondità dell'albero}
+
+Supponendo di riuscire a garantire una taglia degli insiemi generati limitata da
+\begin{equation*}
+    |S_1|, |S_2| \leq \frac{3}{4} t
+\end{equation*}
+e ricordando il legame tra le taglie, un limite superiore implica anche un limite inferiore:
+\begin{equation*}
+    |S_1| = n - 1 - |S_2|
+\end{equation*}
+In questo caso, la taglia del primo livello è
+\begin{align*}
+    |S_0| &= n
+    \\
+    |S_{i+1}|
+    &\leq
+    \frac{3}{4} |S_{i}|
+    \intertext{per unfolding: }
+    |S_{i}|
+    &\leq
+    \left( 
+        \frac{3}{4}
+    \right)^i
+    |S|
+    = 
+    \left( 
+        \frac{3}{4}
+    \right)^i
+    n
+\end{align*}
+La taglia allora decresce esponenzialmente, e il numero di livelli risulta
+\begin{equation*}
+    h = O \left( \log_{4/3} n \right)
+\end{equation*}
+
+\subsubsection{Scelta casuale del pivot}
+
+La scelta casuale del pivot riesce a garantire questa proprietà delle taglie dei sottoinsiemi in alta probabilità.
+\begin{algorithmic}[1]
+    \Procedure{Choose\_Pivot}{$S$}
+        \State return $\Call{Random}{S}$
+    \EndProcedure
+\end{algorithmic}
+Si consideri l'insieme degli elementi
+\begin{equation*}
+    X_i
+    \quad 
+    \text{con}
+    \quad 
+    i \in
+    \left\{ 
+        \left\lfloor 
+        \frac{n}{4} + 1
+        \right\rfloor
+        , \cdots , 
+        \left\lceil 
+        \frac{3}{4}n + 1
+        \right\rceil
+    \right\}
+\end{equation*}
 
 \section{Amplificazione della probabilità}
 pag 132.6
