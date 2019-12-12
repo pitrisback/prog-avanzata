@@ -1352,7 +1352,313 @@ In pratica quicksort è uno degli algoritmi di sorting più efficienti: la scelt
 Non si usa solo nei sistemi con cache molto profonde, dove \emph{k-way merge sort} riesce a sfruttare meglio la cache, generando meno miss.
 
 \section{Amplificazione della probabilità}
-pag 132.6
+% pag 132.6
+
+Si consideri un algoritmo \emph{Monte Carlo} decisionale $
+A_{\bpi{}}
+$, che compie \emph{two-sided error}, caratterizzato da
+\begin{equation*}
+    Pr \left( 
+        i
+        \,
+        \bpi{}
+        \,
+        A_{\bpi{}}
+    \right)
+    =
+    \frac{1}{2} + \varepsilon
+    \quad
+    \text{con}
+    \quad
+    0 < \varepsilon \leq \frac{1}{2}
+\end{equation*}
+Questa minima deviazione dalla scelta casuale è sufficiente per costruire un algoritmo decisionale di precisione arbitraria: secondo il \emph{majority protocol}, si possono compiere un numero dispari di esecuzioni dell'algoritmo, e scegliere come corretta la risposta che viene restituita il numero maggiore di volte.
+Si applica quindi un algoritmo deterministico su una \emph{black box} randomizzata.
+
+\begin{algorithm}[H]
+\caption{Majority protocol per amplificare la probabilità}\label{alg:maj_prot}
+\begin{algorithmic}[1]
+    \Procedure{M\_A}{$i, k$}
+        \State $\mathit{ANS}[0] \gets 0 $
+        \State $\mathit{ANS}[1] \gets 0 $
+        \For{$i \gets 1 $ to $ 2k-1 $ }
+            \State $r \gets A_{\bpi{}}(i)$
+            \State $
+            \mathit{ANS}[r]
+            \gets 
+            \mathit{ANS}[r] + 1
+            $
+        \EndFor
+        \If{$\mathit{ANS}[0] \geq k$}
+            \State return $\mathit{ANS}[0]$
+        \Else
+            \State return $\mathit{ANS}[1]$
+        \EndIf
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+\noindent
+La probabilità di errore $
+Pr \left( 
+    i
+    \,
+    \cancel{
+        \bpi{}
+    }
+    \,
+    \mathit{MA}_{\bpi{}}
+\right)
+$ si studia con la famiglia di variabili indicatrici 
+\begin{equation*}
+    X_i = 
+    \begin{cases}
+        1 & \text{se $i$-esima iterazione ha risultato corretto}
+        \\
+        0 & \text{altrimenti}
+    \end{cases}
+\end{equation*}
+con chiaramente probabilità di successo della singola iterazione pari a 
+\begin{equation*}
+    Pr \left( 
+        X_i = 1
+    \right)
+    =
+    \frac{1}{2} + \varepsilon
+\end{equation*}
+di cui si studia la somma
+\begin{equation*}
+    X = \sum_{i=1}^{2k-1} X_i
+    = \text{\# esecuzioni corrette di $
+        A_{\bpi{}}
+    $ all'interno di $
+        \mathit{MA}_{\bpi{}}
+    $}
+\end{equation*}
+e l'algoritmo $
+    \mathit{MA}_{\bpi{}}
+$ è corretto quando $
+X \geq k
+$.
+La media di $X$ vale
+\begin{equation*}
+    \mu
+    = \E{X}
+    = 
+    \left( 2k - 1 \right)
+    \left(
+        \frac{1}{2}
+        + \varepsilon
+    \right)
+    =
+    k - 
+    \frac{1}{2}
+    + 2k\varepsilon - \varepsilon
+\end{equation*}
+Per poter studiare $
+Pr \left( 
+    X < k
+\right)
+$ con i lemmi di Chernoff, occorre riscrivere $k$ in funzione di $\mu$ e $\delta$, in modo che $
+Pr \left( 
+    X < \left( 1 - \delta \right) \mu
+\right)
+$.
+\begin{align*}
+    k
+    &= 
+    \mu +
+    \frac{1}{2}
+    + \varepsilon -2k\varepsilon
+    \intertext{vale $2k\varepsilon \geq \varepsilon \mu$: }
+    &
+    \qquad
+    \qquad
+    \begin{aligned}[t]
+        \varepsilon \mu
+        &= 
+        \varepsilon 
+        \left( 2k - 1 \right)
+        \left( 
+            \frac{1}{2}
+            + \varepsilon
+        \right)
+        \\
+        &= 
+        \left( 2k - 1 \right)
+        \left( 
+            \frac{\varepsilon}{2}
+            + \varepsilon^2
+        \right)
+        \\
+        &
+        \text{per $0 < \varepsilon \leq 1/2$ vale $\varepsilon^2 \leq \varepsilon/2$}
+        \\
+        &
+        \leq
+        2k
+        \left( 
+            \frac{\varepsilon}{2}
+            +
+            \frac{\varepsilon}{2}
+        \right)
+        = 2k\varepsilon
+    \end{aligned}
+    \\
+    &
+    \leq
+    \mu +
+    \frac{1}{2} + \varepsilon
+    - \varepsilon \mu
+    \\
+    &
+    \leq
+    \mu - \varepsilon \mu + 1
+    \\
+    &
+    \leq
+    \left( 1 - \varepsilon \right) \mu + 1
+\end{align*}
+Per cui risulta
+\begin{align*}
+    Pr \left( 
+        i
+        \,
+        \cancel{
+            \bpi{}
+        }
+        \,
+        \mathit{MA}_{\bpi{}}
+    \right)
+    &= 
+    Pr \left( 
+        X < k
+    \right)
+    \\
+    &= 
+    Pr \left( 
+        X \leq
+        k - 1
+    \right)
+    \\
+    &
+    \leq
+    Pr
+    \left( 
+        X \leq
+        \left( 1 - \varepsilon \right) \mu
+    \right)
+    \intertext{applicando il lemma di Chernoff}
+    &
+    \leq 
+    e^{
+        - \frac{\varepsilon^2}{2} \mu
+    }
+    \intertext{si può esprimere come bound su $k$}
+    &
+    \qquad
+    \qquad
+    \begin{aligned}[t]
+        \mu
+        &= 
+        \left( 2k - 1 \right)
+        \left( 
+            \frac{1}{2}
+            + \varepsilon
+        \right)
+        \\
+        &
+        \geq
+        \left( 2k - 1 \right)
+        \frac{1}{2}
+        \\
+        &= 
+        k -
+        \frac{1}{2}
+        \\
+        &>
+        k - 1
+        \\
+        &
+        \text{e per $k\geq2$ vale}
+        \\
+        &
+        \geq
+        \frac{k}{2}
+    \end{aligned}
+    \\
+    &
+    <
+    e^{
+        -
+        \frac{\varepsilon^2}{4}
+        k
+    }
+    \intertext{definendo $
+        c_\varepsilon
+        =
+        % \frac{\varepsilon^2}{4}
+        \varepsilon^2 / 4
+        $ la probabilità di errore vale
+    }
+    % Pr \left( 
+        % i
+        % \,
+        % \cancel{
+            % \bpi{}
+        % }
+        % \,
+        % \mathit{MA}_{\bpi{}}
+    % \right)
+    &
+    <
+    e^{-
+        c_\varepsilon
+        k
+    }
+\end{align*}
+È allora sufficiente scegliere il numero di iterazioni pari a
+\begin{equation*}
+    k = 
+    \frac{
+        \ln
+        % \left( 
+            |i|
+        % \right)
+        \cdot
+        d
+    }{
+        c_\varepsilon
+    }
+\end{equation*}
+per ottenere il bound in alta probabilità sull'errore dell'algoritmo 
+\begin{equation*}
+    Pr \left( 
+        i
+        \,
+        \cancel{
+            \bpi{}
+        }
+        \,
+        \mathit{MA}_{\bpi{}}
+    \right)
+    <
+    e^{-
+        c_\varepsilon
+        k
+    }
+    =
+    \frac{1}{
+        \left( 
+            |i|
+        \right)
+        ^d
+    }
+\end{equation*}
+È da notare che il numero di iterazioni necessarie è solamente logaritmico nella taglia dell'istanza, ed è quadratico (tramite $
+    c_\varepsilon
+$) con $\varepsilon$. Se l'algoritmo $
+A_{\bpi{}}
+$ è poco affidabile, sono necessarie molte iterazioni.
 
 \section{Algoritmo di Karger}
 pag 134.7
