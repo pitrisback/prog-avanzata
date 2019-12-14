@@ -22,8 +22,8 @@
 % year name title
 % \addbibresource{biblio.bib}
 
-% standard math magic
-\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{amsmath,amssymb,amsfonts,amsthm} % standard math magic
+\usepackage{mathrsfs} % for fancy mathscr symbols
 \usepackage{bm}
 \allowdisplaybreaks % allow breaking equations over pages tex.stackexchange.com/a/431236
 \usepackage{cases} % numbering eq inside case env
@@ -111,6 +111,20 @@
 \newcommand{\cleq}[2]{\left[\,#2\,\right]_{#1}}
 % \newcommand{\cln}[1]{\left[\,#1\,\right]_{n}}
 \newcommand{\cln}[1]{\cleq{n}{#1}}
+\newcommand{\bgg}{\mathscr{G}}
+
+% this is black magic https://tex.stackexchange.com/a/252655
+% multisets https://tex.stackexchange.com/a/318144
+\newcommand*{\ldblbrace}{\{\mskip-5mu\{}
+\newcommand*{\rdblbrace}{\}\mskip-5mu\}}
+\newcommand*{\ldblbraceb}{\big\{\mskip-5mu\big\{}
+\newcommand*{\rdblbraceb}{\big\}\mskip-5mu\big\}}
+\newcommand*{\ldblbraceB}{\Big\{\mskip-5mu\Big\{}
+\newcommand*{\rdblbraceB}{\Big\}\mskip-5mu\Big\}}
+\newcommand*{\ldblbracebb}{\bigg\{\mskip-5mu\bigg\{}
+\newcommand*{\rdblbracebb}{\bigg\}\mskip-5mu\bigg\}}
+\newcommand*{\ldblbraceBB}{\Bigg\{\mskip-5mu\Bigg\{}
+\newcommand*{\rdblbraceBB}{\Bigg\}\mskip-5mu\Bigg\}}
 
 % put text inside a circle
 \newcommand{\circola}[1]{\mbox{\textcircled{\footnotesize #1}}}

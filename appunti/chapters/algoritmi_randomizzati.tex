@@ -1660,11 +1660,190 @@ $) con $\varepsilon$. Se l'algoritmo $
 A_{\bpi{}}
 $ è poco affidabile, sono necessarie molte iterazioni.
 
-\section{Algoritmo di Karger}
-pag 134.7
+\section{Problema del min-cut}
+% pag 134.7
 
-\subsection{Multigrafi e contrazioni}
-pag 134.7
+\subsection{Multigrafi e tagli}
+% pag 134.7
+
+Si indica un multigrafo con $
+\bgg{}
+=
+\left( V, E \right)
+$, dove $V$ è l'insieme dei vertici ed $E$ è il multiinsieme degli archi,
+che si indicano anche come $
+V \left( \bgg{} \right)
+$ ed $
+E \left( \bgg{} \right)
+$.
+
+\begin{definition}
+    [Edge cut]
+    \label{def:edge_cut}
+    Un taglio (sugli archi) in un multigrafo connesso $
+    \bgg{}
+    $ è un multiinsieme di archi $C$ tali che $
+    \bgg{}' = \left( V, E-C \right)
+    $ non è connesso.
+\end{definition}
+% \noindent
+Note:
+% \begin{itemize}[noitemsep,parsep=0pt,partopsep=0pt,topsep=0pt]
+\begin{itemize}
+    \item Un node cut è sempre anche un edge cut, mentre un edge cut potrebbe non essere un node cut.
+    \item Un edge cut minimo è anche un node cut minimo
+\end{itemize}
+
+Il problema del \emph{min-cut} richiede di determinare un edge cut di minima cardinalità in $
+\bgg{}
+$ connesso.
+
+\subsection{Contrazioni}
+% pag 135.2
+
+La contrazione di un (multi)grafo rispetto a un arco viene definita come
+\begin{definition}
+    [Contrazione]
+    \label{def:contrazione}
+    Dato $
+    \bgg{} = \left( V, E \right)
+    $ e $
+    e \in E
+    $, la contrazione di $
+    \bgg{}
+    $ rispetto ad $e$ è il multigrafo $
+    \bgg{} / e = \left( V', E' \right)
+    $, dove, posto $
+    e =
+    \left\{ u, v \right\}
+    $, valgono
+    \begin{align*}
+        V'
+        &
+        = 
+        V
+        -
+        \left\{ u, v \right\}
+        \cup
+        \left\{
+            z_{uv}
+        \right\}
+        \\
+        E'
+        &
+        = 
+        E 
+        \begin{aligned}[t]
+            &
+            -
+            \ldblbrace
+                \left\{ x, y \right\}
+                :
+                \left( x = u \right)
+                \vee
+                \left( y = v \right)
+            \rdblbrace
+            \\
+            &
+            \mskip1mu
+            \cup
+            \ldblbrace
+                \left\{ z_{uv}, x \right\}
+                :
+                \left( \left\{ u,x \right\} \in E \right)
+                \vee
+                \left( \left\{ u,x \right\} \in E \right)
+                :
+                \left( x \ne u \right)
+                \wedge
+                \left( x \ne v \right)
+            \rdblbrace
+        \end{aligned}
+    \end{align*}
+    I nodi $u$ e $v$ sono sostituiti da $
+    z_{uv}
+    $.
+    Vengono eliminati tutti gli archi incidenti su $u$ e $v$, e inseriti, con la loro molteplicità, come archi incidenti su $
+    z_{uv}
+    $.
+\end{definition}
+
+\begin{figure}[h]
+    \centering
+    \caption{Esempio di contrazione}
+    \label{fig:ex_contrazione}
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \caption{Grafo originale}
+        \label{fig:ex_contrazione:prima}
+        \begin{tikzpicture} [
+                scale=1.4,
+                vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+                edge/.style = {draw,thick,-},
+                selected edge/.style = {draw,line width=5pt,-,red!50},
+                bent right/.style = {bend right=20},
+                bent left/.style = {bend left=20},
+            ]
+            % First we draw the vertices
+            \foreach \pos/\name/\label in {
+                    {(1,2)/a/5},
+                    {(2,1.8)/b/1},
+                    {(1.3,0)/c/2},
+                    {(0,0.5)/d/4},
+                    {(3,0.8)/e/3}}
+                % \node[vertex] (\name) at \pos {$\name \label$};
+                \node[vertex] (\name) at \pos {$\label$};
+            % Connect vertices with edges and draw weights
+            \foreach \source/ \dest in {
+                    a/d,d/a,
+                    b/a,
+                    b/c,c/b,
+                    c/e,
+                    c/d,d/c,
+                    e/b}
+                \path[edge] (\source) edge [bent right] (\dest);
+        \end{tikzpicture}
+    \end{subfigure}
+    \quad
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \caption{Grafo dopo la contrazione di $\left\{ 1, 2 \right\}$}
+        \label{fig:ex_contrazione:dopo}
+        \begin{tikzpicture} [
+                scale=1.4,
+                vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+                edge/.style = {draw,thick,-},
+                selected edge/.style = {draw,line width=5pt,-,red!50},
+                bent right/.style = {bend right=20},
+                bent left/.style = {bend left=20},
+            ]
+            % First we draw the vertices
+            \foreach \pos/\name/\label in {
+                    {(0.8,2)/a/5},
+                    {(1.8,0.8)/c/z_{12}},
+                    {(0,0.5)/d/2},
+                    {(3,0.8)/e/4}}
+                % \node[vertex] (\name) at \pos {$\name \label$};
+                \node[vertex] (\name) at \pos {$\label$};
+            % Connect vertices with edges and draw weights
+            \foreach \source/ \dest in {
+                    a/d,d/a,
+                    c/a,
+                    c/e,
+                    c/d,d/c,
+                    e/c}
+                \path[edge] (\source) edge [bent right] (\dest);
+        \end{tikzpicture}
+    \end{subfigure}
+\end{figure}
+
+\subsection{Algoritmo di Karger}
+pag 138.8
+
+\subsection{Variante Karger-Stein}
+pag 141.5
 
 \section{Pezzi utili di \LaTeX{}}
 
@@ -1699,7 +1878,8 @@ Testo non identato!
 \end{definition}
 
 Guarda che so fare
-\begin{equation*}
+\begin{align*}
+    &
     \setzo{m}
     \quad
     \setzo{}
@@ -1715,7 +1895,33 @@ Guarda che so fare
     \zs{\rho(n)}
     \quad
     \equiv_n
-\end{equation*}
+    \\
+    &
+    \ldblbrace
+        u = 1
+    \rdblbrace
+    \ldblbraceb
+        u = 1
+    \rdblbraceb
+    \ldblbraceB
+        u = 1
+    \rdblbraceB
+    \ldblbracebb
+        u = 1
+    \rdblbracebb
+    \ldblbraceBB
+        u = 1
+    \rdblbraceBB
+    \\
+    &
+    \ldblbrace
+        \left\{ x, y \right\}
+        :
+        \left( x = u \right)
+        \vee
+        \left( y = v \right)
+    \rdblbrace
+\end{align*}
 
 Un problema
 \begin{align*}
