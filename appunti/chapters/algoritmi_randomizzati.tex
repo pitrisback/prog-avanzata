@@ -1701,6 +1701,8 @@ $ connesso.
 \subsection{Contrazioni}
 % pag 135.2
 
+\subsubsection{Definizione}
+
 La contrazione di un (multi)grafo rispetto a un arco viene definita come
 \begin{definition}
     [Contrazione]
@@ -1766,7 +1768,21 @@ La contrazione di un (multi)grafo rispetto a un arco viene definita come
     Vengono eliminati tutti gli archi incidenti su $u$ e $v$, e inseriti, con la loro molteplicità, come archi incidenti su $
     z_{uv}
     $.
+    Non vengono reinseriti gli archi tra $u$ e $v$.
 \end{definition}
+    La contrazione rimpicciolisce il grafo, e le cardinalità del grafo ridotto risultano:
+    \begin{align*}
+        |V \left( \bgg{} / e \right)| 
+        &= 
+        |V \left( \bgg{} \right)| 
+        -1
+        % \\
+        &
+        |E \left( \bgg{} / e \right)| 
+        &= 
+        |E \left( \bgg{} \right)| 
+        - molt\left( e \right)
+    \end{align*}
 
 \begin{figure}[h]
     \centering
@@ -1823,8 +1839,8 @@ La contrazione di un (multi)grafo rispetto a un arco viene definita come
             \foreach \pos/\name/\label in {
                     {(0.8,2)/a/5},
                     {(1.8,0.8)/c/z_{12}},
-                    {(0,0.5)/d/2},
-                    {(3,0.8)/e/4}}
+                    {(0,0)/d/4},
+                    {(3,0.8)/e/3}}
                 % \node[vertex] (\name) at \pos {$\name \label$};
                 \node[vertex] (\name) at \pos {$\label$};
             % Connect vertices with edges and draw weights
@@ -1838,6 +1854,8 @@ La contrazione di un (multi)grafo rispetto a un arco viene definita come
         \end{tikzpicture}
     \end{subfigure}
 \end{figure}
+
+\subsubsection{Effetti della contrazione su un taglio}
 
 \subsection{Algoritmo di Karger}
 pag 138.8
