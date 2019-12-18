@@ -1857,9 +1857,208 @@ La contrazione di un (multi)grafo rispetto a un arco viene definita come
 
 \subsubsection{Effetti della contrazione su un taglio}
 
-\subsection{Algoritmo di Karger}
-pag 138.8
+Ogni taglio $C'$ sul grafo contratto ha un suo corrispettivo nel grafo originale con la stessa taglia.
+Questo implica che il taglio minimo in $
+\bgg{} / e
+$ può solo essere più grande.
+Il taglio minimo deve corrispondere ad un taglio con la stessa cardinalità in $\bgg{}$ e quindi il taglio minimo può solo crescere.
+\begin{theorem}
+    Per ogni 
+    % $\forall$
+    taglio $C'$ di $
+    \bgg{} / e
+    = \left\{ u,v \right\}
+    $,
+    esiste
+    % $\exists$
+    $C$ taglio di $
+    \bgg{}
+    $ con $|C|=|C'|$.
+\end{theorem}
+\begin{proof}
+    Sia $
+    \bgg{} / e 
+    =
+    \left( V', E' \right)
+    $, e $
+    C' \subseteq E'
+    $ un taglio, per cui $
+    C'
+    $ disconnette $
+    \bgg{} / e 
+    $.
+    Si consideri l'insieme di archi $
+    C \in E\left( \bgg{} \right)
+    $ ottenuto da $C'$ sostituendo ogni archo $
+    \left\{ 
+        z_{uv}, x
+    \right\}
+    \in C'
+    $ con il corrispettivo arco $
+    \left\{ u,x \right\}
+    $ o $
+    \left\{ v,x \right\}
+    $ in $
+    E \left( \bgg{} \right)
+    $.
+    Riguardo alla cardinalità, si sostituisce un arco con un altro, quindi sono uguali.
+    Va dimostrato che $C$ è un taglio.
+    \\
+    Se $C'$ non contiene nessun arco che abbia $
+    z_{uv}
+    $ come estremo, $C'$ è già un taglio in $
+    \bgg{} / e
+    $ e disconnette anche $
+    \bgg{}
+    $.
+    \\
+    Si sa che $C'$ disconnette $
+    \bgg{} / e
+    $, e disconnette $
+    z_{uv}
+    $ da qualche nodo $x$.
+    La rimozione del taglio crea almeno due componenti connesse, 
+    una componente connessa che contiene $
+    z_{uv}
+    $ e un'altra componente connessa che contiene $x$.
+    Questo significa che ogni cammino da $
+    z_{uv}
+    $ a $x$ in $
+    \bgg{} / e
+    $ deve contenere un arco di $C'$.
+    \\
+    Si supponga che in $
+    \bgg{}
+    $, $C$ non sia un taglio, ovvero in $
+    \bgg{}
+    $ sono tutti nella stessa componente connessa, ovvero $C$ non ha disconnesso il grafo.
+    Per esempio esiste un cammino tra $u$ e $x$ che usa solo archi in $E - C$, ovvero non usa archi in $C$.
+    Se non usa archi in $C$, diventa un cammino tra $
+    z_{uv}
+    $ e $x$ che non usa archi in $C'$.
+    Di conseguenza, si contraddice l'ipotesi che $
+    z_{uv}
+    $ fosse disconnesso da $x$ in $
+    \bgg{} / e
+    $ a cui si è rimosso $C'$, perché c'è un cammino tra $
+    z_{uv}
+    $ e $x$ che non usa archi in $C'$.
+\end{proof}
+\begin{corollario}
+    Vale
+    % \begin{equation*}
+    $
+        |
+        \mincut
+        \left( 
+            \bgg{} / e
+        \right)
+        |
+        \geq
+        |
+        \mincut
+        \left( 
+            \bgg{}
+        \right)
+        |
+    % \end{equation*}
+    $
+    \begin{proof}
+        Tutte le cardinalità dei tagli in $
+        \bgg{} / e
+        $ sono realizzate anche in $
+        \bgg{}
+        $.
+    \end{proof}
+\end{corollario}
+\begin{corollario}
+    Se $C$ è un taglio di $
+    \bgg{}
+    $ con $
+    e \notin C
+    $, allora l'insieme $C'$ corrispondente a $C$ in $
+    \bgg{} / e
+    $ è un taglio in $
+    \bgg{} / e
+    $.
+\end{corollario}
+\noindent
+Si possono identificare in questo modo i tagli che vengono distrutti.
+La contrazione infatti mantiene i tagli che sopravvivono nel grafo $
+\bgg{} / e
+$ e distrugge gli altri tagli.
+Questo caratterizza tutti i tagli che scompaiono, che sono tutti i tagli che contengono $e$.
+% TODO grafico due grafi connessi 137.8
+Se \emph{non} si contrae rispetto a un arco del taglio minimo, quel taglio sopravvive.
+\begin{proof}
+    Sia $
+    e = \left\{ u,v \right\}
+    $, e sia $C$ un taglio che non contiene $e$.
+    Nella rimozione di $C$ da $E$, si creano almeno due componenti connesse e
+    $u$ e $v$
+    devono risultare nella stessa componente connessa: $e$ non è parte del taglio, per cui 
+    $u$ e $v$
+    devono essere connessi.
+    Un cammino tra due nodi in due componenti connesse diverse dovrebbe utilizzare un arco del taglio.
+    Considerando $x$ in una componente connessa diversa, si considerano in $
+    \bgg{} / e
+    $ i nodi $
+    z_{uv}
+    $ e $x$.
+    Il cammino tra $
+    z_{uv}
+    $ e $x$ era originariamente da 
+    $u$ a $x$
+    o da
+    $v$ a $x$.
+    Deve quindi utilizzare un arco del taglio originario (modificato rispetto alla contrazione).
+    Perché altrimenti sopravviverebbe in $
+    \bgg{} / e
+    $ un cammino che non usa nessun arco nel taglio $C'$ corrispettivo a $C$, ma quel cammino esisterebbe anche nel grafo originario, e $C$ non sarebbe un taglio.
+\end{proof}
+% Un taglio disconnette il grafo in più componenti connesse
+% in questo caso se il taglio non contiene questo arco
+% u e v devono essere nella stessa componente connessa
+% e quindi tutti i cammini verso x useranno sempre almeno un arco di C
+% allora questi cammini nel grafo contratto da zuv a x
+% devono per forza usare un arco dell'insieme trasformato
+% altrimenti quel cammino sopravviverebbe in G contratto rispetto ad e
+% e sopravviverebbe anche in questo grafo privato di C.
 
+\subsection{Algoritmo di Karger}
+% pag 138.8
+Si è dimostrato che se si contrae su un arco $e \notin C$, se $C$ era un taglio in $
+\bgg{}
+$, allora $C'$ è un taglio in $
+\bgg{} / e
+$.
+Rimangono allora tutti e soli i tagli che non contengono $e$.
+Gli archi cambiano nomenclatura, ma rimane lo stesso taglio.
+
+L'idea di Karger è sperare di evitare di contrarre su un arco del taglio
+% che sarebbe un aglio
+minimo, e in questo modo conservare il taglio minimo.
+Nel fascio di archi che si restituisce alla fine ci sarà proprio il taglio minimo.
+
+Va studiato con che probabilità si riesce ad evitare di contrarre il taglio minimo.
+Questo capita con una probabilità non bassissima:
+il taglio è minimo per definizione, e ha taglia molto piccola rispetto al numero totale di archi.
+Selezionare un arco di uno specifico taglio minimo avviene allora con probabilità moderata.
+
+\begin{algorithm}[H]
+\caption{Full contraction}\label{alg:full_contraction}
+\begin{algorithmic}[1]
+    \Procedure{Full\_Contraction}{$\bgg{}$}
+        \State $n \gets |V \left( \bgg{} \right)|$
+        \For{$i \gets 1 $ to $ n - 2 $ }
+            \State $e \gets $
+            \Call{Random}{$E\left( \bgg{} \right)$}
+            \State $\bgg{} \gets \bgg{} / e $
+        \EndFor
+        \State return $|E\left( \bgg{} \right)|$
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
 \subsection{Variante Karger-Stein}
 pag 141.5
 
