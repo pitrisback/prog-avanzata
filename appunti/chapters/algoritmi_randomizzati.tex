@@ -1676,6 +1676,19 @@ V \left( \bgg{} \right)
 $ ed $
 E \left( \bgg{} \right)
 $.
+\\
+Il grado di un nodo è pari al numero di archi incidenti sul nodo, contati con la loro molteplicità:
+\begin{equation*}
+    d(v) =
+    |
+    \ldblbrace
+    \left\{ 
+        v, x
+    \right\}
+    \in E
+    \rdblbrace
+    |
+\end{equation*}
 
 \begin{definition}
     [Edge cut]
@@ -2027,6 +2040,9 @@ Se \emph{non} si contrae rispetto a un arco del taglio minimo, quel taglio sopra
 
 \subsection{Algoritmo di Karger}
 % pag 138.8
+
+\subsubsection{Implementazione}
+
 Si è dimostrato che se si contrae su un arco $e \notin C$, se $C$ era un taglio in $
 \bgg{}
 $, allora $C'$ è un taglio in $
@@ -2059,6 +2075,335 @@ Selezionare un arco di uno specifico taglio minimo avviene allora con probabilit
     \EndProcedure
 \end{algorithmic}
 \end{algorithm}
+\noindent
+L'algoritmo ha complessità lineare nel numero di archi di $
+\bgg{}
+$: $
+T_{FC} \left( n, m \right)
+=
+\Theta \left( m \right)
+$.
+\\
+La $
+\Call{Full\_Contraction}{\bgg{}}
+$ genera un qualche taglio (che è anche un node-cut).
+L'algoritmo di \emph{Karger} amplifica la probabilità di essere corretto:
+si vuole ottenere il taglio minimo, quindi si fa girare più volte la contrazione e si preserva il taglio più piccolo trovato. 
+Anche se l'algoritmo non è decisionale, vale l'amplificazione, con la speranza che se il taglio minimo si individua con una certa probabilità, prima o poi lo si individua.
+
+\begin{algorithm}[H]
+\caption{Karger}\label{alg:karger}
+\begin{algorithmic}[1]
+    \Procedure{Karger}{$\bgg{}, k$}
+        \State $min \gets |E(\bgg{})| $
+        \RepLoop{$k$}
+            \State $t \gets \Call{Full\_Contraction}{\bgg{}} $
+            \State $min \gets \Call{Min}{min, t} $
+        \EndRepLoop
+        \State return $min$
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+\noindent
+Rispetto all'algoritmo deterministico, che deve costruire strutture complesse per sconfiggere il caso peggiore (cammini aumentanti\ldots), l'algoritmo randomizzato supera il caso peggiore con l'idea di schivare alcuni elementi, sfruttando proprio la randomizzazione della scelta.
+
+\subsubsection{Rapido recap di probabilità}
+
+Dati due eventi indipendenti $
+E_1
+$ e $
+E_2
+$, la probabilità che avvengano entrambi vale
+\begin{equation*}
+    \prob{
+        E_1 \cap E_2
+    }
+    =
+    \prob{E_1}
+    \prob{E_2}
+\end{equation*}
+Se invece non sono indipendenti, la probabilità che avvenga il secondo dato che il primo si è verificato vale,
+per $
+\prob{E_1} > 0
+$
+\begin{equation*}
+    \prob{E_2 \mid E_1}
+    =
+    \frac{
+        \prob{ E_1 \cap E_2 }
+    }{
+        \prob{E_1}
+    }
+    \quad
+    \leftrightarrow
+    \quad
+    \prob{ E_1 \cap E_2 }
+    =
+    \prob{E_1}
+    \prob{E_2 \mid E_1}
+\end{equation*}
+Questo si estende per $n$ eventi
+\begin{equation*}
+    \prob{
+        \bigcap_{i=1}^{h} E_i
+    }
+    =
+    \prob{E_1}
+    \prod_{i=2}^{h}
+    \prob{
+        E_i \mid
+        E_1 \cap \cdots \cap E_{i-1}
+    }
+\end{equation*}
+
+\subsubsection{Analisi dell'algoritmo}
+
+Dato un multigrafo $
+\bgg{}
+=
+\left( V, E \right)
+$, il grado di ogni nodo è $
+d(v) =
+|
+\ldblbrace
+\left\{ 
+    v, x
+\right\}
+\in E
+\rdblbrace
+|
+$.
+Togliendo tutti gli archi incidenti su un nodo, si ottiene un edge-cut valido.
+Se il taglio minimo è $
+C^*
+$ di taglia $
+|C^*| = t
+$, deve allora valere $
+d(v) \geq t
+$.
+Si può allora mostrare che il numero di archi è grande rispetto alla cardinalità del taglio minimo, infatti
+\begin{align*}
+    |E|
+    &= 
+    \sum_{v \in V} d(v)
+    \bigg/ 2
+    \\
+    & \geq 
+    \sum_{v \in V} t
+    \bigg/ 2
+    \\
+    &= 
+    \frac{nt}{2}
+\end{align*}
+per cui il numero di archi è circa $n$ volte $t$, e il numero di nodi può facilmente essere molto grande.
+Si vuole studiare la probabilità che un certo taglio minimo \emph{fissato} sopravviva alla contrazione
+\begin{equation*}
+    \prob{
+        \text{un taglio minimo fissato $C^*$ sopravvive a full contraction}
+    }
+\end{equation*}
+questa probabilità è di sicuro inferiore a quella relativa a un taglio minimo \emph{generico}, di cui si trova così un lower bound.
+\\
+Seguendo le operazioni dell'algoritmo, si studia per primo l'evento 
+\begin{equation*}
+    E_1 = 
+    \text{la prima contrazione evita }
+    C^*
+\end{equation*}
+Perché questo avvenga, non si devono selezionare archi del taglio, per cui
+\begin{align*}
+    \prob{E_1}
+    &= 
+    1 - 
+    \frac{|C^*|}{|E|}
+    \\
+    &
+    \geq
+    1 - 
+    \frac{t}{nt/2}
+    \\
+    &= 
+    1 - 
+    \frac{2}{n}
+\end{align*}
+e questo è un bound in alta probabilità.
+Il secondo evento da analizzare è
+\begin{equation*}
+    E_2 = 
+    \text{la seconda contrazione evita }
+    C^*
+\end{equation*}
+ma si deve considerare questo evento condizionato dal successo di $E_1$:
+se $
+C^*
+$ è sopravvissuto, si trova un taglio trasformato (con nomenclatura degli archi diversa) di taglia uguale $
+|C^*|
+=
+|
+C^{*'}
+|
+=
+t
+$
+\begin{align*}
+    \prob{
+        E_2 \mid E_1
+    }
+    &= 
+    1 -
+    \frac{
+        C^{*'}
+    }{
+        |E\left( \bgg{} / e_1 \right)|
+    }
+    \\
+    &
+    \geq
+    1 - 
+    \frac{t}{(n-1)t/2}
+    \\
+    &= 
+    1 - 
+    \frac{2}{n-1}
+\end{align*}
+La probabilità inizia quindi a degradare, la cardinalità del taglio cercato resta costante, mentre il numero di archi tra cui scegliere diminuisce. Al passo generico $i$
+\begin{align*}
+    \prob{
+        E_i \mid
+        E_1 \cap \cdots \cap E_{i-1}
+    }
+    &
+    \geq
+    1 - 
+    \frac{t}{(n-i+1)t/2}
+    \\
+    &= 
+    1 - 
+    \frac{2}{n-i+1}
+\end{align*}
+Se in tutte le $n-2$ iterazioni il taglio minimo viene evitato, l'algoritmo ritorna il taglio corretto.
+\begin{align*}
+    \prob{
+        \,
+        \bigcap_{i=1}^{n-2} E_i
+    }
+    &= 
+    \prod_{i=1}^{n-2}
+    \left( 
+        1 - 
+        \frac{2}{n-i+1}
+    \right)
+    \\
+    &= 
+    \prod_{i=1}^{n-2}
+    \;
+    \frac{
+        n-i-1
+    }{
+        n-i+1
+    }
+    \\
+    &= 
+    \frac{
+        \cancel{
+            n-2
+        }
+    }{
+        n
+    }
+    \frac{
+        \cancel{
+            n-3
+        }
+    }{
+        n-1
+    }
+    \frac{
+        \cancel{
+            n-4
+        }
+    }{
+        \cancel{
+            n-2
+        }
+    }
+    \ldots
+    \frac{
+        \cancel{
+            3
+        }
+    }{
+        \cancel{
+            5
+        }
+    }
+    \frac{
+        2
+    }{
+        \cancel{
+            4
+        }
+    }
+    \frac{
+        1
+    }{
+        \cancel{
+            3
+        }
+    }
+    \\
+    &= 
+    \frac{2}{n(n-1)}
+\end{align*}
+La probabilità che un taglio minimo sopravviva è quindi molto bassa, ma non trascurabile.
+Ripetendo $k$ volte la contrazione
+\begin{equation*}
+    k = d \frac{n^2}{2} \ln n
+\end{equation*}
+si riesce ad amplificare la probabilità, sfruttando il fatto che le esecuzioni della contrazione sono indipendenti
+\begin{align*}
+    \prob{
+        \text{$k$ full contraction falliscono}
+    }
+    &
+    \leq
+    \left( 
+        1 -
+        \frac{2}{n(n-1)}
+    \right)^k
+    \\
+    &
+    \leq
+    \left( 
+        1 -
+        \frac{2}{n^2}
+    \right)^k
+    \\
+    &
+    \leq
+    \left( 
+        \left( 
+            1 -
+            \frac{2}{n^2}
+        \right)^{n^2/2}
+    \right)^{\ln n^d}
+    \\
+    &
+    <
+    \left( e^{-1} \right)^{\ln n^d}
+    \\
+    &= 
+    \frac{1}{n^d}
+\end{align*}
+La complessità è molto elevata: una singola contrazione è lineare nel numero di archi, e viene ripetuta $k$ volte, per cui
+\begin{equation*}
+    T_{Karger} (n) =
+    \Theta \left( 
+        m \cdot n^2 \log n
+    \right)
+\end{equation*}
+che per grafi densi risulta quartica in $n$.
+
 \subsection{Variante Karger-Stein}
 pag 141.5
 
@@ -2078,8 +2423,9 @@ pag 141.5
         \Comment{DIVIDE}
         \For{$j \gets 1 $ to $ k $ }
         \Comment{RECURSE}
-            \State $s_j \gets $
-            \Call{Divide\&Conquer}{$i_j$}
+            \State $s_j \gets
+            \Call{Divide\&Conquer}{i_j}
+            $
         \EndFor
         \State $s \gets A_C(\langle s_1, s_2, \dots, s_k \rangle)$
         \Comment{CONQUER}
