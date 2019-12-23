@@ -2405,7 +2405,29 @@ La complessità è molto elevata: una singola contrazione è lineare nel numero 
 che per grafi densi risulta quartica in $n$.
 
 \subsection{Variante Karger-Stein}
-pag 141.5
+% pag 141.5
+
+Nel corso dell'algoritmo di \emph{Karger}, c'è una progressiva degradazione della probabilità di evitare il taglio minimo cercato: nelle prime iterazioni, ci sono tantissimi archi tra cui scegliere, mentre nelle ultime parecchi archi rimasti sono parte del taglio minimo.
+\begin{equation*}
+    \text{Prob di successo:}
+    \quad
+    1 - \frac{2}{n}
+    ,
+    \;
+    1 - \frac{2}{n-1}
+    ,
+    \;
+    1 - \frac{2}{n-2}
+    \quad
+    \cdots
+    \quad
+    1 - \frac{2}{4}
+    ,
+    \;
+    1 - \frac{2}{3}
+\end{equation*}
+In questo modo si stanno sfruttando male le prime contrazioni, che hanno qualità migliore delle finali.
+L'idea di \emph{Stein} è proprio quella di fermare la contrazione dopo $k$ iterazioni (non compiendo quindi una \emph{full} contraction), andando a riutilizzare i grafi ottenuti all'inizio più volte.
 
 \section{Pezzi utili di \LaTeX{}}
 
