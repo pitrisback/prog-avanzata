@@ -2407,6 +2407,8 @@ che per grafi densi risulta quartica in $n$.
 \subsection{Variante Karger-Stein}
 % pag 141.5
 
+\subsubsection{Implementazione}
+
 Nel corso dell'algoritmo di \emph{Karger}, c'è una progressiva degradazione della probabilità di evitare il taglio minimo cercato: nelle prime iterazioni, ci sono tantissimi archi tra cui scegliere, mentre nelle ultime parecchi archi rimasti sono parte del taglio minimo.
 \begin{equation*}
     \text{Prob di successo:}
@@ -2427,7 +2429,599 @@ Nel corso dell'algoritmo di \emph{Karger}, c'è una progressiva degradazione del
     1 - \frac{2}{3}
 \end{equation*}
 In questo modo si stanno sfruttando male le prime contrazioni, che hanno qualità migliore delle finali.
-L'idea di \emph{Stein} è proprio quella di fermare la contrazione dopo $k$ iterazioni (non compiendo quindi una \emph{full} contraction), andando a riutilizzare i grafi ottenuti all'inizio più volte.
+L'idea di \emph{Stein} è proprio quella di fermare la contrazione dopo $k$ iterazioni
+andando a riutilizzare i grafi ottenuti all'inizio più volte.
+Si arresta quindi la routine $
+\Call{Full\_Contraction}{\bgg{}}
+$ dopo $k$ contrazioni, e si utilizza il grafo generato per avviare più ricerche indipendenti.
+Il processo si ripete ricorsivamente, utilizzando in questo modo i grafi iniziali, di qualità migliore, un numero esponenziale di volte.
+I primi due livelli dell'albero generato sono mostrati in \rfig{fig:contrazione_stein}.
+\begin{figure}[h]
+    \centering
+    \caption{Prime due iterazioni dell'algoritmo di \emph{Stein}}
+    \label{fig:contrazione_stein}
+    \begin{tikzpicture} [
+            auto,
+            scale=1.2,
+            vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+            edge/.style = {draw,thick,-},
+            weight/.style = {font=\small},
+        ]
+        \foreach \pos/\name/\labin in {
+                {(0.8,1.5)/b/\bgg{}_{1}},
+                {(0,0)/c/\bgg{}_{11}},
+                {(1.6,0)/d/\bgg{}_{12}},
+                {(4.0,1.5)/e/\bgg{}_{2}},
+                {(3.2,0)/f/\bgg{}_{21}},
+                {(4.8,0)/g/\bgg{}_{22}},
+                {(2.4,3)/a/\bgg{}}}
+            % \node[vertex] (\name) at \pos {$\name \labin$};
+            \node[vertex] (\name) at \pos {$\labin$};
+        \foreach \source/ \dest in {
+                c/b,b/d,b/a,a/e,f/e,e/g}
+            \path[edge] (\source) -- node[weight] {$k$} (\dest);
+    \end{tikzpicture}
+\end{figure}
+% L'algoritmo di \emph{Karger-Stein} risulta allora
+\begin{algorithm}[H]
+\caption{Algoritmo di \emph{Karger-Stein}}\label{alg:karger_stein}
+\begin{algorithmic}[1]
+    \Procedure{R\_KS}{$\bgg{}$}
+        \If{$|V(\bgg{})| \leq 8$}
+            \State * ritorna il \emph{min-cut} calcolato con algoritmo deterministico *
+        \EndIf
+        \State $k \gets 
+        % f (V(\bgg{}))$ 
+        n -
+        \left\lceil 
+            \frac{n}{\sqrt{2}} + 1
+        \right\rceil
+        $ 
+        \State $\bgg{}_{1} \gets \Call{Partial\_Contraction}{\bgg{}, k} $
+        \State $t_{1} \gets \Call{R\_KS}{\bgg{}_{1}} $
+        \State $\bgg{}_{2} \gets \Call{Partial\_Contraction}{\bgg{}, k} $
+        \State $t_{2} \gets \Call{R\_KS}{\bgg{}_{2}} $
+        \State return $\Call{Min}{t_1, t_2} $
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+\noindent
+% Nella contrazione parziale vengono eseguite molte iterazioni, ma meno delle $n-2$ della contrazione totale.
+Il costo per calcolare il $
+\mincut
+$ su grafi di taglia piccola è costante.
+Ad ogni iterazione,
+vengono effettuate due chiamate ricorsive, ciascuna invocata sui grafi generati, di taglia
+\begin{equation*}
+    |
+    V(\bgg{}_{1})
+    | = |
+    V(\bgg{}_{2})
+    | = 
+    n - k = 
+    \left\lceil 
+        \frac{n}{\sqrt{2}} + 1
+    \right\rceil
+\end{equation*}
+Il costo di una contrazione parziale è $
+O \left( n^2 \right)
+$.
+% (tenere traccia del numero esatto di archi è troppo complicato).
+La complessità dell'algoritmo si può quindi determinare
+risolvendo l'equazione di ricorrenza
+\begin{equation*}
+    T(n) =
+    \begin{cases}
+        c & n \leq 8
+        \\
+        2
+        T\left( 
+            \left\lceil 
+                \frac{n}{\sqrt{2}} + 1
+            \right\rceil
+        \right)
+        +
+        O \left( n^2 \right)
+        &
+        n > 8
+    \end{cases}
+\end{equation*}
+La funzione si semplifica in 
+\begin{equation*}
+    T(n) =
+    2
+    T\left( 
+        \frac{n}{\sqrt{2}}
+    \right)
+    +
+    O \left( n^2 \right)
+\end{equation*}
+Applicando il \emph{master theorem}, il work per iterazione è $
+O \left( n^2 \right)
+$, mentre la funzione di soglia risulta $
+n^{\log_{\sqrt{2}} 2} = n^2
+$. Le due corrispondono, per cui 
+\begin{equation*}
+    T(n) = O \left( n^2 \log n \right)
+\end{equation*}
+
+\subsubsection{Analisi dell'algoritmo}
+
+Prima di poter studiare la probabilità che l'algoritmo sia corretto, si studia la probabilità che la contrazione parziale mantenga il taglio minimo.
+Si consideri il grafo $
+\bgg{}
+$, di taglia $n$
+\begin{align*}
+    \prob{
+        \text{successo di $
+            \Call{PC}{\bgg{}, k}
+        $}
+    }
+    &= 
+    \prob{
+        \text{$C^*$ sopravvive a $k$ iterazioni}
+    }
+    \\
+    &= 
+    \prod_{i=1}^{k}
+    \;
+    \frac{
+        n-i-1
+    }{
+        n-i+1
+    }
+    \\
+    &= 
+    \frac{
+        \left\lceil 
+            \frac{n}{\sqrt{2}} + 1
+        \right\rceil
+        \left( 
+            \left\lceil 
+                \frac{n}{\sqrt{2}} + 1
+            \right\rceil
+            - 1
+        \right)
+    }{
+        n \left( n-1 \right)
+    }
+    \intertext{entrambi i fattori al numeratore sono maggiori di $
+        n / \sqrt{2}
+    $}
+    &
+    \geq
+    \frac{
+        \frac{n}{\sqrt{2}}
+        \frac{n}{\sqrt{2}}
+    }{
+        n \left( n-1 \right)
+    }
+    \\
+    &
+    \geq
+    \frac{1}{2}
+\end{align*}
+Questa analisi giustifica la scelta di $k$ effettuata: la contrazione parziale ha una probabilità molto più alta di evitare il cammino minimo rispetto alla contrazione totale.
+La probabilità di successo di \emph{Karger-Stein} risulta allora
+\begin{align*}
+    P(n)
+    &= 
+    \prob{
+        \text{successo per $
+            |V(\bgg{})|=n
+        $}
+    }
+    \\
+    &= 
+    1 - 
+    \prob{
+        \text{fallimento per $
+            |V(\bgg{})|=n
+        $}
+    }
+    \\
+    &= 
+    1 - 
+    \prob{
+        \text{falliscono entrambe le computazioni, su $
+            \bgg{}_{1}
+            $ e $
+            \bgg{}_{2}
+        $}
+    }
+    \intertext{le due ramificazioni dell'algoritmo sono indipendenti, e ciascuna è formata da una contrazione parziale e una chiamata ricorsiva}
+    &= 
+    1 - 
+    \left[ 
+    \vphantom{\big(}
+        \prob{
+            \text{fallisce la computazione su un ramo fissato}
+        }
+    \right]^2
+    \\
+    &= 
+    1 - 
+    \left[ 
+    \vphantom{\big(}
+        1 -
+        \prob{
+            \text{ha successo la computazione su un ramo fissato}
+        }
+    \right]^2
+    \intertext{perché un ramo abbia successo, il cammino minimo deve essere mantenuto dalla contrazione parziale e deve essere restituito correttamente dalla chiamata ricorsiva}
+    &= 
+    1 - 
+    \left[ 
+        1 -
+        \prob{
+            \vphantom{\big(}
+            \text{successo di $
+                \Call{PC}{\bgg{}, k}
+            $}
+        }
+        \cdot
+        \prob{
+            \vphantom{\big(}
+            \text{successo di $
+                \Call{R\_KS}{\bgg{}_1}
+            $}
+        }
+    \right]^2
+    \intertext{la probabilità di successo della contrazione è stata calcolata prima e ne si considera il caso peggiore, e per la chiamata ricorsiva si può esprimere il valore in funzione dell'istanza ridotta}
+    &
+    =
+    1 - 
+    \left[ 
+        1 -
+        \frac{1}{2}
+        \cdot
+        P\left( n - k \right)
+    \right]^2
+    \\
+    &
+    =
+    1 - 
+    \left[ 
+        1 -
+        \frac{1}{2}
+        \cdot
+        P\left( 
+            \left\lceil 
+                \frac{n}{\sqrt{2}} + 1
+            \right\rceil
+        \right)
+    \right]^2
+\end{align*}
+La probabilità di correttezza del caso base è 1, perché si applica un algoritmo deterministico, per cui la probabilità di successo per un'istanza di taglia $n$ vale
+\begin{equation*}
+    P(n) =
+    \begin{cases}
+        1 & n \leq 8
+        \\
+        1 - 
+        \left[ 
+            1 -
+            \frac{1}{2}
+            \cdot
+            P\left( 
+                \left\lceil 
+                    \frac{n}{\sqrt{2}} + 1
+                \right\rceil
+            \right)
+        \right]^2
+        &
+        n > 8
+    \end{cases}
+\end{equation*}
+Per risolvere questa ricorrenza, si inizia studiando il suo albero delle ricorsioni, di cui si rappresenta un generico cammino radice-foglia in \rfig{fig:albero_prob_stein} (tutti i cammini hanno la stessa altezza)
+\begin{figure}[h]
+    \centering
+    \caption{Uno dei cammini seguiti da \emph{Karger-Stein}}
+    \label{fig:albero_prob_stein}
+    \begin{tikzpicture} [
+            scale=1.2,
+            nodo/.style={ellipse,fill=black!25,minimum size=20pt,inner sep=0pt},
+            arco/.style = {draw,thin,-},
+            arco tratteggiato/.style = {draw,thin,dotted},
+        ]
+        \foreach \pos/\name/\labin/\labout in {
+                {(0,5)/a/n/0},
+                {(0,4)/b/
+                \left\lceil 
+                    \frac{n}{\sqrt{2}} + 1
+                \right\rceil
+                /1},
+                {(0,2.8)/c/S_{i}/i},
+                % {(0,2)/d/S_{\bar{i}}/\bar{i}},
+            {(0,1.6)/e/<8/\bar{i}}}
+            \node[nodo, label={east:$\labout$}] (\name) at \pos {$\labin$};
+            % \node[nodo, label={east:$\labout$}] (\name) at \pos {\name $\labin$};
+        \foreach \source/ \dest in {
+                % d/e,
+                a/b}
+            \path[arco] (\source) -- (\dest);
+        \foreach \source/ \dest in {
+                % c/d,
+                c/e,
+                b/c}
+            \path[arco tratteggiato] (\source) -- (\dest);
+        \begin{pgfonlayer}{background}
+        \end{pgfonlayer}
+    \end{tikzpicture}
+\end{figure}
+\\
+La taglia $
+S_i
+$ del grafo all'iterazione $i$ è limitata da 
+\begin{equation*}
+    S_i
+    \leq
+    \left\lceil 
+        \frac{
+            n
+        }{
+            \left( 
+                \sqrt{2}
+            \right)^i
+        }
+        + 7
+    \right\rceil
+\end{equation*}
+questo si prova per induzione per ESERCIZIO, la base per $i=0$ è chiaramente verificata $n \leq n + 7$, e poi si prova per $i$ dato che vale per $i-1$.
+\\
+Al livello $
+\bar{i}
+=
+2 \log_2 n
+$ la taglia risulta
+\begin{align*}
+    S_{\bar{i}}
+    &
+    \leq
+    \left\lceil 
+        \frac{
+            n
+        }{
+            \left( 
+                \sqrt{2}
+            \right)^{\bar{i}}
+        }
+        + 7
+    \right\rceil
+    \\
+    &=
+    \left\lceil 
+        \frac{
+            n
+        }{
+            \left( 
+                \sqrt{2}
+            \right)^{
+                2 \log_2 n
+            }
+        }
+        + 7
+    \right\rceil
+    \\
+    &=
+    \left\lceil 
+        \frac{
+            n
+        }{
+            n
+        }
+        + 7
+    \right\rceil
+    \\
+    &= 
+    8
+\end{align*}
+Per cui al livello $
+\bar{i}
+$ si raggiunge la foglia.
+Se $h$ è il livello preso in considerazione nell'albero, sarà limitato da
+\begin{equation*}
+    h \leq 1 +
+    \left\lceil 
+        2 \log_2 n
+    \right\rceil
+\end{equation*}
+La funzione di ricorrenza si può riscrivere in funzione del livello $h$ in cui si è dell'albero
+\begin{equation*}
+    P(h) =
+    \begin{cases}
+        1 & h = 1
+        \\
+        1 - 
+        \left[ 
+            1 -
+            \frac{1}{2}
+            \cdot
+            P\left( 
+                h - 1
+            \right)
+        \right]^2
+        &
+        h > 1
+    \end{cases}
+\end{equation*}
+Si dimostra per induzione che
+\begin{equation*}
+    P(h) \geq
+    \frac{1}{h}
+\end{equation*}
+La base per $h=1$ è chiaramente vera.
+Supponendo che sia vero per $h-1$, lo si dimostra per $h$.
+Esplicitando il quadrato per $h>1$ vale
+\begin{equation*}
+    P(h) =
+    P(h-1)
+    -
+    \frac{1}{4}
+    \left( 
+        P
+        (h-1)
+    \right)
+    ^2
+\end{equation*}
+Si consideri la funzione reale, definita $\forall x$
+\begin{equation*}
+    f(x) = x - \frac{1}{4} x^2
+\end{equation*}
+Questa funzione, calcolata nel punto $
+    P(h-1)
+$, vale proprio $
+    P(h)
+$:
+\begin{equation*}
+    f(
+        P(h-1)
+    ) = 
+    P(h)
+\end{equation*}
+e nell'intervallo $x \in [0,1]$ ha derivata positiva, ed è quindi una funzione crescente.
+Per l'ipotesi induttiva vale
+\begin{align*}
+    P(h-1)
+    &
+    \geq
+    \frac{1}{h-1}
+    \intertext{e il verso della disequazione viene mantenuto dall'applicazione di una funzione crescente}
+    f(
+        P(h-1)
+    )
+    &
+    \geq
+    f\left( 
+        \frac{1}{h-1}
+    \right)
+    \intertext{sostituendo il primo membro e espandendo il secondo}
+    P(h)
+    &
+    \geq
+    \frac{1}{
+        h-1
+    }
+    -
+    \frac{1}{
+        4
+        \left( 
+            h-1
+        \right)^2
+    }
+    \\
+    &
+    >
+    \frac{1}{
+        h-1
+    }
+    -
+    \frac{1}{
+        2
+        \left( 
+            h-1
+        \right)^2
+    }
+    \\
+    &
+    =
+    \frac{1}{
+        h-1
+    }
+    -
+    \frac{1}{
+        2
+        \left( 
+            h-1
+        \right)
+        \left( 
+            h-1
+        \right)
+    }
+    \intertext{per $h \geq 2$ vale $2(h-1) \geq h$}
+    &
+    \geq
+    \frac{1}{
+        h-1
+    }
+    -
+    \frac{1}{
+        h
+        \left( 
+            h-1
+        \right)
+    }
+    \\
+    &= \frac{1}{h}
+    \intertext{si era mostrato che $
+        h \leq 1 +
+        \left\lceil 
+            2 \log_2 n
+        \right\rceil
+    $}
+    \\
+    &
+    \geq
+    \frac{1}{
+        \left\lceil 
+            2 \log_2 n
+        \right\rceil
+        + 1
+    }
+    \\
+    &
+    \geq
+    \frac{1}{
+        4 \log_2 n
+    }
+\end{align*}
+Quindi la probabilità di successo è legata all'inverso del logaritmo, invece che all'inverso del quadrato come per l'algoritmo di \emph{Karger}.
+Sono quindi necessarie meno iterazioni per ottenere la correttezza in alta probabilità.
+Ripetendo l'algoritmo di \emph{Karger-Stein} per
+\begin{equation*}
+    s
+    =
+    d
+    \,
+    4 \log_2 n
+    \,
+    \ln n
+\end{equation*}
+volte, l'algoritmo fallisce se tutte le esecuzioni sbagliano, ovvero
+\begin{align*}
+    \prob{
+        \text{insuccesso dopo $s$ iterazioni}
+    }
+    &
+    \leq
+    \left[ 
+        1 -
+        \frac{1}{
+            4 \log_2 n
+        }
+    \right]^{
+        d
+        \,
+        4 \log_2 n
+        \,
+        \ln n
+    }
+    \\
+    &
+    <
+    \left( e^{-1} \right)^{
+        \ln n
+        ^{
+            d
+        }
+    }
+    \\
+    &
+    \leq
+    \frac{1}{
+        n^d
+    }
+\end{align*}
 
 \section{Pezzi utili di \LaTeX{}}
 
