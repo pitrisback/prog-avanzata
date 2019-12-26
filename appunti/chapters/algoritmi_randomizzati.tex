@@ -3023,6 +3023,340 @@ volte, l'algoritmo fallisce se tutte le esecuzioni sbagliano, ovvero
     }
 \end{align*}
 
+
+\section{Esempi di algoritmi randomizzati}
+
+\subsection{Polling}
+
+Si vuole stimare in maniera randomizzata una certa quantità.
+Utilizzando un metodo detto stima di Montecarlo, per cui si ricavano stime di quantità con esperimenti randomizzati.
+
+Si consideri un'urna $U$ contenente $n$ palline, nel caso più semplice di due colori, bianco e nero.
+Si vuole stimare 
+\emph{esattamente} 
+la proporzione $\alpha$ di palline bianche.
+L'urna contiene quindi $
+\alpha n
+$ palline bianche e $
+(1-\alpha) n
+$ palline nere.
+
+È necessario conoscere un limite inferiore deterministico alla quantità di palline bianche, per cui
+\begin{equation*}
+    \prob{
+        \alpha \geq \alpha_{min}
+    } 
+    = 1
+\end{equation*}
+Questo perché se le palline bianche sono eccessivamente rare, non c'è verso di stimarne la frequenza.
+Si vuole ottenere una stima randomizzata $
+\bm{\beta}
+$ di $\alpha$, con la garanzia che la stima sia 
+con confidenza $
+0 < \delta < 1
+$
+all'interno di una certa precisione fissata $
+0 < \varepsilon < 1
+$, ovvero l'errore relativo è limitato da
+\begin{equation*}
+    \prob{
+        \frac{
+            |
+            \bm{\beta}
+            - \alpha
+            |
+        }{
+            \alpha
+        }
+        > \varepsilon
+    }
+    < \delta
+\end{equation*}
+\begin{algorithm}[H]
+\caption{Polling}\label{alg:polling}
+\begin{algorithmic}[1]
+    \Procedure{Approximate\_$\alpha$}{$U, \varepsilon, \delta, \alpha_{min}$}
+        \State $n \gets U$
+        \State $x \gets 0$
+        \State $k \gets f \left( n, \varepsilon, \delta, \alpha_{min} \right)$
+        \RepLoop{$k$}
+            \State $p \gets
+            \Call{Random}{U}
+            $
+        \EndRepLoop
+        \If{$p.color = $ \texttt{bianco}}
+            \State $x \gets x + 1$
+        \EndIf
+        \State return $\beta = x / k$
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+\noindent
+Nota: le estrazioni sono \emph{con} reimbussolamento.
+Si associa una variabile indicatrice a ciascuna estrazione, ottenendo $k$ variabili i.i.d. 
+\begin{equation*}
+    X_i =
+    \begin{cases}
+        1 & p.color = B
+        \\
+        0 & \text{altrimenti}
+    \end{cases}
+\end{equation*}
+Per cui vale chiaramente $
+\prob{X_i = 1} = \alpha
+$ e
+\begin{equation*}
+    X = \sum_{i=1}^{k} X_i
+    \quad
+    \E{X} = \mu = k \alpha
+\end{equation*}
+E si riscrive l'evento associato ad un eccessivo errore relativo come
+\begin{align*}
+    \frac{
+        |
+        \bm{\beta}
+        - \alpha
+        |
+    }{
+        \alpha
+    }
+    &
+    > \varepsilon
+    \\
+    \frac{
+        |
+        x/k 
+        - \alpha
+        |
+    }{
+        \alpha
+    }
+    &
+    > \varepsilon
+    \\
+    \frac{
+        |
+        x
+        - k \alpha
+        |
+    }{
+        k \alpha
+    }
+    &
+    > \varepsilon
+    \\
+    \frac{
+        |
+        x
+        - \mu
+        |
+    }{
+        \mu
+    }
+    &
+    > \varepsilon
+    \intertext{che equivale alla disgiunzione degli eventi}
+    x > (1 + \varepsilon) \mu
+    \quad
+    &
+    \cup
+    \quad
+    x < (1 - \varepsilon) \mu
+    \intertext{e quindi è l'unione di due eventi che si possono limitare con Chernoff}
+    \prob{
+        \frac{
+            |
+            x
+            - \mu
+            |
+        }{
+            \mu
+        }
+        > \varepsilon
+    }
+    &
+    <
+    e^{- \varepsilon^2 \mu / 2}
+    +
+    e^{- \varepsilon^2 \mu / 3}
+    \\
+    &
+    <
+    2
+    e^{- \varepsilon^2 \mu / 3}
+    \\
+    &
+    =
+    2
+    e^{- \varepsilon^2 k \alpha / 3}
+    \\
+    &
+    \leq
+    2
+    e^{- \varepsilon^2 k \alpha_{min} / 3}
+    \\
+    &
+    \meq
+    \delta
+    \intertext{da cui si ricava il valore di $k$ per rispettare $\delta$:}
+    k &= 
+    \frac{3}{
+        \alpha_{min}
+        \varepsilon^2
+    }
+    \ln \left( \frac{2}{\delta} \right)
+\end{align*}
+Per cui è presente un forte dipendenza dalla precisione $\varepsilon$, mentre la dipendenza rispetto alla confidenza $\delta$ è più blanda.
+Per il caso con palline di più colori, si sfrutta l'union bound per ampliare l'analisi.
+
+\subsection{Enumerazione randomizzata (coupon collecting)}
+
+Dato $
+\Call{Random}{\left\{ 1, n \right\}}
+$ si vuole calcolare il numero medio di invocazioni del metodo necessarie ad estrarre (con molteplicità) tutti i valori in $
+\left\{ 1, 2, \cdots, n \right\}
+$.
+Si vuole calcolare quante estrazioni (\emph{con} reimbussolamento) sono necessarie per essere sicuri di aver visto tutti gli elementi nell'urna.
+
+Spesso ci sono processi in cui l'urna rappresenta un insieme di job, ma non si possono assegnare i lavori agli esecutori in maniera deterministica.
+Se un esecutore si guastasse, alcuni job non sarebbero eseguiti.
+Assegnando i job casualmente, con un numero limitato di estrazioni tutti i job sono correttamente assegnati.
+
+Sia $
+Y \sim Geom (p)
+$ una variabile geometrica,
+valgono
+\begin{equation*}
+    \prob{Y = j} = \left( 1-p \right)^{j-1} p
+    \qquad
+    \E{Y} = \frac{1}{p}
+\end{equation*}
+
+Si consideri $
+Z_i
+$ il numero di chiamate necessarie ad ottenere l'$i$-esimo valore distinto dopo averne visti $
+i-1
+$, con $
+1 \leq i \leq n
+$: $
+Z_i \sim Geom (p_i)
+$
+Le prime estrazioni avranno spesso successo, mentre quando quasi tutti gli elementi sono già stati visti, è più raro trovarne uno nuovo.
+La variabile viene rappresentata da $p_i$, ottenuto come il numero di valori ancora da vedere diviso il numero totale.
+\begin{equation*}
+    p_i = 
+    \frac{n - \left( i-1 \right)}{n}
+    \qquad
+    \E{Z_i}
+    = 
+    \frac{1}{p_i}
+    =
+    \frac{n}{n-i+1}
+\end{equation*}
+Il numero complessivo di lanci (che non è una geometrica)
+\begin{equation*}
+    Z =
+    \sum_{i=1}^{n} Z_i
+\end{equation*}
+allora la media vale
+\begin{align*}
+    \E{Z}
+    &= 
+    \sum_{i=1}^{n}
+    \E{ Z_i }
+    \\
+    &= 
+    \sum_{i=1}^{n}
+    \frac{n}{n-i+1}
+    \\
+    &= 
+    n
+    \sum_{i=1}^{n}
+    \frac{1}{n-i+1}
+    \intertext{effettuando il cambio di variabile $j = n-i+1$}
+    &= 
+    n
+    \sum_{i=1}^{n}
+    \frac{1}{j}
+    \intertext{la sommatoria è l'$n$-esimo numero armonico}
+    &= 
+    n H(n)
+    \intertext{l'$n$-esimo numero armonico si approssima con il logaritmo}
+    &= 
+    n \left( \ln n + O (1) \right)
+    \\
+    &= 
+    n \ln n + O(n)
+\end{align*}
+Ogni job viene quindi assegnato $\log n$ volte, che non è troppo.
+
+Per quanto riguarda la concentrazione intorno alla media, fissato $
+i \in \left\{ 1, \cdots, n \right\}
+$, la probabilità di non aver collezionato $i$ dopo $r$ lanci ($r>0$) 
+corrisponde all'estrazione di un altro valore in tutti i lanci
+% data dal $
+% (n-1)/n
+% $
+\begin{equation*}
+    \prob{
+        E_i^r
+    }
+    =
+    \left( \frac{n-1}{n} \right)^{r}
+    =
+    \left( 1- \frac{1}{n} \right)^{n \cdot
+        r/n
+        % \frac{r}{n}
+    }
+    <
+    e^{-r/n}
+\end{equation*}
+si può scegliere $r$ in modo da limitare questo valore in maniera arbitraria
+\begin{align*}
+    e^{-r/n}
+    &= 
+    \frac{1}{n^2}
+    \\
+    \Rightarrow
+    r &= 
+    2 n \ln n 
+\end{align*}
+in generale, la probabilità che dopo $r$ lanci almeno un elemento generico non sia ancora uscito è pari a 
+\begin{align*}
+    \prob{
+        \bigcup_{i=1}^{n}
+        E_i^r
+    }
+    &
+    \leq
+    \sum_{i=1}^{n}
+    \prob{
+        E_i^r
+    }
+    \leq
+    n \frac{1}{n^2}
+    =
+    \frac{1}{n}
+\end{align*}
+per cui la probabilità che dopo $
+2 n \ln n 
+$ passi un elemento non sia ancora stato estratto è bassa, minore di $
+1/n
+$ e la probabilità complementare
+\begin{align*}
+    \prob{
+        \text{tutti estratti in un numero $
+            2 n \ln n 
+        $ estrazioni}
+    }
+    \geq 1 - \frac{1}{n}
+\end{align*}
+
+Il numero di iterazioni necessarie non è facilmente abbassabile, la probabilità che tutti gli elementi vengano estratti prima della media è minore di $
+e^{-c}
+$
+
+
 \section{Pezzi utili di \LaTeX{}}
 
 \subsection{Template vari}
