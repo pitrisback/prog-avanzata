@@ -3342,7 +3342,7 @@ per cui la probabilità che dopo $
 2 n \ln n 
 $ passi un elemento non sia ancora stato estratto è bassa, minore di $
 1/n
-$ e la probabilità complementare
+$ e la probabilità complementare risulta
 \begin{align*}
     \prob{
         \text{tutti estratti in un numero $
@@ -3356,6 +3356,138 @@ Il numero di iterazioni necessarie non è facilmente abbassabile, la probabilit�
 e^{-c}
 $
 
+\subsection{Generazione di bit senza bias}
+
+Si vuole generare un bit che assuma valore 0 o 1 con uguale probabilità, avendo a disposizione un generatore con bias $p$ non noto.
+
+\begin{align*}
+    b =
+    \begin{cases}
+        0 & 
+        \text{con prob. }
+        1/2
+        \\
+        1 & 
+        \text{con prob. }
+        1/2
+    \end{cases}
+    \qquad
+    \Call{Bias}{ }
+    =
+    \begin{cases}
+        0 & 
+        \text{con prob. }
+        p
+        \\
+        1 & 
+        \text{con prob. }
+        1-p
+    \end{cases}
+\end{align*}
+Avendo a disposizione solo la primitiva $
+\Call{Bias}{ }
+$ si possono estrarre numeri senza bias:
+\begin{algorithm}[H]
+\caption{Estrazione di bit senza bias}\label{alg:unbias}
+\begin{algorithmic}[1]
+    \Procedure{Unbias}{ }
+        \Repeat
+            \State $x \gets
+            \Call{Bias}{ }
+            $
+            \State $y \gets
+            \Call{Bias}{ }
+            $
+        \Until{$x \ne y$}
+        \State return $x$
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+\noindent
+Ad ogni round vengono quindi estratti due valori, e si considera un successo il caso in cui sono valori diversi. Le probabilità delle quattro combinazioni di valori risultano
+\begin{equation*}
+    \begin{array}[h]{cc|c}
+        x & y & \text{prob} \\
+        \hline
+        \rule{0pt}{1.0\normalbaselineskip}
+        0 & 0 & (1-p)^2 \\
+        0 & 1 & p(1-p) \\
+        1 & 0 & p(1-p) \\
+        1 & 1 & p^2
+    \end{array}
+\end{equation*}
+In questo modo vengono individuati due eventi equiprobabili, indipendenti dal bias, che si riesce a distinguere.
+L'algoritmo è corretto perché restituisce un bit, e termina per $0<p<1$, anche se prevede in generale computazioni di lunghezza illimitata.
+\\
+Considerando gli eventi
+\begin{equation*}
+    A_i = \text{``$
+    \Call{Unbias}{ }
+    $ termina al round $i$''}
+\end{equation*}
+che sono indipendenti, dato che o termina al round $i$ o al round $j$, e vale
+\begin{equation*}
+    \prob{
+        \bigcup_{i=1}^{\infty} A_i
+    }
+    = 1
+\end{equation*}
+perché prima o poi termina.
+Usando la probabilità totale, si riscrive
+\begin{align*}
+    \prob{
+        \Call{Unbias}{ }
+        = 1
+    }
+    &= 
+    \sum_{i=1}^{\infty}
+    \prob{
+        \Call{Unbias}{ }
+        = 1
+        \mid
+        A_i
+    }
+    \prob{
+        A_i
+    }
+    \intertext{l'algoritmo termina quando capita uno di due eventi equiprobabili}
+    &= 
+    \sum_{i=1}^{\infty}
+    \frac{1}{2}
+    \prob{
+        A_i
+    }
+    \\
+    &= 
+    \frac{1}{2}
+    \sum_{i=1}^{\infty}
+    \prob{
+        A_i
+    }
+    \intertext{gli eventi $A_i$ sono disgiunti}
+    &= 
+    \frac{1}{2}
+\end{align*}
+Per quanto riguarda il numero di round, è descritto da una geometrica con probabilità di successo $
+q = 2 p (1-p)
+$
+\begin{equation*}
+    \text{\# round}
+    \sim Geom\left( 
+        2 p (1-p)
+    \right)
+    \qquad
+    \E{
+        \text{\# round}
+    }
+    =
+    \frac{1}{
+        2 p (1-p)
+    }
+\end{equation*}
+
+
+\subsection{Approssimazione randomizzata}
 
 \section{Pezzi utili di \LaTeX{}}
 
@@ -3385,6 +3517,34 @@ $
 \end{algorithm}
 \noindent
 Testo non identato!
+\begin{algorithm}[H]
+\caption{Esempi in libertà}\label{alg:esempi}
+\begin{algorithmic}[1]
+    \Procedure{Esempi}{$n$}
+        \If{$|i| \leq n_0$}
+        \Comment{if}
+            \State *risolvo direttamente*
+        \EndIf
+        \ForAll{$i \in A_n$}
+        \Comment{for each}
+            \State $s \gets
+            \Call{Magic}{i}
+            $
+        \EndFor
+        \RepLoop{$k$}
+        \Comment{repeat some times}
+            \State $t \gets \Call{Full\_Contraction}{\bgg{}} $
+            \State $min \gets \Call{Min}{min, t} $
+        \EndRepLoop
+        \State \Return $x$
+        \Comment{il return che vorrei}
+    \EndProcedure
+    \Function{Unbias}{ }
+        \Comment{funzioni}
+        \State \Return $0$
+    \EndFunction
+\end{algorithmic}
+\end{algorithm}
 
 \begin{definition}[Algoritmo]\label{def:algex}
     Un algoritmo è una procedura computazionale finita (terminante) e deterministica, specificata come una sequenza di passi elementari (istruzioni) estratte da un insieme standard associato a un modello computazionale (astrazione di un computer) che trasforma in maniera univoca un ingresso in un uscita.
@@ -3458,6 +3618,19 @@ Una lista
     \item[--] $L_A = L$ (il linguaggio deciso da $A$ è $L$)
     \item[--] $T_A(|x|) = O(|x|^k)$ per qualche costante $k \geq 0$
 \end{itemize}
+
+Una tabella con spazi aggiunti \url{https://tex.stackexchange.com/a/65128}
+\begin{equation*}
+    \begin{array}[h]{cc|c}
+        x & y & \text{prob} \\
+        \hline
+        \rule{0pt}{1.0\normalbaselineskip}
+        0 & 0 & (1-p)^2 \\
+        0 & 1 & p(1-p) \\
+        1 & 0 & p(1-p) \\
+        1 & 1 & p^2
+    \end{array}
+\end{equation*}
 
 \subsection{Teoremi e vari ambienti }
 
