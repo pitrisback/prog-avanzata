@@ -4165,3 +4165,47 @@ utilità
 validità
 velocità
 verità
+
+
+\begin{figure}[h]
+    \centering
+    \caption{Unweighted graph}
+    \label{fig:ug}
+    \begin{tikzpicture} [
+            auto,
+            swap,
+            scale=1.4,
+            vertex/.style={circle,fill=black!25,minimum size=20pt,inner sep=0pt},
+            selected vertex/.style = {vertex, fill=red!24},
+            edge/.style = {draw,thick,-},
+            weight/.style = {font=\small},
+            selected edge/.style = {draw,line width=5pt,-,red!50},
+            outbound edge/.style = {draw,line width=5pt,-,blue!50},
+            ignored edge/.style = {draw,line width=5pt,-,black!20}
+        ]
+        % First we draw the vertices
+        \foreach \pos/\name in {
+                {(0,0)/A},
+                {(0,2)/B},
+                {(2,2)/C},
+                {(4,2)/D},
+                {(2,0)/E}}
+            \node[vertex] (\name) at \pos {$\name$};
+        % Connect vertices with edges and draw weights
+        \foreach \source/ \dest in {
+                B/C, C/E, C/D, D/E}
+            \path[edge] (\source) -- (\dest);
+        % color a node
+        % \foreach \vertex in {B, D, E}
+            % \path node[selected vertex] at (\vertex) {$\vertex$};
+        \begin{pgfonlayer}{background}
+            % \foreach \source / \dest in {B/C}
+                % \path[outbound edge] (\source.center) -- (\dest.center);
+            % \foreach \source / \dest in {D/G}
+                % \path[selected edge] (\source.center) -- (\dest.center);
+            % \foreach \source / \dest in {F/D}
+                % \path[ignored edge] (\source.center) -- (\dest.center);
+        \end{pgfonlayer}
+    \end{tikzpicture}
+\end{figure}
+

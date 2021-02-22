@@ -9,5 +9,7 @@
 *.pdf
 *.toc
 *.xml
+*.nav
+*.snm
 
-rec
+registrazioni/
